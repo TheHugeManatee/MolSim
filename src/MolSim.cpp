@@ -34,7 +34,7 @@ void plotParticles(int iteration);
 
 
 double start_time = 0;
-double end_time = 1000;
+double end_time = 100.000;
 double delta_t = 0.014;
 
 std::list<Particle> particles;
@@ -80,6 +80,10 @@ int main(int argc, char* argsv[]) {
 	return 0;
 }
 
+/**
+* Calculates forces for all given particles in the particle list
+* and sets the net force in the object's member f
+*/
 
 void calculateF() {
 	list<Particle>::iterator iterator;
@@ -87,6 +91,10 @@ void calculateF() {
 
 	while (iterator != particles.end()) {
 		list<Particle>::iterator innerIterator = particles.begin();
+		utils::Vector<double, 3> resultForce; //new force vector
+		resultForce[0] = 0;
+		resultForce[1] = 0;
+		resultForce[2] = 0;
 
 		while (innerIterator != particles.end()) {
 			if (innerIterator != iterator) {
@@ -94,11 +102,15 @@ void calculateF() {
 				Particle& p1 = *iterator;
 				Particle& p2 = *innerIterator;
 
-				// insert calculation of force here!
+				utils::Vector<double, 3> xDif = p1.getX()-p2.getX();
+				double normRaised3 = xDif.L2Norm()*xDif.L2Norm()*xDif.L2Norm();
+				resultForce = resultForce + ((p1.getM()*p2.getM())/normRaised3) * xDif;
 
 			}
 			++innerIterator;
 		}
+		(*iterator).setF(resultForce);
+
 		++iterator;
 	}
 }
@@ -111,7 +123,9 @@ void calculateX() {
 		Particle& p = *iterator;
 
 		// insert calculation of X here!
-
+		utils::Vector<double, 3> resultX;
+		resultX= p.getX() + delta_t * p.getV() + delta_t * delta_t / (2 * p.getM()) * p.getF();
+		p.setX(resultX);
 		++iterator;
 	}
 }
@@ -124,7 +138,9 @@ void calculateV() {
 		Particle& p = *iterator;
 
 		// insert calculation of velocity here!
-
+		utils::Vector<double, 3> resultV;
+		resultV = p.getV() + delta_t / (2 * p.getM()) * (p.getOldF() + p.getF());
+		p.setV(resultV);
 		++iterator;
 	}
 }
@@ -132,8 +148,18 @@ void calculateV() {
 
 void plotParticles(int iteration) {
 
-	string out_name("MD_vtk");
+	string out_name("OutputFiles/MD_vtk");
 
-	outputWriter::XYZWriter writer;
-	writer.plotParticles(particles, out_name, iteration);
+	outputWriter::VTKWriter writer;
+	writer.initializeOutput(particles.size());
+
+	list<Particle>::iterator it = particles.begin();
+	while(it != particles.end()) {
+
+		writer.plotParticle(*it);
+
+		++it;
+	}
+
+	writer.writeFile(out_name, iteration);
 }

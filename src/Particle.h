@@ -54,6 +54,9 @@ public:
 
 	utils::Vector<double, 3>& getF();
 
+	/** setter for the force vector */
+	void setF(utils::Vector <double ,3> force);
+
 	utils::Vector<double, 3>& getOldF();
 
 	utils::Vector<double, 3>& getV();
@@ -65,6 +68,14 @@ public:
 	bool operator==(Particle& other);
 
 	std::string toString();
+
+	void setV(const utils::Vector<double, 3>& v) {
+		this->v = v;
+	}
+
+	void setX(const utils::Vector<double, 3>& x) {
+		this->x = x;
+	}
 };
 
 std::ostream& operator<<(std::ostream& stream, Particle& p);

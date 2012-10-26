@@ -89,3 +89,8 @@ std::ostream& operator<<(std::ostream& stream, Particle& p) {
 	stream << p.toString();
 	return stream;
 }
+
+void Particle::setF(utils::Vector <double ,3> force){
+	old_f=f;
+	f=force;
+}
