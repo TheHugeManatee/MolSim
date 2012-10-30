@@ -34,8 +34,8 @@ void plotParticles(int iteration);
 
 
 double start_time = 0;
-double end_time = 100.000;
-double delta_t = 0.014;
+double end_time = 50000.000;
+double delta_t = 0.5;
 
 std::list<Particle> particles;
 
@@ -102,9 +102,9 @@ void calculateF() {
 				Particle& p1 = *iterator;
 				Particle& p2 = *innerIterator;
 
-				utils::Vector<double, 3> xDif = p1.getX()-p2.getX();
+				utils::Vector<double, 3> xDif = p2.getX()-p1.getX();
 				double normRaised3 = xDif.L2Norm()*xDif.L2Norm()*xDif.L2Norm();
-				resultForce = resultForce + ((p1.getM()*p2.getM())/normRaised3) * xDif;
+				resultForce = resultForce + ((p1.getM()*p2.getM())/normRaised3) * (xDif);
 
 			}
 			++innerIterator;
