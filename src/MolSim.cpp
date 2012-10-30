@@ -1,165 +1,63 @@
-
-#include "outputWriter/XYZWriter.h"
-#include "outputWriter/VTKWriter.h"
-#include "FileReader.h"
-
 #include <list>
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
 
-using namespace std;
+#include "utils/Settings.h"
+#include "Simulator.h"
 
-/**** forward declaration of the calculation functions ****/
+#include <cstdlib>
+#include <sys/timeb.h>
 
-/**
- * calculate the force for all particles
- */
-void calculateF();
-
-/**
- * calculate the position for all particles
- */
-void calculateX();
-
-/**
- * calculate the position for all particles
- */
-void calculateV();
-
-/**
- * plot the particles to a xyz-file
- */
-void plotParticles(int iteration);
-
-
-double start_time = 0;
-double end_time = 50000.000;
-double delta_t = 0.5;
-
-std::list<Particle> particles;
-
+int getMilliCount(){
+	timeb tb;
+	ftime(&tb);
+	int nCount = tb.millitm + (tb.time & 0xfffff) * 1000;
+	return nCount;
+}
 
 int main(int argc, char* argsv[]) {
 
-	cout << "Hello from MolSim for PSE!" << endl;
-	if (argc != 2) {
-		cout << "Errounous programme call! " << endl;
-		cout << "./molsym filename" << endl;
+	if (argc < 2) {
+		std::cout << "Errounous programme call! " << std::endl;
+		std::cout << "./molsym filename [optional parameters" << std::endl;
+		std::cout << "Optional parameters are:" << std::endl;
+		std::cout << "\t\"deltaT 0.0001\": the desired time step" << std::endl;
+		std::cout << "\t\"endTime 100.0\": the end time of simulation" << std::endl;
+		std::cout << std::endl;
+		std::cout << "EXAMPLE: ./MolSim eingabe_sonne.txt deltaT 0.0014 endTime 100.0" << std::endl;
 	}
 
-	FileReader fileReader;
-	fileReader.readFile(particles, argsv[1]);
-	// the forces are needed to calculate x, but are not given in the input file.
-	calculateF();
+	Settings::initSettings(argc, argsv);
 
-	double current_time = start_time;
+	Simulator sim;
+
+	sim.readInputFile(argsv[1]);
+
+	double current_time = Settings::getStartTime();
 
 	int iteration = 0;
 
-	 // for this loop, we assume: current x, current f and current v are known
-	while (current_time < end_time) {
-		// calculate new x
-		calculateX();
+	int benchmarkStartTime = getMilliCount();
 
-		// calculate new f
-		calculateF();
-		// calculate new v
-		calculateV();
+	 // for this loop, we assume: current x, current f and current v are known
+	while (current_time < Settings::getEndTime()) {
+		sim.nextTimeStep();
 
 		iteration++;
 		if (iteration % 10 == 0) {
-			plotParticles(iteration);
+			sim.plotParticles(iteration);
 		}
-		cout << "Iteration " << iteration << " finished." << endl;
+		//std::cout << "Iteration " << iteration << " finished." << std::endl;
 
-		current_time += delta_t;
+		current_time += Settings::getDeltaT();
 	}
 
-	cout << "output written. Terminating..." << endl;
+	int benchmarkEndTime = getMilliCount();
+
+	std::cout << "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds" << std::endl;
+
+	std::cout << "output written. Terminating..." << std::endl;
 	return 0;
 }
 
-/**
-* Calculates forces for all given particles in the particle list
-* and sets the net force in the object's member f
-*/
-
-void calculateF() {
-	list<Particle>::iterator iterator;
-	iterator = particles.begin();
-
-	while (iterator != particles.end()) {
-		list<Particle>::iterator innerIterator = particles.begin();
-		utils::Vector<double, 3> resultForce; //new force vector
-		resultForce[0] = 0;
-		resultForce[1] = 0;
-		resultForce[2] = 0;
-
-		while (innerIterator != particles.end()) {
-			if (innerIterator != iterator) {
-
-				Particle& p1 = *iterator;
-				Particle& p2 = *innerIterator;
-
-				utils::Vector<double, 3> xDif = p2.getX()-p1.getX();
-				double normRaised3 = xDif.L2Norm()*xDif.L2Norm()*xDif.L2Norm();
-				resultForce = resultForce + ((p1.getM()*p2.getM())/normRaised3) * (xDif);
-
-			}
-			++innerIterator;
-		}
-		(*iterator).setF(resultForce);
-
-		++iterator;
-	}
-}
-
-
-void calculateX() {
-	list<Particle>::iterator iterator = particles.begin();
-	while (iterator != particles.end()) {
-
-		Particle& p = *iterator;
-
-		// insert calculation of X here!
-		utils::Vector<double, 3> resultX;
-		resultX= p.getX() + delta_t * p.getV() + delta_t * delta_t / (2 * p.getM()) * p.getF();
-		p.setX(resultX);
-		++iterator;
-	}
-}
-
-
-void calculateV() {
-	list<Particle>::iterator iterator = particles.begin();
-	while (iterator != particles.end()) {
-
-		Particle& p = *iterator;
-
-		// insert calculation of velocity here!
-		utils::Vector<double, 3> resultV;
-		resultV = p.getV() + delta_t / (2 * p.getM()) * (p.getOldF() + p.getF());
-		p.setV(resultV);
-		++iterator;
-	}
-}
-
-
-void plotParticles(int iteration) {
-
-	string out_name("OutputFiles/MD_vtk");
-
-	outputWriter::VTKWriter writer;
-	writer.initializeOutput(particles.size());
-
-	list<Particle>::iterator it = particles.begin();
-	while(it != particles.end()) {
-
-		writer.plotParticle(*it);
-
-		++it;
-	}
-
-	writer.writeFile(out_name, iteration);
-}

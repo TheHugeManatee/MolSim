@@ -4,4 +4,6 @@ SOURCES=\
 	src/outputWriter/vtk-unstructured.cpp\
 	src/outputWriter/VTKWriter.cpp\
 	src/outputWriter/XYZWriter.cpp\
-	src/Particle.cpp
+	src/Particle.cpp\
+	src/utils/Settings.cpp\
+	src/Simulator.cpp\

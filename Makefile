@@ -11,7 +11,7 @@ include files.mk
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -O3
+CFLAGS=-g -fpermissive
 
 # Linker flags
 # ------------

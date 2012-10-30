@@ -67,11 +67,11 @@ void VTKWriter::writeFile(const std::string& filename, int iteration) {
 }
 
 void VTKWriter::plotParticle(Particle& p) {
-	if (vtkFile->UnstructuredGrid().present()) {
+	/*if (vtkFile->UnstructuredGrid().present()) {
 		cout << "UnstructuredGrid is present" << endl;
 	} else {
 		cout << "ERROR: No UnstructuredGrid present" << endl;
-	}
+	}*/
 
 	PointData::DataArray_sequence& pointDataSequence = vtkFile->UnstructuredGrid()->Piece().PointData().DataArray();
 	PointData::DataArray_iterator dataIterator = pointDataSequence.begin();
