@@ -41,6 +41,10 @@ int main(int argc, char* argsv[]) {
 	int benchmarkStartTime = getMilliCount();
 
 	 // for this loop, we assume: current x, current f and current v are known
+	int maxIterations = (Settings::getEndTime() - Settings::getStartTime()) / Settings::getDeltaT();
+	int iterationsPerDot = maxIterations / 50;
+	int nextDotIteration = 1;
+	std::cout << maxIterations << " " << iterationsPerDot << "\n ";
 	while (current_time < Settings::getEndTime()) {
 		sim.nextTimeStep();
 
@@ -48,10 +52,16 @@ int main(int argc, char* argsv[]) {
 		if (iteration % 10 == 0) {
 			sim.plotParticles(iteration);
 		}
+		
+		if(iteration >= nextDotIteration) {
+			std::cout << "." << std::flush;
+			nextDotIteration += iterationsPerDot;
+		}
 		//std::cout << "Iteration " << iteration << " finished." << std::endl;
 
 		current_time += Settings::getDeltaT();
 	}
+	std::cout << std::endl;
 
 	int benchmarkEndTime = getMilliCount();
 
