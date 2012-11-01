@@ -19,8 +19,8 @@ int getMilliCount(){
 int main(int argc, char* argsv[]) {
 
 	if (argc < 2) {
-		std::cout << "Errounous programme call! " << std::endl;
-		std::cout << "./molsym filename [optional parameters" << std::endl;
+		std::cout << "Erroneous programme call! " << std::endl;
+		std::cout << "./molsim filename [optional parameters]" << std::endl;
 		std::cout << "Optional parameters are:" << std::endl;
 		std::cout << "\t\"deltaT 0.0001\": the desired time step" << std::endl;
 		std::cout << "\t\"endTime 100.0\": the end time of simulation" << std::endl;

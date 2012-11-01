@@ -2,3 +2,4 @@ OutputFiles/
 *.DS_Store
 *.o
 /MolSim
+doxy/

@@ -1,8 +1,10 @@
-/*
- * Simulator.h
+/**
+ * @file Simulator.h
  *
- *  Created on: Oct 30, 2012
- *      Author: j
+ * a simulator offering methods to calculate force, postition and velocitiy for a given list of particles.
+ *
+ * @date Oct 30, 2012
+ * @author j
  */
 
 #ifndef SIMULATOR_H_
@@ -31,7 +33,7 @@ public:
 	void calculateX();
 
 	/**
-	 * calculate the position for all particles
+	 * calculate the velocity for all particles
 	 */
 	void calculateV();
 

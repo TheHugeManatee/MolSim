@@ -1,6 +1,7 @@
 #include "ParticleContainer.h"
 
 
+
 void ParticleContainer::each(std::function<void (Particle&)> fn) {
 	std::list<Particle>::iterator iterator = particles.begin();
 	while (iterator != particles.end()) {
