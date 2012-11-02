@@ -3,7 +3,7 @@
 
 
 void ParticleContainer::each(std::function<void (Particle&)> fn) {
-	std::list<Particle>::iterator iterator = particles.begin();
+	std::vector<Particle>::iterator iterator = particles.begin();
 	while (iterator != particles.end()) {
 
 		fn(*iterator);
@@ -14,11 +14,11 @@ void ParticleContainer::each(std::function<void (Particle&)> fn) {
 
 
 void ParticleContainer::eachPair(std::function<void (Particle&, Particle&)> fn) {
-	std::list<Particle>::iterator iterator;
+	std::vector<Particle>::iterator iterator;
 	iterator = particles.begin();
 
 	while (iterator != particles.end()) {
-		std::list<Particle>::iterator innerIterator = particles.begin();
+		std::vector<Particle>::iterator innerIterator = particles.begin();
 
 		while (innerIterator != particles.end()) {
 			if (innerIterator != iterator) {
@@ -31,6 +31,6 @@ void ParticleContainer::eachPair(std::function<void (Particle&, Particle&)> fn) 
 	}
 }
 
-std::list<Particle>& ParticleContainer::getList() {
+std::vector<Particle>& ParticleContainer::getContainer() {
     return particles;
 }

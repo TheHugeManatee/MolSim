@@ -11,7 +11,7 @@ include files.mk
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive
+CFLAGS=-g -fpermissive -std=c++0x
 
 # Linker flags
 # ------------

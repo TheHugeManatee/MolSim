@@ -13,10 +13,11 @@
 #include <list>
 
 #include "Particle.h"
+#include "ParticleContainer.h"
 
 class Simulator {
 private:
-	std::list<Particle> particles;
+	ParticleContainer particleContainer;
 
 public:
 	Simulator();

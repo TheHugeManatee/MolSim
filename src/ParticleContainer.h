@@ -13,7 +13,7 @@
 #ifndef PARTICLECONTAINER_H_
 #define PARTICLECONTAINER_H_
 
-#include <list>
+#include <vector>
 #include <functional>
 
 #include "Particle.h"
@@ -22,7 +22,7 @@
 
 class ParticleContainer {
     private:
-        std::list<Particle> particles;
+        std::vector<Particle> particles;
 
     public:
 
@@ -41,7 +41,7 @@ class ParticleContainer {
          */
 
         void eachPair(std::function<void (Particle&, Particle&)> fn);
-        std::list<Particle>& getList();
+        std::vector<Particle>& getContainer();
 };
 
 #endif

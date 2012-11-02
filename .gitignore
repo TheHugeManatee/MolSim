@@ -3,3 +3,5 @@ OutputFiles/
 *.o
 /MolSim
 doxy/
+.settings/
+*.layout

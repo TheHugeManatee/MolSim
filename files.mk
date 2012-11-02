@@ -7,3 +7,4 @@ SOURCES=\
 	src/Particle.cpp\
 	src/utils/Settings.cpp\
 	src/Simulator.cpp\
+	src/ParticleContainer.cpp\

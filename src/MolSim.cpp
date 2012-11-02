@@ -34,22 +34,24 @@ int main(int argc, char* argsv[]) {
 
 	sim.readInputFile(argsv[1]);
 
-	double current_time = Settings::getStartTime();
+	double current_time = Settings::startTime;
 
 	int iteration = 0;
 
 	int benchmarkStartTime = getMilliCount();
 
 	 // for this loop, we assume: current x, current f and current v are known
-	int maxIterations = (Settings::getEndTime() - Settings::getStartTime()) / Settings::getDeltaT();
+	int maxIterations = (Settings::endTime - Settings::startTime) / Settings::deltaT;
 	int iterationsPerDot = maxIterations / 50;
 	int nextDotIteration = 1;
-	std::cout << maxIterations << " " << iterationsPerDot << "\n ";
-	while (current_time < Settings::getEndTime()) {
+
+	std::cout << "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::snapshotSkips << " frames " << std::endl;
+
+	while (current_time < Settings::endTime) {
 		sim.nextTimeStep();
 
 		iteration++;
-		if (iteration % 10 == 0) {
+		if (iteration % Settings::snapshotSkips == 0) {
 			sim.plotParticles(iteration);
 		}
 		
@@ -59,7 +61,7 @@ int main(int argc, char* argsv[]) {
 		}
 		//std::cout << "Iteration " << iteration << " finished." << std::endl;
 
-		current_time += Settings::getDeltaT();
+		current_time += Settings::deltaT;
 	}
 	std::cout << std::endl;
 
