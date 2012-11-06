@@ -74,7 +74,6 @@ void FileReader::readFile(std::vector<Particle>& particles, char* filename) {
     	//now cuboid functionals etc.
 		string keyword;
     	while(!input_file.eof()) {
-    		getline(input_file, tmp_string);
     		istringstream lstream(tmp_string);
     		lstream >> keyword;
     		if(!keyword.compare("cuboid")) {
@@ -95,10 +94,12 @@ void FileReader::readFile(std::vector<Particle>& particles, char* filename) {
     			lstream >> nX3;
     			lstream >> h;
 
+    			cout << bottomLeft << " " << initialVelocity << " " << bMean << " " << nX1 << " " << nX2 << " " << nX3 << " " << h << endl;
+
     			cout << "Generating " << nX1*nX2*nX3 << " particles on a regular cuboid" << endl;
 
     			generateParticlesRegularCuboid(particles, bottomLeft, nX1, nX2, nX3, h, m, initialVelocity, bMean);
-
+        		getline(input_file, tmp_string);
     		}
     	}
     } else {

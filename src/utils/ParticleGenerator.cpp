@@ -26,7 +26,7 @@ void generateParticlesRegularCuboid(std::vector<Particle> &particles, utils::Vec
 				x[2] = bottomLeft[2] + x3 * h;
 
 				Particle p(x, initialVelocity, m);
-				MaxwellBoltzmannDistribution(p, brownianMean, 3);
+				MaxwellBoltzmannDistribution(p, brownianMean, 2);
 
 				particles.push_back(p);
 			}

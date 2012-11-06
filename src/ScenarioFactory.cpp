@@ -59,8 +59,8 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 	        double sigmaNormalized = Settings::sigma/norm;
 	        double sigmaNormailzedRaisedBySix = sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized;
 	        utils::Vector<double, 3> resultForce = (24*Settings::epsilon / (norm*norm)) * ((sigmaNormailzedRaisedBySix) -2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
-
 	        p1.addF(resultForce);
+
 	        resultForce = resultForce * -1;
 	        p2.addF(resultForce);
 		};

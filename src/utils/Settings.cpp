@@ -66,6 +66,7 @@ static void Settings::initSettings(int argc, char* argv[]) {
 			if(!var.compare("inputFile")) cfgFile >> Settings::inputFile;
 			if(!var.compare("epsilon")) cfgFile >> Settings::epsilon;
 			if(!var.compare("sigma")) cfgFile >> Settings::sigma;
+			if(!var.compare("snapshotSkips")) cfgFile >> Settings::snapshotSkips;
 		}
 
 		cfgFile.close();
