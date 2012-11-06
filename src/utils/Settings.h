@@ -66,6 +66,9 @@ public:
 	 */
 	static std::string inputFile;
 
+	static double sigma;
+	static double epsilon;
+
 private:
 	static void loadConfigFile(std::string cfgFile);
 };

@@ -10,3 +10,4 @@ SOURCES=\
 	src/ParticleContainer.cpp\
 	src/ScenarioFactory.cpp\
 	src/utils/MaxwellBoltzmannDistribution.cpp\
+	src/utils/ParticleGenerator.cpp\

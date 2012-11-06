@@ -18,6 +18,8 @@ double Settings::startTime = 0;
 double Settings::endTime = 100.0;
 int Settings::snapshotSkips = 10;
 bool Settings::disableOutput = false;
+double Settings::sigma = 1;
+double Settings::epsilon = 5;
 std::string Settings::scenarioType = "gravity";
 std::string Settings::configFile = "config.cfg";
 std::string Settings::inputFile = "eingabe-sonne.txt";
@@ -62,6 +64,8 @@ static void Settings::initSettings(int argc, char* argv[]) {
 			if(!var.compare("scenarioType")) cfgFile >> Settings::scenarioType;
 			if(!var.compare("disableOutput")) cfgFile >> Settings::disableOutput;
 			if(!var.compare("inputFile")) cfgFile >> Settings::inputFile;
+			if(!var.compare("epsilon")) cfgFile >> Settings::epsilon;
+			if(!var.compare("sigma")) cfgFile >> Settings::sigma;
 		}
 
 		cfgFile.close();

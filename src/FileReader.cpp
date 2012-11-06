@@ -13,6 +13,8 @@
 #include <iostream>
 #include <cstdlib>
 
+#include "utils/ParticleGenerator.h"
+
 using namespace std;
 
 FileReader::FileReader() {
@@ -68,10 +70,40 @@ void FileReader::readFile(std::vector<Particle>& particles, char* filename) {
     		getline(input_file, tmp_string);
     		cout << "Read line: " << tmp_string << endl;
     	}
+    	//read all fixed particles
+    	//now cuboid functionals etc.
+		string keyword;
+    	while(!input_file.eof()) {
+    		getline(input_file, tmp_string);
+    		istringstream lstream(tmp_string);
+    		lstream >> keyword;
+    		if(!keyword.compare("cuboid")) {
+    			utils::Vector<double, 3> bottomLeft, initialVelocity;
+    			int nX1, nX2, nX3;
+    			double h, m, bMean;
+
+    			lstream >> bottomLeft[0];
+    			lstream >> bottomLeft[1];
+    			lstream >> bottomLeft[2];
+    			lstream >> initialVelocity[0];
+    			lstream >> initialVelocity[1];
+    			lstream >> initialVelocity[2];
+    			lstream >> m;
+    			lstream >> bMean;
+    			lstream >> nX1;
+    			lstream >> nX2;
+    			lstream >> nX3;
+    			lstream >> h;
+
+    			cout << "Generating " << nX1*nX2*nX3 << " particles on a regular cuboid" << endl;
+
+    			generateParticlesRegularCuboid(particles, bottomLeft, nX1, nX2, nX3, h, m, initialVelocity, bMean);
+
+    		}
+    	}
     } else {
     	std::cout << "Error: could not open file " << filename << std::endl;
     	exit(-1);
     }
 
 }
-
