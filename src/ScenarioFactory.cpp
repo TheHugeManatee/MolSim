@@ -55,8 +55,10 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 	else if(!type.compare("Lennard-Jones")){
 		scenario.calculateForce = [] (Particle& p1, Particle& p2) {
 	        utils::Vector<double, 3> xDif = p2.getX() - p1.getX();
-	        double normRaised = xDif.L2Norm();
-	        utils::Vector<double, 3> resultForce;
+	        double norm = xDif.L2Norm();
+	        double sigmaNormalized = Settings::sigma/norm;
+	        double sigmaNormailzedRaisedBySix = sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized;
+	        utils::Vector<double, 3> resultForce = (24*Settings::epsilon / (norm*norm)) * ((sigmaNormailzedRaisedBySix) -2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
 
 	        p1.addF(resultForce);
 	        resultForce = resultForce * -1;
