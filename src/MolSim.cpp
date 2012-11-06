@@ -32,8 +32,6 @@ int main(int argc, char* argsv[]) {
 
 	Simulator sim;
 
-	sim.readInputFile(argsv[1]);
-
 	double current_time = Settings::startTime;
 
 	int iteration = 0;
@@ -51,7 +49,7 @@ int main(int argc, char* argsv[]) {
 		sim.nextTimeStep();
 
 		iteration++;
-		if (iteration % Settings::snapshotSkips == 0) {
+		if (!Settings::disableOutput && (iteration % Settings::snapshotSkips == 0)) {
 			sim.plotParticles(iteration);
 		}
 		

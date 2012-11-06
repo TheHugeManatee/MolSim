@@ -11,11 +11,15 @@
 #include <functional>
 #include <string>
 #include "Particle.h"
+#include "FileReader.h"
+#include "ParticleContainer.h"
 
 typedef struct {
 	std::function<void (Particle&, Particle&)> calculateForce;
 	std::function<void (Particle&)> updatePosition;
 	std::function<void (Particle&)> updateVelocity;
+
+	std::function<void (ParticleContainer&)> setup;
 } SimulationScenario;
 
 

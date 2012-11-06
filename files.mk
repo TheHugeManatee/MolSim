@@ -8,3 +8,5 @@ SOURCES=\
 	src/utils/Settings.cpp\
 	src/Simulator.cpp\
 	src/ParticleContainer.cpp\
+	src/ScenarioFactory.cpp\
+	src/utils/MaxwellBoltzmannDistribution.cpp\

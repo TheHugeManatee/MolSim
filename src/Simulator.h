@@ -14,10 +14,12 @@
 
 #include "Particle.h"
 #include "ParticleContainer.h"
+#include "ScenarioFactory.h"
 
 class Simulator {
 private:
 	ParticleContainer particleContainer;
+	SimulationScenario scenario;
 
 public:
 	Simulator();
@@ -43,12 +45,6 @@ public:
 	 * @param iteration the number of the iteration, for naming purposes
 	 */
 	void plotParticles(int iteration);
-
-	/**
-	 * reads the particle configuration input file
-	 * @param inputFile the path to the input configuration file
-	 */
-	void readInputFile(char* inputFile);
 
 	/**
 	 * advances the simulation by a time step of Settings::deltaT

@@ -77,6 +77,16 @@ public:
 	void setX(const utils::Vector<double, 3>& x) {
 		this->x = x;
 	}
+
+	void clearF() {
+		this->f[0] = 0;
+		this->f[1] = 0;
+		this->f[2] = 0;
+	}
+
+	void addF(utils::Vector<double,3> &delta) {
+		f = f + delta;
+	}
 };
 
 std::ostream& operator<<(std::ostream& stream, Particle& p);

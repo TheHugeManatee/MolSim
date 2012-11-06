@@ -50,6 +50,22 @@ public:
 	 */
 	static int snapshotSkips;
 
+	/**
+	 * the type of simulation scenario
+	 * @see ScenarioFactory for available types
+	 */
+	static std::string scenarioType;
+
+	/**
+	 * disable the file output
+	 */
+	static bool disableOutput;
+
+	/**
+	 * the input file describing the startup scenario
+	 */
+	static std::string inputFile;
+
 private:
 	static void loadConfigFile(std::string cfgFile);
 };

@@ -19,7 +19,6 @@
 #include "Particle.h"
 
 
-
 class ParticleContainer {
     private:
         std::vector<Particle> particles;
@@ -35,11 +34,11 @@ class ParticleContainer {
 
 
         /**
-         * to iterate a given function over all permutations of two particles from the particles list
-         * permutations containing identical particles are only called once
-         * @param: fn an anonymous function (e.g numerical force calculation)
+         * calls the given lambda expression for every unique pair of particles
+         * permutations of two particles as well as pairs of the same particle
+         * are ignored, that means that for n particles, n² - n calls will be made
+         * @param: fn a lambda expression
          */
-
         void eachPair(std::function<void (Particle&, Particle&)> fn);
         std::vector<Particle>& getContainer();
 };
