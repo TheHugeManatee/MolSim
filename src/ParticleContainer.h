@@ -29,17 +29,20 @@ class ParticleContainer {
          * to iterate a given function over all particles from the particles list
          * @param: fn an anonymous function (e.g numerical force calculation)
          */
-
         void each(std::function<void (Particle&)> fn);
 
 
         /**
          * calls the given lambda expression for every unique pair of particles
          * permutations of two particles as well as pairs of the same particle
-         * are ignored, that means that for n particles, nÂ² - n calls will be made
+         * are ignored, that means that for n particles, n^² - n calls will be made
          * @param: fn a lambda expression
          */
         void eachPair(std::function<void (Particle&, Particle&)> fn);
+
+        /**
+         * returns the internal container
+         */
         std::vector<Particle>& getContainer();
 };
 

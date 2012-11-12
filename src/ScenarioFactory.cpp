@@ -16,13 +16,13 @@ std::function<void (Particle&)> ScenarioFactory::verletUpdatePosition =
 
 	utils::Vector<double, 3> resultX;
 	resultX= p.getX() + dt * p.getV() + dt * dt / (2 * p.getM()) * p.getF();
-	p.setX(resultX);
+	p.getX() = resultX;
 };
 
 std::function<void (Particle&)> ScenarioFactory::verletUpdateVelocity = [] (Particle& p) {
     utils::Vector<double, 3> resultV;
 	resultV = p.getV() + Settings::deltaT / (2 * p.getM()) * (p.getOldF() + p.getF());
-	p.setV(resultV);
+	p.getV() = resultV;
 };
 
 SimulationScenario ScenarioFactory::build(std::string type) {
@@ -35,9 +35,10 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 	        double normRaised3 = xDif.L2Norm() * xDif.L2Norm() * xDif.L2Norm();
 	        utils::Vector<double, 3> resultForce = ((p1.getM() * p2.getM()) / normRaised3) * (xDif);
 
-	        p1.addF(resultForce);
-	        resultForce = resultForce * -1;
-	        p2.addF(resultForce);
+	        p1.getF() = p1.getF() + resultForce;
+
+	        //resultForce = resultForce * -1;
+	        p2.getF() = p2.getF() - resultForce;
 		};
 
 		scenario.setup = [&](ParticleContainer& container){
@@ -49,8 +50,6 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 
 		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
-
-		return scenario;
 	}
 	else if(!type.compare("Lennard-Jones")){
 		scenario.calculateForce = [] (Particle& p1, Particle& p2) {
@@ -58,11 +57,11 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 	        double norm = xDif.L2Norm();
 	        double sigmaNormalized = Settings::sigma/norm;
 	        double sigmaNormailzedRaisedBySix = sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized;
-	        utils::Vector<double, 3> resultForce = (24*Settings::epsilon / (norm*norm)) * ((sigmaNormailzedRaisedBySix) -2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
-	        p1.addF(resultForce);
+	        utils::Vector<double, 3> resultForce = (24*Settings::epsilon / (norm * norm)) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+	        p1.getF() = p1.getF() + resultForce;
 
-	        resultForce = resultForce * -1;
-	        p2.addF(resultForce);
+	        //resultForce = resultForce * -1;
+	        p2.getF() = p2.getF() - resultForce;
 		};
 
 		scenario.setup = [&](ParticleContainer& container){
@@ -74,7 +73,6 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 
 		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
-
-		return scenario;
 	}
+	return scenario;
 }

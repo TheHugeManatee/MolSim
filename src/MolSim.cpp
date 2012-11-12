@@ -66,7 +66,9 @@ int main(int argc, char* argsv[]) {
 	int benchmarkEndTime = getMilliCount();
 
 	std::cout << "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds" << std::endl;
-
+	
+	std::cout << "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)" << std::endl;
+	std::cout << "Destroyed " << Particle::destroyedInstances << " Particle instances" << std::endl;
 	std::cout << "output written. Terminating..." << std::endl;
 	return 0;
 }

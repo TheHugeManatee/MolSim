@@ -36,6 +36,10 @@ private:
 	int type;
 
 public:
+	static int createdInstances;
+	static int createdByCopy;
+	static int destroyedInstances;
+
 	Particle(int type = 0);
 
 	Particle(const Particle& other);
@@ -69,24 +73,6 @@ public:
 	bool operator==(Particle& other);
 
 	std::string toString();
-
-	void setV(const utils::Vector<double, 3>& v) {
-		this->v = v;
-	}
-
-	void setX(const utils::Vector<double, 3>& x) {
-		this->x = x;
-	}
-
-	void clearF() {
-		this->f[0] = 0;
-		this->f[1] = 0;
-		this->f[2] = 0;
-	}
-
-	void addF(utils::Vector<double,3> &delta) {
-		f = f + delta;
-	}
 };
 
 std::ostream& operator<<(std::ostream& stream, Particle& p);

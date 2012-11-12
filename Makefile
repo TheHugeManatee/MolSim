@@ -1,6 +1,5 @@
 # This is a makefile template
 
-
 # Compiler
 # --------
 CC=g++
@@ -11,11 +10,11 @@ include files.mk
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive -std=c++0x
+CFLAGS=-g -fpermissive -std=c++0x -O3
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c 
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit
 
 INCLUDES= -I./src -I./libxsd
 

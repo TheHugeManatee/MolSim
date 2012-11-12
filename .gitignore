@@ -5,3 +5,6 @@ OutputFiles/
 doxy/
 .settings/
 *.layout
+*~
+*.*~
+*.exe
