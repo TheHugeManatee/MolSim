@@ -9,11 +9,13 @@
 #define PARTICLE_H_
 
 #include "utils/Vector.h"
-
+#include <log4cxx/logger.h>
 
 class Particle {
 
 private:
+
+	static log4cxx::LoggerPtr logger;
 
 	/** the position of the particle */
 	utils::Vector<double, 3> x;

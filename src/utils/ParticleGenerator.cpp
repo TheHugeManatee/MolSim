@@ -11,9 +11,9 @@
 
 
 
-void generateParticlesRegularCuboid(std::vector<Particle> &particles, utils::Vector<double, 3> bottomLeft,
+void generateParticlesRegularCuboid(ParticleContainer& container, utils::Vector<double, 3> bottomLeft,
 		int nX1, int nX2, int nX3,
-		double h, double m,
+		double h, double m, int type,
 		utils::Vector<double, 3> initialVelocity,
 		double brownianMean) {
 
@@ -25,9 +25,9 @@ void generateParticlesRegularCuboid(std::vector<Particle> &particles, utils::Vec
 				x[1] = bottomLeft[1] + x2 * h;
 				x[2] = bottomLeft[2] + x3 * h;
 
-				Particle p(x, initialVelocity, m);
+				Particle p(x, initialVelocity, m, type);
 				MaxwellBoltzmannDistribution(p, brownianMean, 2);
 
-				particles.push_back(p);
+				container.add(p);
 			}
 }

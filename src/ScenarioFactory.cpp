@@ -9,6 +9,9 @@
 
 #include "utils/Settings.h"
 #include "utils/Vector.h"
+#include <cstdlib>
+
+log4cxx::LoggerPtr ScenarioFactory::logger = log4cxx::Logger::getLogger("ScenarioFactory");
 
 std::function<void (Particle&)> ScenarioFactory::verletUpdatePosition =
 [] (Particle& p) {
@@ -28,7 +31,6 @@ std::function<void (Particle&)> ScenarioFactory::verletUpdateVelocity = [] (Part
 SimulationScenario ScenarioFactory::build(std::string type) {
 	SimulationScenario scenario;
 	if(!type.compare("gravity")) {
-
 		//Simple gravity simulation with gravitational constant g = 1
 		scenario.calculateForce = [] (Particle& p1, Particle& p2) {
 	        utils::Vector<double, 3> xDif = p2.getX() - p1.getX();
@@ -37,19 +39,19 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 
 	        p1.getF() = p1.getF() + resultForce;
 
-	        //resultForce = resultForce * -1;
 	        p2.getF() = p2.getF() - resultForce;
 		};
 
 		scenario.setup = [&](ParticleContainer& container){
 			FileReader fileReader;
-			fileReader.readFile(container.getContainer(), (char*)Settings::inputFile.c_str());
+			fileReader.readFile(container, (char*)Settings::inputFile.c_str());
 			// the forces are needed to calculate x, but are not given in the input file.
 			container.each(ScenarioFactory::verletUpdateVelocity);
 		};
 
 		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
+		LOG4CXX_INFO(logger,"Built Gravity Scenario");
 	}
 	else if(!type.compare("Lennard-Jones")){
 		scenario.calculateForce = [] (Particle& p1, Particle& p2) {
@@ -66,13 +68,17 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 
 		scenario.setup = [&](ParticleContainer& container){
 			FileReader fileReader;
-			fileReader.readFile(container.getContainer(), (char*)Settings::inputFile.c_str());
+			fileReader.readFile(container, (char*)Settings::inputFile.c_str());
 			// the forces are needed to calculate x, but are not given in the input file.
 			container.each(ScenarioFactory::verletUpdateVelocity);
 		};
 
 		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
+		LOG4CXX_INFO(logger,"Built Lennard-Jones Scenario");
+	} else {
+		LOG4CXX_FATAL(logger, "Unknown Simulation type!");
+		exit(-1);
 	}
 	return scenario;
 }

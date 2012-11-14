@@ -9,15 +9,21 @@
 #define FILE_READER_H_
 
 #include "Particle.h"
+#include "ParticleContainer.h"
+
+#include <log4cxx/logger.h>
+
 #include <vector>
 
 class FileReader {
+private:
+	static log4cxx::LoggerPtr logger;
 
 public:
 	FileReader();
 	virtual ~FileReader();
 
-	void readFile(std::vector<Particle>& particles, char* filename);
+	void readFile(ParticleContainer& container, char* filename);
 
 };
 

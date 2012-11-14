@@ -1,16 +1,23 @@
 # input file for assignment 2
-# first line specifies # of hardcoded particles, being zero
+# first line specifies number of particles, being zero in this case
+# after that line there should be as many lines; each defining one particle
+
 # after that, some arrays of particles
+# WARNING: it is important that the explicit  
 # syntax for cuboid arrays:
 #
-# cuboid x1 x2 x3 v1 v2 v3 m bMean nx1 nx2 nx3 h
+# cuboid x1 x2 x3 v1 v2 v3 m t bMean nx1 nx2 nx3 h
 #
 # x = bottom left corner
 # v = initial velocity
 # m = mass
+# t = type of the particle
 # bMean = brownian motion factor
 # nX1, nX2, nX3 = number of particles in the corresponding dimension
 # h = distance of the particles
+
 0
-cuboid 0 0 0 0 0 0 1 0.1 40 8 1 1.1225
-cuboid 15 15 0 0 -10 0 1 0.1 8 8 1 1.1225
+cuboid 0  0  0 0  0  0 1 1 0.1 40 8 1 1.1225
+cuboid 15 15 0 0 -10 0 1 2 0.1  8 8 1 1.1225
+
+# be sure to leave this line here to mark the end of the input file

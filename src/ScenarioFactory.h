@@ -13,6 +13,7 @@
 #include "Particle.h"
 #include "FileReader.h"
 #include "ParticleContainer.h"
+#include <log4cxx/logger.h>
 
 typedef struct {
 	std::function<void (Particle&, Particle&)> calculateForce;
@@ -27,6 +28,7 @@ typedef struct {
 class ScenarioFactory {
 public:
 	static SimulationScenario build(std::string type);
+	static log4cxx::LoggerPtr logger;
 private:
 	static std::function<void (Particle&)> verletUpdatePosition;
 	static std::function<void (Particle&)> verletUpdateVelocity;

@@ -23,6 +23,9 @@ double Settings::epsilon = 5;
 std::string Settings::scenarioType = "gravity";
 std::string Settings::configFile = "config.cfg";
 std::string Settings::inputFile = "eingabe-sonne.txt";
+std::string Settings::testCase = "";
+std::string Settings::loggerConfigFile = "";
+std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
 
 /**
  * static class containing all global settings relevant to simulation and
@@ -30,21 +33,12 @@ std::string Settings::inputFile = "eingabe-sonne.txt";
  * parameters can be configured through the command line and through a config
  * standard config filename is config.cfg
  */
-static void Settings::initSettings(int argc, char* argv[]) {
+void Settings::initSettings(int argc, char* argv[]) {
 
+	//Look if a config file parameter was specified
 	for(int i=0; i < argc; i++) {
-		if(strcmp(argv[i], "deltaT") == 0 && argc > i + 1)
-			Settings::deltaT = atof(argv[i+1]);
-		if(strcmp(argv[i], "endTime") == 0 && argc > i + 1)
-			Settings::endTime = atof(argv[i+1]);
 		if(strcmp(argv[i], "configFile") == 0 && argc > i + 1)
 			Settings::configFile = argv[i+1];
-		if(strcmp(argv[i], "scenarioType") == 0 && argc > i + 1)
-			Settings::scenarioType = argv[i+1];
-		if(strcmp(argv[i], "inputFile") == 0 && argc > i + 1)
-			Settings::inputFile = argv[i+1];
-		if(strcmp(argv[i], "disableOutput") == 0 && argc > i + 1)
-			Settings::disableOutput = atoi(argv[i+1]);
 	}
 
 	std::ifstream cfgFile;
@@ -67,9 +61,32 @@ static void Settings::initSettings(int argc, char* argv[]) {
 			if(!var.compare("epsilon")) cfgFile >> Settings::epsilon;
 			if(!var.compare("sigma")) cfgFile >> Settings::sigma;
 			if(!var.compare("snapshotSkips")) cfgFile >> Settings::snapshotSkips;
+			if(!var.compare("loggerConfigFile")) cfgFile >> Settings::loggerConfigFile;
+			if(!var.compare("outputFilePrefix")) cfgFile >> Settings::outputFilePrefix;
+
 		}
 
 		cfgFile.close();
+
+		//override parameters from the config file and default values
+		//with values from the command line
+		for(int i=0; i < argc; i++) {
+			if(strcmp(argv[i], "deltaT") == 0 && argc > i + 1)
+				Settings::deltaT = atof(argv[i+1]);
+			if(strcmp(argv[i], "endTime") == 0 && argc > i + 1)
+				Settings::endTime = atof(argv[i+1]);
+			if(strcmp(argv[i], "scenarioType") == 0 && argc > i + 1)
+				Settings::scenarioType = argv[i+1];
+			if(strcmp(argv[i], "inputFile") == 0 && argc > i + 1)
+				Settings::inputFile = argv[i+1];
+			if(strcmp(argv[i], "disableOutput") == 0 && argc > i + 1)
+				Settings::disableOutput = atoi(argv[i+1]);
+			if(strcmp(argv[i], "-test") == 0 && argc > i + 1)
+				Settings::testCase = argv[i+1];
+			if(strcmp(argv[i], "outputFilePrefix") == 0 && argc > i + 1)
+				Settings::outputFilePrefix = argv[i+1];
+		}
+
 	}
 	else
 		std::cout << "Cannot open " << Settings::configFile << std::endl;

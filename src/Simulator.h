@@ -15,6 +15,7 @@
 #include "Particle.h"
 #include "ParticleContainer.h"
 #include "ScenarioFactory.h"
+#include <log4cxx/logger.h>
 
 class Simulator {
 private:
@@ -24,6 +25,7 @@ private:
 public:
 	Simulator();
 	virtual ~Simulator();
+	static log4cxx::LoggerPtr logger;
 
 	/**
 	 * calculate the force for all particles

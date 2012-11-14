@@ -2,12 +2,32 @@
 #include <cstring>
 #include <cstdlib>
 #include <iostream>
+#include <cstdlib>
+#include <sys/timeb.h>
+
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/ui/text/TestRunner.h>
+#include <cppunit/TestCaller.h>
+
+#include <log4cxx/logger.h>
+#include <log4cxx/basicconfigurator.h>
+#include <log4cxx/propertyconfigurator.h>
+
+
+#include "UnitTests/ParticleContainerTests.h"
 
 #include "utils/Settings.h"
 #include "Simulator.h"
 
-#include <cstdlib>
-#include <sys/timeb.h>
+//Forward declarations
+int executeTests();
+void initializeLogger();
+
+
+//globals
+auto rootLogger = log4cxx::Logger::getRootLogger();
+
 
 int getMilliCount(){
 	timeb tb;
@@ -17,10 +37,9 @@ int getMilliCount(){
 }
 
 int main(int argc, char* argsv[]) {
-
 	if (argc < 2) {
-		std::cout << "Erroneous programme call! " << std::endl;
-		std::cout << "./molsim filename [optional parameters]" << std::endl;
+		std::cout << "Erroneous program call! " << std::endl;
+		std::cout << "./molsim [optional parameters]" << std::endl;
 		std::cout << "Optional parameters are:" << std::endl;
 		std::cout << "\t\"deltaT 0.0001\": the desired time step" << std::endl;
 		std::cout << "\t\"endTime 100.0\": the end time of simulation" << std::endl;
@@ -29,6 +48,14 @@ int main(int argc, char* argsv[]) {
 	}
 
 	Settings::initSettings(argc, argsv);
+
+	//Initialize the logging stuff
+	initializeLogger();
+
+	//Check if we should be executing some unit tests
+	if(!Settings::testCase.empty()) {
+		return executeTests();
+	}
 
 	Simulator sim;
 
@@ -43,7 +70,7 @@ int main(int argc, char* argsv[]) {
 	int iterationsPerDot = maxIterations / 50;
 	int nextDotIteration = 1;
 
-	std::cout << "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::snapshotSkips << " frames " << std::endl;
+	LOG4CXX_INFO(rootLogger, "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::snapshotSkips << " frames ");
 
 	while (current_time < Settings::endTime) {
 		sim.nextTimeStep();
@@ -57,7 +84,7 @@ int main(int argc, char* argsv[]) {
 			std::cout << "." << std::flush;
 			nextDotIteration += iterationsPerDot;
 		}
-		//std::cout << "Iteration " << iteration << " finished." << std::endl;
+		LOG4CXX_TRACE(rootLogger, "Iteration " << iteration << " finished.");
 
 		current_time += Settings::deltaT;
 	}
@@ -65,11 +92,45 @@ int main(int argc, char* argsv[]) {
 
 	int benchmarkEndTime = getMilliCount();
 
-	std::cout << "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds" << std::endl;
+	LOG4CXX_INFO(rootLogger, "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds");
 	
-	std::cout << "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)" << std::endl;
-	std::cout << "Destroyed " << Particle::destroyedInstances << " Particle instances" << std::endl;
-	std::cout << "output written. Terminating..." << std::endl;
+	LOG4CXX_DEBUG(rootLogger, "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)");
+	LOG4CXX_DEBUG(rootLogger, "Destroyed " << Particle::destroyedInstances << " Particle instances");
+	LOG4CXX_DEBUG(rootLogger, "output written. Terminating...");
 	return 0;
 }
 
+/**
+ * execute a specific or all test cases, depending on the Settings::testCase parameter
+ */
+int executeTests() {
+
+	  CppUnit::TextUi::TestRunner runner;
+
+	  runner.addTest(ParticleContainerTests::suite());
+
+
+	  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
+	                                                       std::cerr ) );
+	  // Run the tests.
+	  bool wasSuccessful = runner.run();
+
+	  // Return error code 1 if the one of test failed.
+	  if(wasSuccessful) {
+		  std::cout << "Tests ok!";
+	  }
+
+	  return wasSuccessful ? 0 : 1;
+}
+
+
+void initializeLogger() {
+    if (!Settings::loggerConfigFile.empty())
+    {
+            log4cxx::PropertyConfigurator::configure(Settings::loggerConfigFile);
+    }
+    else
+    {
+            log4cxx::BasicConfigurator::configure();
+    }
+}

@@ -12,12 +12,14 @@
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
 
+log4cxx::LoggerPtr Simulator::logger = log4cxx::Logger::getLogger("Simulator");
+
 Simulator::Simulator() {
 	scenario = ScenarioFactory::build(Settings::scenarioType);
 
 	scenario.setup(particleContainer);
 
-	plotParticles(0);
+	//plotParticles(0);
 }
 
 Simulator::~Simulator() {
@@ -31,7 +33,6 @@ Simulator::~Simulator() {
 */
 
 void Simulator::calculateF() {
-
 	particleContainer.each([] (Particle& p) {
 		auto f = p.getF();
 		f[0] = 0;
@@ -40,31 +41,32 @@ void Simulator::calculateF() {
 	});
 
 	particleContainer.eachPair(scenario.calculateForce);
-
+	LOG4CXX_TRACE(logger,"Finished Force Calculation" );
 }
 
 
 void Simulator::calculateX() {
     particleContainer.each(scenario.updatePosition);
+    LOG4CXX_TRACE(logger,"Finished Position Calculation" );
 }
 
 void Simulator::calculateV() {
 	particleContainer.each(scenario.updateVelocity);
+	LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
 }
 
 void Simulator::plotParticles(int iteration) {
-
-	std::string out_name("OutputFiles/MD_vtk");
-
 	outputWriter::VTKWriter writer;
 
-	writer.initializeOutput(particleContainer.getContainer().size());
+	writer.initializeOutput(particleContainer.getSize());
 
 	particleContainer.each([&] (Particle& p) {
         writer.plotParticle(p);
     });
 
-	writer.writeFile(out_name, iteration);
+	writer.writeFile(Settings::outputFilePrefix, iteration);
+
+	LOG4CXX_TRACE(logger,"Plotted \t"<< iteration << "\t Particles" );
 }
 
 

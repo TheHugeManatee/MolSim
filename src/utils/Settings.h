@@ -1,12 +1,27 @@
 /**
  *
- * static class containing all global parameters needed for simulation
- *
- *
  * @file Settings.h
  *
  * @date Oct 30, 2012
  * @author j
+ * @class Settings
+ *
+ * This class manages all global parameters and constants used in the simulation.
+ * Any globally availabe setting should be stored here as a public static variable,
+ * so it will be accessible in any part of the code.
+ *
+ * Most of the settings can be specified in a config file. The config file specifies
+ * one parameter on every line, the config name being separated from its value by a
+ * single space.
+ * 
+ * When adding new config parameters, the following pieces of code are required:
+ * - a new static member variable declaration in the Settings.h header file
+ * - the static member definition and an assigned default value in the Settings.cpp file
+ * - code to read the value from the input file, for most standard types this will look like
+ 	\code
+	if(!var.compare("newConfigValue")) cfgFile >> Settings::newConfigValue;
+	\endcode
+ 
  */
 
 #ifndef SETTINGS_H_
@@ -20,7 +35,7 @@ public:
 	/**
 	 * parses the command line for initialization parameters
 	 * @param argc command line parameter count
-	 * @param argv parameters for the simulation. Syntax: deltaT <decimal value> endTime <decimal value>
+	 * @param argv parameters for the simulation. Command line Syntax example: deltaT <decimal value> endTime <decimal value>
 	 */
 	static void initSettings(int argc, char* argv[]);
 	/**
@@ -66,10 +81,37 @@ public:
 	 */
 	static std::string inputFile;
 
+	/*
+	 * sigma parameter for the Lennard-Jones potential
+	 */
 	static double sigma;
+
+	/*
+	 * epsilon parameter for the Lennard-Jones potential
+	 */
 	static double epsilon;
 
+	/**
+	 * the test case to be executed
+	 */
+	static std::string testCase;
+
+	/**
+	 * the logger configuration file
+	 */
+	static std::string loggerConfigFile;
+
+	/**
+	 * the prefix of all output files
+	 * can include folders, but they will have to exist already
+	 */
+	static std::string outputFilePrefix;
+
 private:
+	/**
+	 * loads config parameters from a config file
+	 * @param cfgFile path to the config file
+	 */
 	static void loadConfigFile(std::string cfgFile);
 };
 
