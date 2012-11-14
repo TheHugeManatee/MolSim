@@ -23,6 +23,7 @@
 //Forward declarations
 int executeTests();
 void initializeLogger();
+void printProgressBar(int percentage, int elapsed);
 
 
 //globals
@@ -67,8 +68,8 @@ int main(int argc, char* argsv[]) {
 
 	 // for this loop, we assume: current x, current f and current v are known
 	int maxIterations = (Settings::endTime - Settings::startTime) / Settings::deltaT;
-	int iterationsPerDot = maxIterations / 50;
-	int nextDotIteration = 1;
+	int nextProgressBarDraw = 1;
+	int iterationsPerPercent = (maxIterations/100) + 1;
 
 	LOG4CXX_INFO(rootLogger, "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::snapshotSkips << " frames ");
 
@@ -80,10 +81,11 @@ int main(int argc, char* argsv[]) {
 			sim.plotParticles(iteration);
 		}
 		
-		if(iteration >= nextDotIteration) {
-			std::cout << "." << std::flush;
-			nextDotIteration += iterationsPerDot;
+		if(iteration == nextProgressBarDraw) {
+			nextProgressBarDraw+=iterationsPerPercent;
+			printProgressBar(100*iteration/maxIterations, -(benchmarkStartTime - getMilliCount()));
 		}
+
 		LOG4CXX_TRACE(rootLogger, "Iteration " << iteration << " finished.");
 
 		current_time += Settings::deltaT;
@@ -134,4 +136,23 @@ void initializeLogger() {
     else {
             log4cxx::BasicConfigurator::configure();
     }
+}
+
+void printProgressBar(int percentage, int elapsed){
+	std::cout << "[";
+	int i = 0;
+	for(; i<percentage; i=i+3){
+		std::cout << "=";
+	}
+	for(; i<100;i=i+3){
+		std::cout << " ";
+	}
+	std::cout << "]";
+	if(percentage !=0){
+		std::cout << " " << percentage << "%  Est. Remaining: " << (elapsed/percentage)/10 - elapsed/1000<<"s    \r";
+	}
+	else{
+		std::cout << " " << percentage << "%  Est. Remaining: TBD\r";
+	}
+	std::cout.flush();
 }
