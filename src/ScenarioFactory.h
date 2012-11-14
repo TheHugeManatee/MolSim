@@ -29,9 +29,15 @@ class ScenarioFactory {
 public:
 	static SimulationScenario build(std::string type);
 	static log4cxx::LoggerPtr logger;
-private:
+
+//private:
 	static std::function<void (Particle&)> verletUpdatePosition;
 	static std::function<void (Particle&)> verletUpdateVelocity;
+
+	static std::function<void (Particle&, Particle&)> calculateLennardJonesPotentialForce;
+	static std::function<void (Particle&, Particle&)> calculateGravityForce;
+
+	static std::function<void (ParticleContainer &container)> basicFileReaderSetup;
 };
 
 #endif /* SCENARIOFACTORY_H_ */

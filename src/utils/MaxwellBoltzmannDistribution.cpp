@@ -14,7 +14,7 @@
 static double GaussDeviate();
 
 void MaxwellBoltzmannDistribution(Particle& p, double meanVelocity, int dimensions) {
-	utils::Vector<double, 3>& v = p.getV();
+	utils::Vector<double, 3>& v = p.v;
 	for (int i = 0; i < dimensions; i++) {
 		v[i] = v[i] + meanVelocity * GaussDeviate();
 	}

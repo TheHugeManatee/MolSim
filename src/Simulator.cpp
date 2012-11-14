@@ -19,6 +19,10 @@ Simulator::Simulator() {
 
 	scenario.setup(particleContainer);
 
+	LOG4CXX_INFO(logger, "Simulator set up.");
+	LOG4CXX_INFO(logger, "Will run scenario " << Settings::scenarioType);
+	LOG4CXX_INFO(logger, "World has " << particleContainer.getSize() << " particles");
+
 	//plotParticles(0);
 }
 
@@ -34,10 +38,9 @@ Simulator::~Simulator() {
 
 void Simulator::calculateF() {
 	particleContainer.each([] (Particle& p) {
-		auto f = p.getF();
-		f[0] = 0;
-		f[1] = 0;
-		f[2] = 0;
+		p.f[0] = 0;
+		p.f[1] = 0;
+		p.f[2] = 0;
 	});
 
 	particleContainer.eachPair(scenario.calculateForce);

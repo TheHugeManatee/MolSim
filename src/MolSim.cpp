@@ -107,7 +107,10 @@ int executeTests() {
 
 	  CppUnit::TextUi::TestRunner runner;
 
-	  runner.addTest(ParticleContainerTests::suite());
+	  bool all = !Settings::testCase.compare("all");
+
+	  if(all || !Settings::testCase.compare("ParticleContainer"))
+		  runner.addTest(ParticleContainerTests::suite());
 
 
 	  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),

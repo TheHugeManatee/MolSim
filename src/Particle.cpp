@@ -56,29 +56,6 @@ Particle::~Particle() {
 	Particle::destroyedInstances++;
 }
 
-utils::Vector<double, 3>& Particle::getX() {
-	return x;
-}
-
-utils::Vector<double, 3>& Particle::getV() {
-	return v;
-}
-
-utils::Vector<double, 3>& Particle::getF() {
-	return f;
-}
-
-utils::Vector<double, 3>& Particle::getOldF() {
-	return old_f;
-}
-
-double Particle::getM() {
-	return m;
-}
-
-int Particle::getType() {
-	return type;
-}
 
 std::string Particle::toString() {
 	std::stringstream stream;

@@ -14,9 +14,9 @@
 class Particle {
 
 private:
-
 	static log4cxx::LoggerPtr logger;
 
+public:
 	/** the position of the particle */
 	utils::Vector<double, 3> x;
 
@@ -37,7 +37,6 @@ private:
 	 */
 	int type;
 
-public:
 	static int createdInstances;
 	static int createdByCopy;
 	static int destroyedInstances;
@@ -56,21 +55,6 @@ public:
 	);
 
 	virtual ~Particle();
-
-	utils::Vector<double, 3>& getX();
-
-	utils::Vector<double, 3>& getF();
-
-	/** setter for the force vector */
-	void setF(utils::Vector <double ,3> force);
-
-	utils::Vector<double, 3>& getOldF();
-
-	utils::Vector<double, 3>& getV();
-
-	double getM();
-
-	int getType();
 
 	bool operator==(Particle& other);
 

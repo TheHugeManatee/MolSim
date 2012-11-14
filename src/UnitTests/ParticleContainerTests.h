@@ -86,15 +86,15 @@ public:
 		pcEach.eachPair([&] (Particle& p1, Particle& p2) {
 			callCount ++;
 
-			p1.getF()[0] = p1.getF()[0] + 1;
-			p2.getF()[0] = p2.getF()[0] + 1;
+			p1.f[0] = p1.f[0] + 1;
+			p2.f[0] = p2.f[0] + 1;
 
 			CPPUNIT_ASSERT(!(p1 == p2));
 
-			CPPUNIT_ASSERT(comparedMatrix[p1.getType()][p2.getType()] == 0);
-			CPPUNIT_ASSERT(comparedMatrix[p2.getType()][p1.getType()] == 0);
+			CPPUNIT_ASSERT(comparedMatrix[p1.type][p2.type] == 0);
+			CPPUNIT_ASSERT(comparedMatrix[p2.type][p1.type] == 0);
 
-			comparedMatrix[p1.getType()][p2.getType()] = comparedMatrix[p2.getType()][p1.getType()] = 1;
+			comparedMatrix[p1.type][p2.type] = comparedMatrix[p2.type][p1.type] = 1;
 		});
 
 		pcEach.each([&] (Particle &p) {
@@ -102,7 +102,7 @@ public:
 		});
 
 		CPPUNIT_ASSERT(callCount == 45);
-		CPPUNIT_ASSERT(pListEach[0].getF()[0] == 9);
+		CPPUNIT_ASSERT(pListEach[0].f[0] == 9);
 	}
 
 	/**
