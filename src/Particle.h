@@ -26,7 +26,7 @@ public:
 	/** the force effective on this particle */
 	utils::Vector<double, 3> f;
 
-	/** the force wich was effective on this particle */
+	/** the force which was effective on this particle */
 	utils::Vector<double, 3> old_f;
 
 	/** the mass of this particle */

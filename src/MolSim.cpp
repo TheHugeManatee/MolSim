@@ -128,12 +128,10 @@ int executeTests() {
 
 
 void initializeLogger() {
-    if (!Settings::loggerConfigFile.empty())
-    {
+    if (!Settings::loggerConfigFile.empty()) {
             log4cxx::PropertyConfigurator::configure(Settings::loggerConfigFile);
     }
-    else
-    {
+    else {
             log4cxx::BasicConfigurator::configure();
     }
 }

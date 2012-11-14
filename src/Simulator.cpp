@@ -38,9 +38,8 @@ Simulator::~Simulator() {
 
 void Simulator::calculateF() {
 	particleContainer.each([] (Particle& p) {
-		p.f[0] = 0;
-		p.f[1] = 0;
-		p.f[2] = 0;
+		p.old_f = p.f;
+		p.f = 0;
 	});
 
 	particleContainer.eachPair(scenario.calculateForce);

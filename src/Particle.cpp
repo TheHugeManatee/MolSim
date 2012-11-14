@@ -10,9 +10,9 @@
 #include <iostream>
 
 log4cxx::LoggerPtr Particle::logger = log4cxx::Logger::getLogger("Particle");
-static int Particle::createdInstances;
-static int Particle::createdByCopy;
-static int Particle::destroyedInstances;
+int Particle::createdInstances = 0;
+int Particle::createdByCopy = 0;
+int Particle::destroyedInstances = 0;
 
 Particle::Particle(int type_arg) {
 	type = type_arg;
@@ -37,18 +37,18 @@ Particle::Particle(const Particle& other) {
 
 // Todo: maybe use initializater list instead of copy?
 Particle::Particle(	utils::Vector<double, 3> x_arg,
-	        utils::Vector<double, 3> v_arg,
-	        double m_arg,
-	        int type_arg
+		utils::Vector<double, 3> v_arg,
+		double m_arg,
+		int type_arg
 ) {
-    x = x_arg;
-    v = v_arg;
-    m = m_arg;
-    type = type_arg;
-    f = 0.0;
-    old_f = 0.0;
-    LOG4CXX_TRACE(logger,"Particle generated");
-    Particle::createdInstances++;
+	x = x_arg;
+	v = v_arg;
+	m = m_arg;
+	type = type_arg;
+	f = 0.0;
+	old_f = 0.0;
+	LOG4CXX_TRACE(logger,"Particle generated");
+	Particle::createdInstances++;
 }
 
 Particle::~Particle() {
