@@ -15,6 +15,7 @@
 #include "ParticleContainer.h"
 #include <log4cxx/logger.h>
 
+
 typedef struct {
 	std::function<void (Particle&, Particle&)> calculateForce;
 	std::function<void (Particle&)> updatePosition;
@@ -38,6 +39,8 @@ public:
 	static std::function<void (Particle&, Particle&)> calculateGravityForce;
 
 	static std::function<void (ParticleContainer &container)> basicFileReaderSetup;
+	static std::function<void (ParticleContainer &container)> LennardJonesSetup;
 };
+
 
 #endif /* SCENARIOFACTORY_H_ */

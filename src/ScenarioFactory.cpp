@@ -10,6 +10,8 @@
 #include "utils/Settings.h"
 #include "utils/Vector.h"
 #include <cstdlib>
+#include <cassert>
+
 
 log4cxx::LoggerPtr ScenarioFactory::logger = log4cxx::Logger::getLogger("ScenarioFactory");
 
@@ -57,6 +59,17 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::basicFileRea
 	container.each(ScenarioFactory::verletUpdateVelocity);
 };
 
+
+std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJonesSetup = [](ParticleContainer& container){
+	FileReader fileReader;
+	fileReader.readFile(container, (char*)Settings::inputFile.c_str());
+	// the forces are needed to calculate x, but are not given in the input file.
+	container.each(ScenarioFactory::verletUpdateVelocity);
+
+	assert(Settings::epsilon > 0);
+	assert(Settings::sigma > 0);
+};
+
 SimulationScenario ScenarioFactory::build(std::string type) {
 	SimulationScenario scenario;
 	if(!type.compare("gravity")) {
@@ -72,7 +85,7 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 	else if(!type.compare("Lennard-Jones")){
 		scenario.calculateForce = ScenarioFactory::calculateLennardJonesPotentialForce;
 
-		scenario.setup = ScenarioFactory::basicFileReaderSetup;
+		scenario.setup = ScenarioFactory::LennardJonesSetup;
 
 		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;

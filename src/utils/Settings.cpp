@@ -9,6 +9,8 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <cassert>
+#include <algorithm>
 
 #include "Settings.h"
 
@@ -26,6 +28,10 @@ std::string Settings::inputFile = "eingabe-sonne.txt";
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
+
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
 
 /**
  * static class containing all global settings relevant to simulation and
@@ -71,19 +77,19 @@ void Settings::initSettings(int argc, char* argv[]) {
 		//override parameters from the config file and default values
 		//with values from the command line
 		for(int i=0; i < argc; i++) {
-			if(strcmp(argv[i], "deltaT") == 0 && argc > i + 1)
+			if(strcmp(argv[i], "-deltaT") == 0 && argc > i + 1)
 				Settings::deltaT = atof(argv[i+1]);
-			if(strcmp(argv[i], "endTime") == 0 && argc > i + 1)
+			if(strcmp(argv[i], "-endTime") == 0 && argc > i + 1)
 				Settings::endTime = atof(argv[i+1]);
-			if(strcmp(argv[i], "scenarioType") == 0 && argc > i + 1)
+			if(strcmp(argv[i], "-scenarioType") == 0 && argc > i + 1)
 				Settings::scenarioType = argv[i+1];
-			if(strcmp(argv[i], "inputFile") == 0 && argc > i + 1)
+			if(strcmp(argv[i], "-inputFile") == 0 && argc > i + 1)
 				Settings::inputFile = argv[i+1];
-			if(strcmp(argv[i], "disableOutput") == 0 && argc > i + 1)
+			if(strcmp(argv[i], "-disableOutput") == 0 && argc > i + 1)
 				Settings::disableOutput = atoi(argv[i+1]);
 			if(strcmp(argv[i], "-test") == 0 && argc > i + 1)
 				Settings::testCase = argv[i+1];
-			if(strcmp(argv[i], "outputFilePrefix") == 0 && argc > i + 1)
+			if(strcmp(argv[i], "-outputFilePrefix") == 0 && argc > i + 1)
 				Settings::outputFilePrefix = argv[i+1];
 		}
 
@@ -91,5 +97,7 @@ void Settings::initSettings(int argc, char* argv[]) {
 	else
 		std::cout << "Cannot open " << Settings::configFile << std::endl;
 
+	assert(Settings::deltaT != 0);//timestep needs to be non-zero
 
+	assert(sgn(Settings::deltaT) == sgn(Settings::endTime));	//deltaT and endTime have the same sign, otherwise the
 }

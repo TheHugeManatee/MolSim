@@ -74,12 +74,13 @@ int main(int argc, char* argsv[]) {
 	LOG4CXX_INFO(rootLogger, "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::snapshotSkips << " frames ");
 
 	while (current_time < Settings::endTime) {
-		sim.nextTimeStep();
-
-		iteration++;
 		if (!Settings::disableOutput && (iteration % Settings::snapshotSkips == 0)) {
 			sim.plotParticles(iteration);
 		}
+
+		sim.nextTimeStep();
+
+		iteration++;
 		
 		if(iteration == nextProgressBarDraw) {
 			nextProgressBarDraw+=iterationsPerPercent;
