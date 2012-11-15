@@ -149,7 +149,26 @@ void printProgressBar(int percentage, int elapsed){
 	}
 	std::cout << "]";
 	if(percentage !=0){
-		std::cout << " " << percentage << "%  Est. Remaining: " << (elapsed/percentage)/10 - elapsed/1000<<"s    \r";
+		int estSeconds = (elapsed/percentage)/10 - elapsed/1000,
+				estMinutes = 0, estHours = 0, estDays = 0;
+
+		if(estSeconds > 60) {
+			estMinutes = estSeconds / 60;
+			estSeconds = estSeconds % 60;
+		}
+		if(estMinutes > 60) {
+			estHours = estMinutes / 60;
+			estMinutes = estMinutes % 60;
+		}
+		if(estHours > 24) {
+			estDays = estHours / 24;
+			estHours = estHours % 60;
+		}
+		std::cout << " " << percentage << "%  Est. Remaining: ";
+		if(estDays) std::cout << estDays << "d ";
+		if(estHours) std::cout << estHours << "h ";
+		if(estMinutes) std::cout << estMinutes << "m ";
+		std::cout << estSeconds <<"s    \r";
 	}
 	else{
 		std::cout << " " << percentage << "%  Est. Remaining: TBD\r";
