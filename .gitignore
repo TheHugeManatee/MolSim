@@ -1,4 +1,7 @@
 OutputFiles/
+sampleConfigs/
+src/html/
+src/latex/
 *.DS_Store
 *.o
 /MolSim
@@ -9,3 +12,4 @@ doxy/
 *.*~
 *.exe
 *.stackdump
+doxys_documentation/

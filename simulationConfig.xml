@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+  <deltaT>0.002</deltaT>
+  <endTime>5</endTime>
+  <scenarioType>Lennard-Jones</scenarioType>
+  <epsilon>5</epsilon>
+  <sigma>1</sigma>
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <inputFile>eingabe_2.txt</inputFile>
+
+  <generator>
+    <cuboid>
+      <bottomLeft x1="0.0" x2="0.0" x3="0.0" />
+      <nX x1="8" x2="8" x3="8" />
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x1="0" x2="10" x3="0"/>
+      <brownianMeanVelocity>0.1</brownianMeanVelocity>
+    </cuboid>
+    <cuboid>
+      <bottomLeft x1="5.0" x2="5.0" x3="5.0" />
+      <nX x1="8" x2="8" x3="8" />
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x1="0" x2="-10" x3="0"/>
+      <brownianMeanVelocity>0.1</brownianMeanVelocity>
+    </cuboid>
+    
+  </generator>
+  
+
+</simulationConfig>

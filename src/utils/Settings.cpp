@@ -5,6 +5,8 @@
  *      Author: j
  */
 
+#include "Settings.h"
+
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
@@ -12,13 +14,15 @@
 #include <cassert>
 #include <algorithm>
 
-#include "Settings.h"
+//Forward declarations
+extern void initializeLogger();//This is implemented in MolSim.cpp
+
 
 //variable definitions and  default settings
 double Settings::deltaT = 0.0014;
 double Settings::startTime = 0;
 double Settings::endTime = 100.0;
-int Settings::snapshotSkips = 10;
+int Settings::outputFrequency = 10;
 bool Settings::disableOutput = false;
 double Settings::sigma = 1;
 double Settings::epsilon = 5;
@@ -28,6 +32,8 @@ std::string Settings::inputFile = "eingabe-sonne.txt";
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
+SimulationConfig::GeneratorType Settings::generator;
+log4cxx::LoggerPtr Settings::logger = log4cxx::Logger::getLogger("Settings");
 
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
@@ -39,7 +45,31 @@ template <typename T> int sgn(T val) {
  * parameters can be configured through the command line and through a config
  * standard config filename is config.cfg
  */
+#include <exception>
 void Settings::initSettings(int argc, char* argv[]) {
+
+	 try {
+	    std::auto_ptr<SimulationConfig> xmlCfg (simulationConfig("simulationConfig.xml", xml_schema::Flags::dont_validate));
+
+	    Settings::deltaT = xmlCfg->deltaT();
+	    Settings::endTime = xmlCfg->endTime();
+	    Settings::outputFrequency = xmlCfg->outputFrequency();
+	    Settings::disableOutput = xmlCfg->disableOutput();
+	    Settings::loggerConfigFile = xmlCfg->loggerConfigFile();
+	    Settings::outputFilePrefix = xmlCfg->outputFilePrefix();
+	    Settings::scenarioType = xmlCfg->scenarioType();
+
+	    Settings::generator = xmlCfg->generator();
+
+	    Settings::epsilon = xmlCfg->epsilon();
+	    Settings::sigma = xmlCfg->sigma();
+	  }
+	  catch (const xml_schema::Exception &e)
+	  {
+	    LOG4CXX_ERROR(logger, "Error when parsing xml input file: " << e);
+	    //we continue to parse the command line..
+	  }
+
 
 	//Look if a config file parameter was specified
 	for(int i=0; i < argc; i++) {
@@ -66,8 +96,13 @@ void Settings::initSettings(int argc, char* argv[]) {
 			if(!var.compare("inputFile")) cfgFile >> Settings::inputFile;
 			if(!var.compare("epsilon")) cfgFile >> Settings::epsilon;
 			if(!var.compare("sigma")) cfgFile >> Settings::sigma;
-			if(!var.compare("snapshotSkips")) cfgFile >> Settings::snapshotSkips;
-			if(!var.compare("loggerConfigFile")) cfgFile >> Settings::loggerConfigFile;
+			if(!var.compare("snapshotSkips")) cfgFile >> Settings::outputFrequency;
+			if(!var.compare("loggerConfigFile")) {
+				cfgFile >> Settings::loggerConfigFile;
+				//Re-initialize the logger
+				initializeLogger();
+
+			}
 			if(!var.compare("outputFilePrefix")) cfgFile >> Settings::outputFilePrefix;
 
 		}

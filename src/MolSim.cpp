@@ -22,7 +22,16 @@
 
 //Forward declarations
 int executeTests();
+/**
+ * set up the logger based on Settings::loggerConfigFile
+ */
 void initializeLogger();
+/**
+ * print out a progress bar on the console command line
+ *
+ * @param percentage the percentage finished of the job, should be in the interval [0;100]
+ * @param elapsed time it took to compute the current progress, measured in milliseconds
+ */
 void printProgressBar(int percentage, int elapsed);
 
 
@@ -48,10 +57,11 @@ int main(int argc, char* argsv[]) {
 		std::cout << "EXAMPLE: ./MolSim eingabe_sonne.txt deltaT 0.0014 endTime 100.0" << std::endl;
 	}
 
-	Settings::initSettings(argc, argsv);
-
 	//Initialize the logging stuff
 	initializeLogger();
+
+
+	Settings::initSettings(argc, argsv);
 
 	//Check if we should be executing some unit tests
 	if(!Settings::testCase.empty()) {
@@ -71,10 +81,10 @@ int main(int argc, char* argsv[]) {
 	int nextProgressBarDraw = 1;
 	int iterationsPerPercent = (maxIterations/100) + 1;
 
-	LOG4CXX_INFO(rootLogger, "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::snapshotSkips << " frames ");
+	LOG4CXX_INFO(rootLogger, "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::outputFrequency << " frames ");
 
 	while (current_time < Settings::endTime) {
-		if (!Settings::disableOutput && (iteration % Settings::snapshotSkips == 0)) {
+		if (!Settings::disableOutput && (iteration % Settings::outputFrequency == 0)) {
 			sim.plotParticles(iteration);
 		}
 

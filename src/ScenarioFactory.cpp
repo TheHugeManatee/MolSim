@@ -7,6 +7,8 @@
 
 #include "ScenarioFactory.h"
 
+#include "utils/ParticleGenerator.h"
+
 #include "utils/Settings.h"
 #include "utils/Vector.h"
 #include <cstdlib>
@@ -53,6 +55,7 @@ std::function<void (Particle&, Particle&)> ScenarioFactory::calculateGravityForc
 };
 
 std::function<void (ParticleContainer &container)> ScenarioFactory::basicFileReaderSetup = [](ParticleContainer& container){
+	LOG4CXX_DEBUG(logger, "Performing basic scenario setup");
 	FileReader fileReader;
 	fileReader.readFile(container, (char*)Settings::inputFile.c_str());
 	// the forces are needed to calculate x, but are not given in the input file.
@@ -61,13 +64,35 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::basicFileRea
 
 
 std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJonesSetup = [](ParticleContainer& container){
+	LOG4CXX_DEBUG(logger, "Performing Lennard-Jones setup");
 	FileReader fileReader;
 	fileReader.readFile(container, (char*)Settings::inputFile.c_str());
 	// the forces are needed to calculate x, but are not given in the input file.
 	container.each(ScenarioFactory::verletUpdateVelocity);
 
+	LOG4CXX_TRACE(logger, "Cuboid generation:");
+	for(auto it = Settings::generator.cuboid().begin();
+			it != Settings::generator.cuboid().end();
+			++it) {
+
+		auto c = (*it);
+		double bl[] = {c.initialVelocity().x1(), c.initialVelocity().x2(), c.initialVelocity().x3()};
+		double v[] = {c.bottomLeft().x1(), c.bottomLeft().x2(), c.bottomLeft().x3()};
+		ParticleGenerator::regularCuboid(container,
+				utils::Vector<double, 3> (bl),
+				c.nX().x1(), c.nX().x2(), c.nX().x3(),
+				c.stepWidth(), c.mass(), c.type(),
+				utils::Vector<double, 3> (v),
+				c.brownianMeanVelocity()
+		);
+	}
+	LOG4CXX_TRACE(logger, "Generation finished!");
+
+	//TODO: sphere generation
+
 	assert(Settings::epsilon > 0);
 	assert(Settings::sigma > 0);
+
 };
 
 SimulationScenario ScenarioFactory::build(std::string type) {

@@ -99,12 +99,7 @@ void FileReader::readFile(ParticleContainer& container, char* filename) {
     			lstream >> nX3;
     			lstream >> h;
 
-    			LOG4CXX_DEBUG(logger, "pos:" << bottomLeft.toString() << " vel:" << initialVelocity.toString() << " bMean:"
-    					<< bMean << " type:" << type << " mass:" << m << " x1:" << nX1 << " x2:" << nX2 << " x3:" << nX3 << " h:" << h);
-
-    			LOG4CXX_INFO(logger, "Generating " << nX1*nX2*nX3 << " particles on a regular cuboid");
-
-    			generateParticlesRegularCuboid(container, bottomLeft, nX1, nX2, nX3, h, m, type, initialVelocity, bMean);
+    			ParticleGenerator::regularCuboid(container, bottomLeft, nX1, nX2, nX3, h, m, type, initialVelocity, bMean);
     		}
     		getline(input_file, tmp_string);
     	}

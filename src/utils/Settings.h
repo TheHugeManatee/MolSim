@@ -27,7 +27,13 @@
 #ifndef SETTINGS_H_
 #define SETTINGS_H_
 
+
+#include "simulationConfig.h"
+
+#include <log4cxx/logger.h>
+
 #include <string>
+
 
 class Settings {
 public:
@@ -63,7 +69,7 @@ public:
 	/**
 	 * how many simulation step should be calculated between two output frames
 	 */
-	static int snapshotSkips;
+	static int outputFrequency;
 
 	/**
 	 * the type of simulation scenario
@@ -107,12 +113,22 @@ public:
 	 */
 	static std::string outputFilePrefix;
 
+	/**
+	 * generator configuration
+	 */
+	static SimulationConfig::GeneratorType generator;
+
 private:
 	/**
 	 * loads config parameters from a config file
 	 * @param cfgFile path to the config file
 	 */
 	static void loadConfigFile(std::string cfgFile);
+
+	/**
+	 * the internal logger instance for logging settings-related things
+	 */
+	static log4cxx::LoggerPtr logger;
 };
 
 #endif /* SETTINGS_H_ */

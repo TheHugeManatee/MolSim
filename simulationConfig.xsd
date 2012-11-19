@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:xse="http://www.codesynthesis.com/xmlns/xml-schema-extension"
+            >
+                            	
+	<xsd:complexType name="floatVector">
+		<xsd:attribute name="x1" type="xsd:double" use="required"/>
+		<xsd:attribute name="x2" type="xsd:double" use="required"/>
+		<xsd:attribute name="x3" type="xsd:double" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="intVector">
+		<xsd:attribute name="x1" type="xsd:int" use="required"/>
+		<xsd:attribute name="x2" type="xsd:int" use="required"/>
+		<xsd:attribute name="x3" type="xsd:int" use="required"/>
+	</xsd:complexType>   
+	             
+  <xsd:complexType name="cuboid">
+	  <xsd:sequence>
+	  	<xsd:element name="bottomLeft" type="floatVector"/>
+	  	<xsd:element name="nX" type="intVector" />
+	  	<xsd:element name="stepWidth" type="xsd:double"/>
+	  	<xsd:element name="mass" type="xsd:double"/>
+	  	<xsd:element name="type" type="xsd:int"/>
+	  	<xsd:element name="initialVelocity" type="floatVector"/>
+	  	<xsd:element name="brownianMeanVelocity" type="xsd:double"/>
+	 </xsd:sequence>
+  </xsd:complexType>
+            
+  <xsd:complexType name="generator">
+  	<xsd:sequence>
+  		<xsd:element name="cuboid" type="cuboid" maxOccurs="unbounded"/>
+  	</xsd:sequence>
+  </xsd:complexType>
+            
+  <xsd:complexType name="simulationConfig">
+    <xsd:sequence>
+      <xsd:element name="deltaT" type="xsd:double"/>
+      <xsd:element name="endTime" type="xsd:double"/>
+      <xsd:element name="scenarioType" type="xsd:string"/>
+      <xsd:element name="epsilon" type="xsd:double" />
+      <xsd:element name="sigma" type="xsd:double" />
+      <xsd:element name="outputFrequency" type="xsd:int"/>
+      <xsd:element name="disableOutput" type="xsd:boolean"/>
+      <xsd:element name="loggerConfigFile" type="xsd:string"/>
+      <xsd:element name="outputFilePrefix" type="xsd:string"/>
+      <xsd:element name="inputFile" type="xsd:string"/>
+            
+      <xsd:element name="generator" type="generator"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="simulationConfig" type="simulationConfig" />
+
+</xsd:schema>
