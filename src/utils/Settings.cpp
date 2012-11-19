@@ -11,6 +11,7 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <cassert>
 #include <algorithm>
 
@@ -32,9 +33,16 @@ std::string Settings::inputFile = "eingabe-sonne.txt";
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
+
 SimulationConfig::GeneratorType Settings::generator;
+
 log4cxx::LoggerPtr Settings::logger = log4cxx::Logger::getLogger("Settings");
 
+/**
+ * the signum function
+ * returns -1, 0 or 1
+ * branchless and typesafe
+ */
 template <typename T> int sgn(T val) {
     return (T(0) < val) - (val < T(0));
 }
@@ -48,8 +56,54 @@ template <typename T> int sgn(T val) {
 #include <exception>
 void Settings::initSettings(int argc, char* argv[]) {
 
+	//Look if a config file parameter was specified
+	for(int i=0; i < argc; i++) {
+		if(strcmp(argv[i], "-configFile") == 0 && argc > i + 1)
+			Settings::configFile = argv[i+1];
+	}
+
+	if(!Settings::configFile.substr(Settings::configFile.length() - 4, 4).compare(".xml")) {
+		parseXmlFile(Settings::configFile);
+	}
+	else {
+		parseCfgFile(Settings::configFile);
+	}
+
+
+	//override parameters from the config file and default values
+	//with values from the command line
+	for(int i=0; i < argc; i++) {
+		if(strcmp(argv[i], "-deltaT") == 0 && argc > i + 1)
+			Settings::deltaT = atof(argv[i+1]);
+		if(strcmp(argv[i], "-endTime") == 0 && argc > i + 1)
+			Settings::endTime = atof(argv[i+1]);
+		if(strcmp(argv[i], "-scenarioType") == 0 && argc > i + 1)
+			Settings::scenarioType = argv[i+1];
+		if(strcmp(argv[i], "-inputFile") == 0 && argc > i + 1)
+			Settings::inputFile = argv[i+1];
+		if(strcmp(argv[i], "-disableOutput") == 0 && argc > i + 1)
+			Settings::disableOutput = atoi(argv[i+1]);
+		if(strcmp(argv[i], "-test") == 0 && argc > i + 1)
+			Settings::testCase = argv[i+1];
+		if(strcmp(argv[i], "-outputFilePrefix") == 0 && argc > i + 1)
+			Settings::outputFilePrefix = argv[i+1];
+	}
+
+	//Re-initialize the logger with possibly new configuration file
+	initializeLogger();
+
+	LOG4CXX_DEBUG(logger, "Configuration loaded: " << Settings::toString());
+
+	assert(Settings::deltaT != 0);//timestep needs to be non-zero
+
+	assert(sgn(Settings::deltaT) == sgn(Settings::endTime));	//deltaT and endTime have the same sign, otherwise the
+}
+
+
+void Settings::parseXmlFile(std::string cfgFile) {
+	LOG4CXX_DEBUG(logger, "Loading Configuration from .xml file " << cfgFile);
 	 try {
-	    std::auto_ptr<SimulationConfig> xmlCfg (simulationConfig("simulationConfig.xml", xml_schema::Flags::dont_validate));
+	    std::auto_ptr<SimulationConfig> xmlCfg (simulationConfig(cfgFile, xml_schema::Flags::dont_validate));
 
 	    Settings::deltaT = xmlCfg->deltaT();
 	    Settings::endTime = xmlCfg->endTime();
@@ -67,72 +121,63 @@ void Settings::initSettings(int argc, char* argv[]) {
 	  catch (const xml_schema::Exception &e)
 	  {
 	    LOG4CXX_ERROR(logger, "Error when parsing xml input file: " << e);
-	    //we continue to parse the command line..
+	    return;
 	  }
+}
 
+void Settings::parseCfgFile(std::string cfgFile) {
+	LOG4CXX_DEBUG(logger, "Loading Configuration from .cfg file " << cfgFile);
+	LOG4CXX_WARN(logger, "Loading from a .cfg file. Note that the preferred way to load configurations is through a .xml file." <<
+			"New features will likely be impelemented in the xml reader only!");
 
-	//Look if a config file parameter was specified
-	for(int i=0; i < argc; i++) {
-		if(strcmp(argv[i], "configFile") == 0 && argc > i + 1)
-			Settings::configFile = argv[i+1];
-	}
-
-	std::ifstream cfgFile;
-	cfgFile.open(Settings::configFile, std::ifstream::in);
-	if(cfgFile.is_open()) {
+	std::ifstream cfgFileStream;
+	cfgFileStream.open(cfgFile, std::ifstream::in);
+	if(cfgFileStream.is_open()) {
 		std::string var;
-		while(!cfgFile.eof())
+		while(!cfgFileStream.eof())
 		{
 			char comment[256];
-			cfgFile >> var;
+			cfgFileStream >> var;
 
 			//ignore everything in the line after #
-			if(!var.compare("#")) cfgFile.getline(comment, sizeof(comment));
+			if(!var.compare("#")) cfgFileStream.getline(comment, sizeof(comment));
 
-			if(!var.compare("deltaT"))	cfgFile >> Settings::deltaT;
-			if(!var.compare("endTime"))	cfgFile >> Settings::endTime;
-			if(!var.compare("scenarioType")) cfgFile >> Settings::scenarioType;
-			if(!var.compare("disableOutput")) cfgFile >> Settings::disableOutput;
-			if(!var.compare("inputFile")) cfgFile >> Settings::inputFile;
-			if(!var.compare("epsilon")) cfgFile >> Settings::epsilon;
-			if(!var.compare("sigma")) cfgFile >> Settings::sigma;
-			if(!var.compare("snapshotSkips")) cfgFile >> Settings::outputFrequency;
-			if(!var.compare("loggerConfigFile")) {
-				cfgFile >> Settings::loggerConfigFile;
-				//Re-initialize the logger
-				initializeLogger();
-
-			}
-			if(!var.compare("outputFilePrefix")) cfgFile >> Settings::outputFilePrefix;
+			if(!var.compare("deltaT"))			cfgFileStream >> Settings::deltaT;
+			if(!var.compare("endTime"))			cfgFileStream >> Settings::endTime;
+			if(!var.compare("scenarioType")) 	cfgFileStream >> Settings::scenarioType;
+			if(!var.compare("disableOutput")) 	cfgFileStream >> Settings::disableOutput;
+			if(!var.compare("inputFile")) 		cfgFileStream >> Settings::inputFile;
+			if(!var.compare("epsilon")) 		cfgFileStream >> Settings::epsilon;
+			if(!var.compare("sigma")) 			cfgFileStream >> Settings::sigma;
+			if(!var.compare("outputFrequency")) cfgFileStream >> Settings::outputFrequency;
+			if(!var.compare("loggerConfigFile"))
+												cfgFileStream >> Settings::loggerConfigFile;
+			if(!var.compare("outputFilePrefix")) cfgFileStream >> Settings::outputFilePrefix;
 
 		}
 
-		cfgFile.close();
+		cfgFileStream.close();
 
-		//override parameters from the config file and default values
-		//with values from the command line
-		for(int i=0; i < argc; i++) {
-			if(strcmp(argv[i], "-deltaT") == 0 && argc > i + 1)
-				Settings::deltaT = atof(argv[i+1]);
-			if(strcmp(argv[i], "-endTime") == 0 && argc > i + 1)
-				Settings::endTime = atof(argv[i+1]);
-			if(strcmp(argv[i], "-scenarioType") == 0 && argc > i + 1)
-				Settings::scenarioType = argv[i+1];
-			if(strcmp(argv[i], "-inputFile") == 0 && argc > i + 1)
-				Settings::inputFile = argv[i+1];
-			if(strcmp(argv[i], "-disableOutput") == 0 && argc > i + 1)
-				Settings::disableOutput = atoi(argv[i+1]);
-			if(strcmp(argv[i], "-test") == 0 && argc > i + 1)
-				Settings::testCase = argv[i+1];
-			if(strcmp(argv[i], "-outputFilePrefix") == 0 && argc > i + 1)
-				Settings::outputFilePrefix = argv[i+1];
-		}
 
 	}
-	else
-		std::cout << "Cannot open " << Settings::configFile << std::endl;
+	else {
+		LOG4CXX_ERROR(logger, "Cannot open " << cfgFile);
+	}
+}
 
-	assert(Settings::deltaT != 0);//timestep needs to be non-zero
+std::string Settings::toString() {
+	std::stringstream s;
 
-	assert(sgn(Settings::deltaT) == sgn(Settings::endTime));	//deltaT and endTime have the same sign, otherwise the
+	s << "\n\tdeltaT = " << Settings::deltaT ;
+	s << "\n\tendTime = " << Settings::endTime;
+	s << "\n\tscenarioType = " << Settings::scenarioType;
+	s << "\n\tepsilon = " << Settings::epsilon;
+	s << "\n\tsigma = " << Settings::sigma;
+	s << "\n\tdisableOutput = " << Settings::disableOutput;
+	s << "\n\toutputFrequency = " << Settings::outputFrequency;
+	s << "\n\tinputFile = " << Settings::inputFile;
+	s << "\n\tloggerConfigFile = " << Settings::loggerConfigFile;
+	s << "\n\toutputFilePrefix = " << Settings::outputFilePrefix;
+
+	return s.str();
 }

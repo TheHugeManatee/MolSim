@@ -123,12 +123,16 @@ private:
 	 * loads config parameters from a config file
 	 * @param cfgFile path to the config file
 	 */
-	static void loadConfigFile(std::string cfgFile);
+	static void parseCfgFile(std::string cfgFile);
+
+	static void parseXmlFile(std::string xmlFile);
 
 	/**
 	 * the internal logger instance for logging settings-related things
 	 */
 	static log4cxx::LoggerPtr logger;
+
+	static std::string toString();
 };
 
 #endif /* SETTINGS_H_ */

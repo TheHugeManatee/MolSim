@@ -47,14 +47,24 @@ int getMilliCount(){
 }
 
 int main(int argc, char* argsv[]) {
-	if (argc < 2) {
-		std::cout << "Erroneous program call! " << std::endl;
-		std::cout << "./molsim [optional parameters]" << std::endl;
-		std::cout << "Optional parameters are:" << std::endl;
-		std::cout << "\t\"deltaT 0.0001\": the desired time step" << std::endl;
-		std::cout << "\t\"endTime 100.0\": the end time of simulation" << std::endl;
+	if (!strcmp(argsv[1], "-?") || !strcmp(argsv[1], "help") || !strcmp(argsv[1], "--help")) {
+		std::cout << "This is the NUKULAR Simulator" << std::endl;
+		std::cout << "Authors: " << std::endl;
+		std::cout << "\tLeonhard Rannabauer" << std::endl;
+		std::cout << "\tJakob Weiss" << std::endl;
+		std::cout << "\tAlexander Winkler" << std::endl;
 		std::cout << std::endl;
-		std::cout << "EXAMPLE: ./MolSim eingabe_sonne.txt deltaT 0.0014 endTime 100.0" << std::endl;
+		std::cout << "By default, configuration will be loaded from a configuration file." << std::endl;
+		std::cout << "The CWD will be searched for \"config.cfg\". Override this by specifying the" << std::endl;
+		std::cout << "\t-configFile command line parameter with the path to your own configuration" << std::endl;
+		std::cout << "\t(either .xml or .cfg format)" << std::endl;
+		std::cout << std::endl;
+		std::cout << "EXAMPLE: ./MolSim -configFile simulationConfig.xml -outputFilePrefix MD_sim -endTime 10" << std::endl;
+		std::cout << std::endl;
+		std::cout << "\t will load Settings from simulationConfig.xml, simulate the world for 10 seconds" << std::endl;
+		std::cout << "\t and output the files with a prefix of \"MD_sim\", which will lead to files like" << std::endl;
+		std::cout << "\t\"MD_sim_0010.vtu\"" << std::endl;
+		return 0;
 	}
 
 	//Initialize the logging stuff
