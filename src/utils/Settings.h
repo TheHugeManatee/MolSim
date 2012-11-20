@@ -30,6 +30,8 @@
 
 #include "simulationConfig.h"
 
+#include "utils/Vector.h"
+
 #include <log4cxx/logger.h>
 
 #include <string>

@@ -38,9 +38,9 @@ private:
 	 */
 	double edgeLength;
 
-	ParticleContainer & getCell(int x0, int x1, int x2);
+	ParticleContainer * getCell(int x0, int x1, int x2);
 
-	ParticleContainer & getContainingCell(Particle& p);
+	ParticleContainer * getContainingCell(Particle& p);
 
 
 public:
