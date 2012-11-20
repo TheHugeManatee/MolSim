@@ -37,7 +37,7 @@ CellListContainer::~CellListContainer() {
 	// TODO Auto-generated destructor stub
 }
 
-inline ParticleContainer & CellListContainer::getCell(int x0, int x1, int x2) {
+inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 	assert(x0 > 0);
 	assert(x1 > 0);
 	assert(x2 > 0);
@@ -45,10 +45,15 @@ inline ParticleContainer & CellListContainer::getCell(int x0, int x1, int x2) {
 	assert(x1 < nX1);
 	assert(x2 < nX2);
 
-	return cells[x0 + x1*nX1 + x2*nX1*nX2];
+	if(	x0 < 0 || x0 > nX0 ||
+		x1 < 0 || x1 > nX1 ||
+		x2 < 0 || x2 > nX2)
+		return nullptr;
+
+	return &cells[x0 + x1*nX1 + x2*nX1*nX2];
 };
 
-ParticleContainer & CellListContainer::getContainingCell(Particle& p) {
+ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
 	int x0 = p.x[0] / edgeLength,
 		x1 = p.x[1] / edgeLength,
 		x2 = p.x[2] / edgeLength;
@@ -58,4 +63,6 @@ ParticleContainer & CellListContainer::getContainingCell(Particle& p) {
 
 void CellListContainer::add(Particle & p) {
 	ParticleContainer & cell = getContainingCell(p);
+
+
 }

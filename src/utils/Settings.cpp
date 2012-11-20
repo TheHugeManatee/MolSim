@@ -33,8 +33,8 @@ std::string Settings::inputFile = "eingabe-sonne.txt";
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
-static double Settings::rCutoff = 3;
-static utils::Vector<double, 3> Settings::domainSize = 10;
+double Settings::rCutoff = 3;
+utils::Vector<double, 3> Settings::domainSize = 10;
 
 SimulationConfig::GeneratorType Settings::generator;
 
