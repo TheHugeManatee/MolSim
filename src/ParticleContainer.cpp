@@ -1,6 +1,12 @@
 #include <algorithm>
 #include <cassert>
+
 #include "ParticleContainer.h"
+
+
+ParticleContainer::~ParticleContainer() {
+
+}
 
 void ParticleContainer::each(std::function<void (Particle&)> fn) {
 	assert(particles.size()!=0);
@@ -24,6 +30,7 @@ void ParticleContainer::eachPair(std::function<void (Particle&, Particle&)> fn) 
 void ParticleContainer::add(Particle& p) {
 	particles.push_back(p);
 }
+
 
 int ParticleContainer::getSize()
 {

@@ -118,6 +118,17 @@ public:
 	 */
 	static SimulationConfig::GeneratorType generator;
 
+	/**
+	 * the cutoff radius for the simulation
+	 */
+	static double rCutoff;
+
+	/**
+	 * the size of the simulation domain
+	 * the domain will start at (0,0,0) and have the size of domainSize
+	 */
+	static utils::Vector<double, 3> domainSize;
+
 private:
 	/**
 	 * loads config parameters from a config file

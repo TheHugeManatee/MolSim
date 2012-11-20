@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:xse="http://www.codesynthesis.com/xmlns/xml-schema-extension"
-            >
+            xmlns:xse="http://www.codesynthesis.com/xmlns/xml-schema-extension">
                             	
 	<xsd:complexType name="floatVector">
 		<xsd:attribute name="x1" type="xsd:double" use="required"/>

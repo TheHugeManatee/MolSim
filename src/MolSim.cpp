@@ -22,6 +22,7 @@
 
 //Forward declarations
 int executeTests();
+
 /**
  * set up the logger based on Settings::loggerConfigFile
  */

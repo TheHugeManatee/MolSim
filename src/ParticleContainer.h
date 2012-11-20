@@ -14,23 +14,30 @@
 #ifndef PARTICLECONTAINER_H_
 #define PARTICLECONTAINER_H_
 
-#include <vector>
-#include <functional>
-
 #include "Particle.h"
 
 
+#include <vector>
+#include <functional>
+
+
+
 class ParticleContainer {
-    private:
+    protected:
         std::vector<Particle> particles;
 
     public:
 
         /**
+         * virtual destructor to accomodate virtual methods
+         */
+        virtual ~ParticleContainer();
+
+        /**
          * to iterate a given function over all particles from the particles list
          * @param fn an anonymous function (e.g numerical force calculation)
          */
-        void each(std::function<void (Particle&)> fn);
+        virtual void each(std::function<void (Particle&)> fn);
 
 
         /**
@@ -39,15 +46,14 @@ class ParticleContainer {
          * are ignored, that means that for n particles, n^² - n calls will be made
          * @param fn a lambda expression
          */
-        void eachPair(std::function<void (Particle&, Particle&)> fn);
+        virtual void eachPair(std::function<void (Particle&, Particle&)> fn);
 
         /**
          * adds a particle to the container
          */
-        void add(Particle& p);
+        virtual void add(Particle& p);
 
-        int getSize();
+        virtual int getSize();
 };
 
 #endif
-
