@@ -2,6 +2,14 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:xse="http://www.codesynthesis.com/xmlns/xml-schema-extension">
+       
+  <xsd:simpleType name="BoundaryConditionType">
+  	<xsd:restriction base="xsd:string">
+  		<xsd:enumeration value="Outflow" />
+  		<xsd:enumeration value="Reflect" />
+  		<xsd:enumeration value="Periodic" />
+  	</xsd:restriction>
+  </xsd:simpleType>    
         
   <xsd:simpleType name="OutputFileType">
     <xsd:restriction base="xsd:string">
@@ -60,6 +68,7 @@
       <xsd:element name="endTime" type="xsd:double"/>
       <xsd:element name="scenarioType" type="ScenarioType"/>
       <xsd:element name="domainSize" type="floatVector" />
+      <xsd:element name="boundaryCondition" type="BoundaryConditionType" />
       <xsd:element name="containerType" type="ContainerType" />
       <xsd:element name="epsilon" type="xsd:double" />
       <xsd:element name="sigma" type="xsd:double" />

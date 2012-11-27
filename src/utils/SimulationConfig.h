@@ -554,6 +554,7 @@ namespace xml_schema
 
 // Forward declarations.
 //
+class BoundaryConditionType;
 class OutputFileType;
 class ScenarioType;
 class ContainerType;
@@ -575,6 +576,152 @@ class SimulationConfig;
 #include <xsd/cxx/tree/list.hxx>
 
 #include <xsd/cxx/xml/dom/parsing-header.hxx>
+
+/**
+ * @brief Enumeration class corresponding to the %BoundaryConditionType
+ * schema type.
+ */
+class BoundaryConditionType: public ::xml_schema::String
+{
+  public:
+
+  /**
+   * @brief Underlying enum type.
+   */
+  enum Value
+  {
+    Outflow,
+    Reflect,
+    Periodic
+  };
+
+  /**
+   * @brief Create an instance from the underlying enum value.
+   *
+   * @param v A enum value.
+   */
+  BoundaryConditionType (Value v);
+
+  /**
+   * @brief Create an instance from a C string.
+   *
+   * @param v A string value.
+   */
+  BoundaryConditionType (const char* v);
+
+  /**
+   * @brief Create an instance from a string.
+   *
+   * @param v A string value.
+   */
+  BoundaryConditionType (const ::std::string& v);
+
+  /**
+   * @brief Create an instance from the base value.
+   *
+   * @param v A base value.
+   */
+  BoundaryConditionType (const ::xml_schema::String& v);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  BoundaryConditionType (const ::xercesc::DOMElement& e,
+                         ::xml_schema::Flags f = 0,
+                         ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a DOM attribute.
+   *
+   * @param a A DOM attribute to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  BoundaryConditionType (const ::xercesc::DOMAttr& a,
+                         ::xml_schema::Flags f = 0,
+                         ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a string fragment.
+   *
+   * @param s A string fragment to extract the data from.
+   * @param e A pointer to DOM element containing the string fragment.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  BoundaryConditionType (const ::std::string& s,
+                         const ::xercesc::DOMElement* e,
+                         ::xml_schema::Flags f = 0,
+                         ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  BoundaryConditionType (const BoundaryConditionType& x,
+                         ::xml_schema::Flags f = 0,
+                         ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual BoundaryConditionType*
+  _clone (::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0) const;
+
+  /**
+   * @brief Assign the underlying enum value.
+   *
+   * @param v A enum value.
+   * @return A refernce to the instance.
+   */
+  BoundaryConditionType&
+  operator= (Value v);
+
+  /**
+   * @brief Implicit conversion operator to the underlying
+   * enum value.
+   *
+   * @return A enum value.
+   */
+  virtual
+  operator Value () const
+  {
+    return _xsd_BoundaryConditionType_convert ();
+  }
+
+  //@cond
+
+  protected:
+  Value
+  _xsd_BoundaryConditionType_convert () const;
+
+  public:
+  static const char* const _xsd_BoundaryConditionType_literals_[3];
+  static const Value _xsd_BoundaryConditionType_indexes_[3];
+
+  //@endcond
+};
 
 /**
  * @brief Enumeration class corresponding to the %OutputFileType
@@ -2306,6 +2453,64 @@ class SimulationConfig: public ::xml_schema::Type
   //@}
 
   /**
+   * @name boundaryCondition
+   *
+   * @brief Accessor and modifier functions for the %boundaryCondition
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::BoundaryConditionType BoundaryConditionType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< BoundaryConditionType, char > BoundaryConditionTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const BoundaryConditionType&
+  boundaryCondition () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  BoundaryConditionType&
+  boundaryCondition ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  boundaryCondition (const BoundaryConditionType& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  boundaryCondition (::std::auto_ptr< BoundaryConditionType > p);
+
+  //@}
+
+  /**
    * @name containerType
    *
    * @brief Accessor and modifier functions for the %containerType
@@ -2854,6 +3059,7 @@ class SimulationConfig: public ::xml_schema::Type
                     const EndTimeType&,
                     const ScenarioTypeType&,
                     const DomainSizeType&,
+                    const BoundaryConditionType&,
                     const ContainerTypeType&,
                     const EpsilonType&,
                     const SigmaType&,
@@ -2877,6 +3083,7 @@ class SimulationConfig: public ::xml_schema::Type
                     const EndTimeType&,
                     const ScenarioTypeType&,
                     ::std::auto_ptr< DomainSizeType >&,
+                    const BoundaryConditionType&,
                     const ContainerTypeType&,
                     const EpsilonType&,
                     const SigmaType&,
@@ -2951,6 +3158,7 @@ class SimulationConfig: public ::xml_schema::Type
   ::xsd::cxx::tree::one< EndTimeType > endTime_;
   ::xsd::cxx::tree::one< ScenarioTypeType > scenarioType_;
   ::xsd::cxx::tree::one< DomainSizeType > domainSize_;
+  ::xsd::cxx::tree::one< BoundaryConditionType > boundaryCondition_;
   ::xsd::cxx::tree::one< ContainerTypeType > containerType_;
   ::xsd::cxx::tree::one< EpsilonType > epsilon_;
   ::xsd::cxx::tree::one< SigmaType > sigma_;

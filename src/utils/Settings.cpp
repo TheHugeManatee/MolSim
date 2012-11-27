@@ -37,6 +37,7 @@ OutputFileType Settings::outputFileType = OutputFileType::vtk;
 double Settings::rCutoff = 3;
 utils::Vector<double, 3> Settings::domainSize = 50;
 ContainerType Settings::containerType = ContainerType::ParticleContainer;
+BoundaryConditionType Settings::boundaryCondition = BoundaryConditionType::Outflow;
 
 SimulationConfig::GeneratorType Settings::generator;
 
@@ -118,8 +119,10 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::domainSize[0] = xmlCfg->domainSize().x0();
 	    Settings::domainSize[1] = xmlCfg->domainSize().x1();
 	    Settings::domainSize[2] = xmlCfg->domainSize().x2();
+	    Settings::boundaryCondition = xmlCfg->boundaryCondition();
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
+
 
 	    Settings::generator = xmlCfg->generator();
 
@@ -189,6 +192,7 @@ std::string Settings::toString() {
 	s << "\n\toutputFilePrefix = " << Settings::outputFilePrefix;
 	s << "\n\toutputType = " << Settings::outputFileType;
 	s << "\n\tdomainSize = " << Settings::domainSize;
+	s << "\n\tboundaryCondition = " << Settings::boundaryCondition;
 
 	return s.str();
 }

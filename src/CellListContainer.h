@@ -77,9 +77,9 @@ private:
 
 	inline bool isBoundaryCell(int x0, int x1, int x2) {
 		return (x0 == 1 || x1 == 1 || x2 == 1 ||
-				x0 == nX0 - 2 ||
-				x1 == nX1 - 2 ||
-				x2 == nX2 - 2);
+				x0 == (nX0 - 2) ||
+				x1 == (nX1 - 2) ||
+				x2 == (nX2 - 2) );
 
 	}
 
@@ -91,8 +91,8 @@ public:
 	virtual ~CellListContainer();
 
 	void afterPositionChanges(
-			std::function<bool (Particle &, utils::Vector<double, 3> &)> boundaryHandler,
-			std::function<bool (Particle &, utils::Vector<double, 3> &)> haloHandler
+			std::function<bool (ParticleContainer &container, Particle &)> boundaryHandler,
+			std::function<bool (ParticleContainer &container, Particle &)> haloHandler
 	);
 
 	//Overridden members from ParticleContainer base class

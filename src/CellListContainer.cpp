@@ -140,7 +140,9 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 	}
 }
 
-void CellListContainer::afterPositionChanges(std::function<bool (Particle &, utils::Vector<double, 3> &)> boundaryHandler, std::function<bool (Particle &, utils::Vector<double, 3> &)> haloHandler) {
+void CellListContainer::afterPositionChanges(
+		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandler,
+		std::function<bool (ParticleContainer &container, Particle &)> haloHandler) {
 	int cellcount = cells.size();
 	int emptyCells = 0;
 	for(int x0=0; x0 < nX0; x0++)
@@ -155,40 +157,38 @@ void CellListContainer::afterPositionChanges(std::function<bool (Particle &, uti
 					p.old_f = p.f;
 					p.f = 0;
 
-					bool particleRemoved = false;
+					bool particleToBeRemoved = false;
 
 					//if the halo handler or the boundary handler say the particle should be removed, kill it
+
+				//	LOG4CXX_DEBUG(logger,"Checking for"<<x0<<x1<<x2);
+				//	LOG4CXX_DEBUG(logger,"isHalo"<<isHaloCell(x0, x1, x2));
+
 					if(isHaloCell(x0, x1, x2)) {
-						//TODO!!!
-						//utils::Vector<double, 3>
-						//particleRemoved = haloHandler(p, boundaryVector);
+						LOG4CXX_TRACE(logger,"Halo cell called");
+						particleToBeRemoved = haloHandler(*this, p);
 					}
 					else if(isBoundaryCell(x0, x1, x2)) {
-						/*utils::Vector<double, 3> boundaryVector({
-							(x0 == 1) * p.x[0] + (x0 == (nX0 - 2)) * (p.x[0] - Settings::domainSize[0]),
-							(x1 == 2) * p.x[1] + (x1 == (nX1 - 2)) * (p.x[1] - Settings::domainSize[1]),
-							(x2 == 3) * p.x[2] + (x2 == (nX2 - 2)) * (p.x[2] - Settings::domainSize[2])
-						});
-						particleRemoved = boundaryHandler(p, boundaryVector);*/
+						LOG4CXX_TRACE(logger,"Boundary cell called");
+						particleToBeRemoved = boundaryHandler(*this, p);
 					}
 
-					if(!particleRemoved) {
+					if(!particleToBeRemoved) {
 						ParticleContainer *cc = getContainingCell(p);
 						if(cc != &c) {
 							cellSwitches++;
 							if(cc == NULL) {
 								LOG4CXX_WARN(logger, "Particle " << p.toString() << " dropped out somehow..");
-								size_--;
 							} else {
 								cc->add(p);
 							}
 
-							particleRemoved = true;
+							particleToBeRemoved = true;
 						}
 					}
 
 					//perform the removal
-					if(particleRemoved) {
+					if(particleToBeRemoved) {
 						//switch last one and the one to be deleted
 						c.particles[i] = c.particles[c.particles.size() - 1];
 						//then delete the new last one and decrement the loop counter to check
@@ -229,6 +229,6 @@ int CellListContainer::getSize() {
 	for(int ci = 0; ci < cellcount; ci++) {
 		size += cells[ci].getSize();
 	}
-	assert(size == size_);
+//	assert(size == size_);
 	return size;
 }

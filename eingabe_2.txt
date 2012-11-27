@@ -18,7 +18,7 @@
 
 0
 # cuboid x1 x2 x3 v1 v2 v3 m t bMean nx1 nx2 nx3 h
-  cuboid 0  0   0  0  0  0 1 1 0.1   40    8   1 1.1225
-  cuboid 15 15  0  0 -10 0 2 2 0.1    8    8   1 1.1225
+  cuboid 2  2   5  0  0  0 1 1 0.1   40    8   1 1.1225
+  cuboid 17 17  5  0 -10 0 2 2 0.1    8    8   1 1.1225
 
 # be sure to leave this line here to mark the end of the input file

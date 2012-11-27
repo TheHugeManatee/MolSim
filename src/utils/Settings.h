@@ -141,6 +141,11 @@ public:
 	 */
 	static OutputFileType outputFileType;
 
+	/**
+	 * the boundary condition
+	 */
+	static BoundaryConditionType boundaryCondition;
+
 private:
 	/**
 	 * loads config parameters from a config file

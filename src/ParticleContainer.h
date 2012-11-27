@@ -64,9 +64,9 @@ class ParticleContainer {
          *  - optimize the internal structure of the container regarding the updated positions
          *  - apply boundary conditions
          */
-        void afterPositionChanges(
-        			std::function<bool (Particle &, utils::Vector<double, 3> &)> boundaryHandler,
-        			std::function<bool (Particle &, utils::Vector<double, 3> &)> haloHandler
+        virtual void afterPositionChanges(
+        			std::function<bool (ParticleContainer &container, Particle &)> boundaryHandler,
+        			std::function<bool (ParticleContainer &container, Particle &)> haloHandler
         ) {
         	int s = particles.size();
         	for(int i=0; i < s; i++) {

@@ -54,6 +54,12 @@ typedef struct {
 	 * @param container the Simulator's ParticleContainer used in the current Simulation
 	 */
 	std::function<void (ParticleContainer& container)> setup;
+
+
+	std::function<bool (ParticleContainer &container, Particle & p)> haloHandler;
+
+	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandler;
+
 } SimulationScenario;
 
 
@@ -79,7 +85,7 @@ public:
 	 * 		- gravity: simple gravity simulation, with hardcoded g = 1
 	 * 		- Lennard-Jones: molecule simulation based on the Lennard-Jones potential
 	 */
-	static SimulationScenario build(ScenarioType type);
+	static SimulationScenario *build(ScenarioType type);
 
 	/**
 	 * the static logger instance for the scenario factory
