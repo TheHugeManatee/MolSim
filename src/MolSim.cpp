@@ -48,7 +48,7 @@ int getMilliCount(){
 }
 
 int main(int argc, char* argsv[]) {
-	if (!strcmp(argsv[1], "-?") || !strcmp(argsv[1], "help") || !strcmp(argsv[1], "--help")) {
+	if (argc > 1 && (!strcmp(argsv[1], "-?") || !strcmp(argsv[1], "help") || !strcmp(argsv[1], "--help"))) {
 		std::cout << "This is the NUKULAR Simulator" << std::endl;
 		std::cout << "Authors: " << std::endl;
 		std::cout << "\tLeonhard Rannabauer" << std::endl;
@@ -68,17 +68,20 @@ int main(int argc, char* argsv[]) {
 		return 0;
 	}
 
+	std::cout << "Initializing the logger..." << std::endl << std::flush;
 	//Initialize the logging stuff
 	initializeLogger();
 
 
 	Settings::initSettings(argc, argsv);
+	LOG4CXX_TRACE(rootLogger, "Settings initialized!");
 
 	//Check if we should be executing some unit tests
 	if(!Settings::testCase.empty()) {
 		return executeTests();
 	}
 
+	LOG4CXX_TRACE(rootLogger, "Creating Simulator instance...");
 	Simulator sim;
 
 	double current_time = Settings::startTime;
@@ -128,26 +131,43 @@ int main(int argc, char* argsv[]) {
  * execute a specific or all test cases, depending on the Settings::testCase parameter
  */
 int executeTests() {
+	std::cout << "Test.." << std::endl;
+	Settings::domainSize = 100;
+	Settings::rCutoff = 3;
+	CellListContainer c;
 
-	  CppUnit::TextUi::TestRunner runner;
+	Particle p;
+	for(int i=0; i < 100; i++) {
+		p.x[0] = i;
+		p.x[1] = i;
+		p.x[2] = i;
+		c.add(p);
+	}
 
-	  bool all = !Settings::testCase.compare("all");
+	int i=0;
+	c.eachPair([&] (Particle&p1, Particle&p2) {i++;});
 
-	  if(all || !Settings::testCase.compare("ParticleContainer"))
-		  runner.addTest(ParticleContainerTests::suite());
+	std::cout << i << " pairs compared.." << std::endl;
+
+	CppUnit::TextUi::TestRunner runner;
+
+	bool all = !Settings::testCase.compare("all");
+
+	if(all || !Settings::testCase.compare("ParticleContainer"))
+	  runner.addTest(ParticleContainerTests::suite());
 
 
-	  runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
-	                                                       std::cerr ) );
-	  // Run the tests.
-	  bool wasSuccessful = runner.run();
+	runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
+													   std::cerr ) );
+	// Run the tests.
+	bool wasSuccessful = runner.run();
 
-	  // Return error code 1 if the one of test failed.
-	  if(wasSuccessful) {
-		  std::cout << "Tests ok!";
-	  }
+	// Return error code 1 if the one of test failed.
+	if(wasSuccessful) {
+	  std::cout << "Tests ok!";
+	}
 
-	  return wasSuccessful ? 0 : 1;
+	return wasSuccessful ? 0 : 1;
 }
 
 

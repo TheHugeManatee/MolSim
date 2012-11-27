@@ -40,8 +40,161 @@
 
 #include "simulationConfig.h"
 
+// OutputFileType
+// 
+
+OutputFileType::
+OutputFileType (Value v)
+: ::xml_schema::String (_xsd_OutputFileType_literals_[v])
+{
+}
+
+OutputFileType::
+OutputFileType (const char* v)
+: ::xml_schema::String (v)
+{
+}
+
+OutputFileType::
+OutputFileType (const ::std::string& v)
+: ::xml_schema::String (v)
+{
+}
+
+OutputFileType::
+OutputFileType (const ::xml_schema::String& v)
+: ::xml_schema::String (v)
+{
+}
+
+OutputFileType::
+OutputFileType (const OutputFileType& v,
+                ::xml_schema::Flags f,
+                ::xml_schema::Container* c)
+: ::xml_schema::String (v, f, c)
+{
+}
+
+OutputFileType& OutputFileType::
+operator= (Value v)
+{
+  static_cast< ::xml_schema::String& > (*this) = 
+  ::xml_schema::String (_xsd_OutputFileType_literals_[v]);
+
+  return *this;
+}
+
+
+// ScenarioType
+// 
+
+ScenarioType::
+ScenarioType (Value v)
+: ::xml_schema::String (_xsd_ScenarioType_literals_[v])
+{
+}
+
+ScenarioType::
+ScenarioType (const char* v)
+: ::xml_schema::String (v)
+{
+}
+
+ScenarioType::
+ScenarioType (const ::std::string& v)
+: ::xml_schema::String (v)
+{
+}
+
+ScenarioType::
+ScenarioType (const ::xml_schema::String& v)
+: ::xml_schema::String (v)
+{
+}
+
+ScenarioType::
+ScenarioType (const ScenarioType& v,
+              ::xml_schema::Flags f,
+              ::xml_schema::Container* c)
+: ::xml_schema::String (v, f, c)
+{
+}
+
+ScenarioType& ScenarioType::
+operator= (Value v)
+{
+  static_cast< ::xml_schema::String& > (*this) = 
+  ::xml_schema::String (_xsd_ScenarioType_literals_[v]);
+
+  return *this;
+}
+
+
+// ContainerType
+// 
+
+ContainerType::
+ContainerType (Value v)
+: ::xml_schema::String (_xsd_ContainerType_literals_[v])
+{
+}
+
+ContainerType::
+ContainerType (const char* v)
+: ::xml_schema::String (v)
+{
+}
+
+ContainerType::
+ContainerType (const ::std::string& v)
+: ::xml_schema::String (v)
+{
+}
+
+ContainerType::
+ContainerType (const ::xml_schema::String& v)
+: ::xml_schema::String (v)
+{
+}
+
+ContainerType::
+ContainerType (const ContainerType& v,
+               ::xml_schema::Flags f,
+               ::xml_schema::Container* c)
+: ::xml_schema::String (v, f, c)
+{
+}
+
+ContainerType& ContainerType::
+operator= (Value v)
+{
+  static_cast< ::xml_schema::String& > (*this) = 
+  ::xml_schema::String (_xsd_ContainerType_literals_[v]);
+
+  return *this;
+}
+
+
 // FloatVector
 // 
+
+const FloatVector::X0Type& FloatVector::
+x0 () const
+{
+  return this->x0_.get ();
+}
+
+FloatVector::X0Type& FloatVector::
+x0 ()
+{
+  return this->x0_.get ();
+}
+
+void FloatVector::
+x0 (const X0Type& x)
+{
+  this->x0_.set (x);
+}
 
 const FloatVector::X1Type& FloatVector::
 x1 () const
@@ -79,27 +232,27 @@ x2 (const X2Type& x)
   this->x2_.set (x);
 }
 
-const FloatVector::X3Type& FloatVector::
-x3 () const
-{
-  return this->x3_.get ();
-}
-
-FloatVector::X3Type& FloatVector::
-x3 ()
-{
-  return this->x3_.get ();
-}
-
-void FloatVector::
-x3 (const X3Type& x)
-{
-  this->x3_.set (x);
-}
-
 
 // IntVector
 // 
+
+const IntVector::X0Type& IntVector::
+x0 () const
+{
+  return this->x0_.get ();
+}
+
+IntVector::X0Type& IntVector::
+x0 ()
+{
+  return this->x0_.get ();
+}
+
+void IntVector::
+x0 (const X0Type& x)
+{
+  this->x0_.set (x);
+}
 
 const IntVector::X1Type& IntVector::
 x1 () const
@@ -135,24 +288,6 @@ void IntVector::
 x2 (const X2Type& x)
 {
   this->x2_.set (x);
-}
-
-const IntVector::X3Type& IntVector::
-x3 () const
-{
-  return this->x3_.get ();
-}
-
-IntVector::X3Type& IntVector::
-x3 ()
-{
-  return this->x3_.get ();
-}
-
-void IntVector::
-x3 (const X3Type& x)
-{
-  this->x3_.set (x);
 }
 
 
@@ -389,6 +524,54 @@ scenarioType (::std::auto_ptr< ScenarioTypeType > x)
   this->scenarioType_.set (x);
 }
 
+const SimulationConfig::DomainSizeType& SimulationConfig::
+domainSize () const
+{
+  return this->domainSize_.get ();
+}
+
+SimulationConfig::DomainSizeType& SimulationConfig::
+domainSize ()
+{
+  return this->domainSize_.get ();
+}
+
+void SimulationConfig::
+domainSize (const DomainSizeType& x)
+{
+  this->domainSize_.set (x);
+}
+
+void SimulationConfig::
+domainSize (::std::auto_ptr< DomainSizeType > x)
+{
+  this->domainSize_.set (x);
+}
+
+const SimulationConfig::ContainerTypeType& SimulationConfig::
+containerType () const
+{
+  return this->containerType_.get ();
+}
+
+SimulationConfig::ContainerTypeType& SimulationConfig::
+containerType ()
+{
+  return this->containerType_.get ();
+}
+
+void SimulationConfig::
+containerType (const ContainerTypeType& x)
+{
+  this->containerType_.set (x);
+}
+
+void SimulationConfig::
+containerType (::std::auto_ptr< ContainerTypeType > x)
+{
+  this->containerType_.set (x);
+}
+
 const SimulationConfig::EpsilonType& SimulationConfig::
 epsilon () const
 {
@@ -509,6 +692,30 @@ outputFilePrefix (::std::auto_ptr< OutputFilePrefixType > x)
   this->outputFilePrefix_.set (x);
 }
 
+const SimulationConfig::OutputFileTypeType& SimulationConfig::
+outputFileType () const
+{
+  return this->outputFileType_.get ();
+}
+
+SimulationConfig::OutputFileTypeType& SimulationConfig::
+outputFileType ()
+{
+  return this->outputFileType_.get ();
+}
+
+void SimulationConfig::
+outputFileType (const OutputFileTypeType& x)
+{
+  this->outputFileType_.set (x);
+}
+
+void SimulationConfig::
+outputFileType (::std::auto_ptr< OutputFileTypeType > x)
+{
+  this->outputFileType_.set (x);
+}
+
 const SimulationConfig::InputFileType& SimulationConfig::
 inputFile () const
 {
@@ -560,17 +767,227 @@ generator (::std::auto_ptr< GeneratorType > x)
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
 
+// OutputFileType
+//
+
+OutputFileType::
+OutputFileType (const ::xercesc::DOMElement& e,
+                ::xml_schema::Flags f,
+                ::xml_schema::Container* c)
+: ::xml_schema::String (e, f, c)
+{
+  _xsd_OutputFileType_convert ();
+}
+
+OutputFileType::
+OutputFileType (const ::xercesc::DOMAttr& a,
+                ::xml_schema::Flags f,
+                ::xml_schema::Container* c)
+: ::xml_schema::String (a, f, c)
+{
+  _xsd_OutputFileType_convert ();
+}
+
+OutputFileType::
+OutputFileType (const ::std::string& s,
+                const ::xercesc::DOMElement* e,
+                ::xml_schema::Flags f,
+                ::xml_schema::Container* c)
+: ::xml_schema::String (s, e, f, c)
+{
+  _xsd_OutputFileType_convert ();
+}
+
+OutputFileType* OutputFileType::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class OutputFileType (*this, f, c);
+}
+
+OutputFileType::Value OutputFileType::
+_xsd_OutputFileType_convert () const
+{
+  ::xsd::cxx::tree::enum_comparator< char > c (_xsd_OutputFileType_literals_);
+  const Value* i (::std::lower_bound (
+                    _xsd_OutputFileType_indexes_,
+                    _xsd_OutputFileType_indexes_ + 2,
+                    *this,
+                    c));
+
+  if (i == _xsd_OutputFileType_indexes_ + 2 || _xsd_OutputFileType_literals_[*i] != *this)
+  {
+    throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+  }
+
+  return *i;
+}
+
+const char* const OutputFileType::
+_xsd_OutputFileType_literals_[2] =
+{
+  "xyz",
+  "vtk"
+};
+
+const OutputFileType::Value OutputFileType::
+_xsd_OutputFileType_indexes_[2] =
+{
+  ::OutputFileType::vtk,
+  ::OutputFileType::xyz
+};
+
+// ScenarioType
+//
+
+ScenarioType::
+ScenarioType (const ::xercesc::DOMElement& e,
+              ::xml_schema::Flags f,
+              ::xml_schema::Container* c)
+: ::xml_schema::String (e, f, c)
+{
+  _xsd_ScenarioType_convert ();
+}
+
+ScenarioType::
+ScenarioType (const ::xercesc::DOMAttr& a,
+              ::xml_schema::Flags f,
+              ::xml_schema::Container* c)
+: ::xml_schema::String (a, f, c)
+{
+  _xsd_ScenarioType_convert ();
+}
+
+ScenarioType::
+ScenarioType (const ::std::string& s,
+              const ::xercesc::DOMElement* e,
+              ::xml_schema::Flags f,
+              ::xml_schema::Container* c)
+: ::xml_schema::String (s, e, f, c)
+{
+  _xsd_ScenarioType_convert ();
+}
+
+ScenarioType* ScenarioType::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class ScenarioType (*this, f, c);
+}
+
+ScenarioType::Value ScenarioType::
+_xsd_ScenarioType_convert () const
+{
+  ::xsd::cxx::tree::enum_comparator< char > c (_xsd_ScenarioType_literals_);
+  const Value* i (::std::lower_bound (
+                    _xsd_ScenarioType_indexes_,
+                    _xsd_ScenarioType_indexes_ + 2,
+                    *this,
+                    c));
+
+  if (i == _xsd_ScenarioType_indexes_ + 2 || _xsd_ScenarioType_literals_[*i] != *this)
+  {
+    throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+  }
+
+  return *i;
+}
+
+const char* const ScenarioType::
+_xsd_ScenarioType_literals_[2] =
+{
+  "Gravity",
+  "Lennard-Jones"
+};
+
+const ScenarioType::Value ScenarioType::
+_xsd_ScenarioType_indexes_[2] =
+{
+  ::ScenarioType::Gravity,
+  ::ScenarioType::Lennard_Jones
+};
+
+// ContainerType
+//
+
+ContainerType::
+ContainerType (const ::xercesc::DOMElement& e,
+               ::xml_schema::Flags f,
+               ::xml_schema::Container* c)
+: ::xml_schema::String (e, f, c)
+{
+  _xsd_ContainerType_convert ();
+}
+
+ContainerType::
+ContainerType (const ::xercesc::DOMAttr& a,
+               ::xml_schema::Flags f,
+               ::xml_schema::Container* c)
+: ::xml_schema::String (a, f, c)
+{
+  _xsd_ContainerType_convert ();
+}
+
+ContainerType::
+ContainerType (const ::std::string& s,
+               const ::xercesc::DOMElement* e,
+               ::xml_schema::Flags f,
+               ::xml_schema::Container* c)
+: ::xml_schema::String (s, e, f, c)
+{
+  _xsd_ContainerType_convert ();
+}
+
+ContainerType* ContainerType::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class ContainerType (*this, f, c);
+}
+
+ContainerType::Value ContainerType::
+_xsd_ContainerType_convert () const
+{
+  ::xsd::cxx::tree::enum_comparator< char > c (_xsd_ContainerType_literals_);
+  const Value* i (::std::lower_bound (
+                    _xsd_ContainerType_indexes_,
+                    _xsd_ContainerType_indexes_ + 2,
+                    *this,
+                    c));
+
+  if (i == _xsd_ContainerType_indexes_ + 2 || _xsd_ContainerType_literals_[*i] != *this)
+  {
+    throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+  }
+
+  return *i;
+}
+
+const char* const ContainerType::
+_xsd_ContainerType_literals_[2] =
+{
+  "ParticleContainer",
+  "CelllistContainer"
+};
+
+const ContainerType::Value ContainerType::
+_xsd_ContainerType_indexes_[2] =
+{
+  ::ContainerType::CelllistContainer,
+  ::ContainerType::ParticleContainer
+};
+
 // FloatVector
 //
 
 FloatVector::
-FloatVector (const X1Type& x1,
-             const X2Type& x2,
-             const X3Type& x3)
+FloatVector (const X0Type& x0,
+             const X1Type& x1,
+             const X2Type& x2)
 : ::xml_schema::Type (),
+  x0_ (x0, ::xml_schema::Flags (), this),
   x1_ (x1, ::xml_schema::Flags (), this),
-  x2_ (x2, ::xml_schema::Flags (), this),
-  x3_ (x3, ::xml_schema::Flags (), this)
+  x2_ (x2, ::xml_schema::Flags (), this)
 {
 }
 
@@ -579,9 +996,9 @@ FloatVector (const FloatVector& x,
              ::xml_schema::Flags f,
              ::xml_schema::Container* c)
 : ::xml_schema::Type (x, f, c),
+  x0_ (x.x0_, f, this),
   x1_ (x.x1_, f, this),
-  x2_ (x.x2_, f, this),
-  x3_ (x.x3_, f, this)
+  x2_ (x.x2_, f, this)
 {
 }
 
@@ -590,9 +1007,9 @@ FloatVector (const ::xercesc::DOMElement& e,
              ::xml_schema::Flags f,
              ::xml_schema::Container* c)
 : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
+  x0_ (f, this),
   x1_ (f, this),
-  x2_ (f, this),
-  x3_ (f, this)
+  x2_ (f, this)
 {
   if ((f & ::xml_schema::Flags::base) == 0)
   {
@@ -611,6 +1028,12 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     const ::xsd::cxx::xml::qualified_name< char > n (
       ::xsd::cxx::xml::dom::name< char > (i));
 
+    if (n.name () == "x0" && n.namespace_ ().empty ())
+    {
+      this->x0_.set (X0Traits::create (i, f, this));
+      continue;
+    }
+
     if (n.name () == "x1" && n.namespace_ ().empty ())
     {
       this->x1_.set (X1Traits::create (i, f, this));
@@ -622,12 +1045,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       this->x2_.set (X2Traits::create (i, f, this));
       continue;
     }
+  }
 
-    if (n.name () == "x3" && n.namespace_ ().empty ())
-    {
-      this->x3_.set (X3Traits::create (i, f, this));
-      continue;
-    }
+  if (!x0_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "x0",
+      "");
   }
 
   if (!x1_.present ())
@@ -641,13 +1065,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_attribute< char > (
       "x2",
-      "");
-  }
-
-  if (!x3_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_attribute< char > (
-      "x3",
       "");
   }
 }
@@ -668,13 +1085,13 @@ FloatVector::
 //
 
 IntVector::
-IntVector (const X1Type& x1,
-           const X2Type& x2,
-           const X3Type& x3)
+IntVector (const X0Type& x0,
+           const X1Type& x1,
+           const X2Type& x2)
 : ::xml_schema::Type (),
+  x0_ (x0, ::xml_schema::Flags (), this),
   x1_ (x1, ::xml_schema::Flags (), this),
-  x2_ (x2, ::xml_schema::Flags (), this),
-  x3_ (x3, ::xml_schema::Flags (), this)
+  x2_ (x2, ::xml_schema::Flags (), this)
 {
 }
 
@@ -683,9 +1100,9 @@ IntVector (const IntVector& x,
            ::xml_schema::Flags f,
            ::xml_schema::Container* c)
 : ::xml_schema::Type (x, f, c),
+  x0_ (x.x0_, f, this),
   x1_ (x.x1_, f, this),
-  x2_ (x.x2_, f, this),
-  x3_ (x.x3_, f, this)
+  x2_ (x.x2_, f, this)
 {
 }
 
@@ -694,9 +1111,9 @@ IntVector (const ::xercesc::DOMElement& e,
            ::xml_schema::Flags f,
            ::xml_schema::Container* c)
 : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
+  x0_ (f, this),
   x1_ (f, this),
-  x2_ (f, this),
-  x3_ (f, this)
+  x2_ (f, this)
 {
   if ((f & ::xml_schema::Flags::base) == 0)
   {
@@ -715,6 +1132,12 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
     const ::xsd::cxx::xml::qualified_name< char > n (
       ::xsd::cxx::xml::dom::name< char > (i));
 
+    if (n.name () == "x0" && n.namespace_ ().empty ())
+    {
+      this->x0_.set (X0Traits::create (i, f, this));
+      continue;
+    }
+
     if (n.name () == "x1" && n.namespace_ ().empty ())
     {
       this->x1_.set (X1Traits::create (i, f, this));
@@ -726,12 +1149,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       this->x2_.set (X2Traits::create (i, f, this));
       continue;
     }
+  }
 
-    if (n.name () == "x3" && n.namespace_ ().empty ())
-    {
-      this->x3_.set (X3Traits::create (i, f, this));
-      continue;
-    }
+  if (!x0_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "x0",
+      "");
   }
 
   if (!x1_.present ())
@@ -745,13 +1169,6 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_attribute< char > (
       "x2",
-      "");
-  }
-
-  if (!x3_.present ())
-  {
-    throw ::xsd::cxx::tree::expected_attribute< char > (
-      "x3",
       "");
   }
 }
@@ -1082,24 +1499,30 @@ SimulationConfig::
 SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
+                  const DomainSizeType& domainSize,
+                  const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
                   const OutputFrequencyType& outputFrequency,
                   const DisableOutputType& disableOutput,
                   const LoggerConfigFileType& loggerConfigFile,
                   const OutputFilePrefixType& outputFilePrefix,
+                  const OutputFileTypeType& outputFileType,
                   const InputFileType& inputFile,
                   const GeneratorType& generator)
 : ::xml_schema::Type (),
   deltaT_ (deltaT, ::xml_schema::Flags (), this),
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
+  domainSize_ (domainSize, ::xml_schema::Flags (), this),
+  containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
   outputFrequency_ (outputFrequency, ::xml_schema::Flags (), this),
   disableOutput_ (disableOutput, ::xml_schema::Flags (), this),
   loggerConfigFile_ (loggerConfigFile, ::xml_schema::Flags (), this),
   outputFilePrefix_ (outputFilePrefix, ::xml_schema::Flags (), this),
+  outputFileType_ (outputFileType, ::xml_schema::Flags (), this),
   inputFile_ (inputFile, ::xml_schema::Flags (), this),
   generator_ (generator, ::xml_schema::Flags (), this)
 {
@@ -1109,24 +1532,30 @@ SimulationConfig::
 SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
+                  ::std::auto_ptr< DomainSizeType >& domainSize,
+                  const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
                   const OutputFrequencyType& outputFrequency,
                   const DisableOutputType& disableOutput,
                   const LoggerConfigFileType& loggerConfigFile,
                   const OutputFilePrefixType& outputFilePrefix,
+                  const OutputFileTypeType& outputFileType,
                   const InputFileType& inputFile,
                   ::std::auto_ptr< GeneratorType >& generator)
 : ::xml_schema::Type (),
   deltaT_ (deltaT, ::xml_schema::Flags (), this),
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
+  domainSize_ (domainSize, ::xml_schema::Flags (), this),
+  containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
   outputFrequency_ (outputFrequency, ::xml_schema::Flags (), this),
   disableOutput_ (disableOutput, ::xml_schema::Flags (), this),
   loggerConfigFile_ (loggerConfigFile, ::xml_schema::Flags (), this),
   outputFilePrefix_ (outputFilePrefix, ::xml_schema::Flags (), this),
+  outputFileType_ (outputFileType, ::xml_schema::Flags (), this),
   inputFile_ (inputFile, ::xml_schema::Flags (), this),
   generator_ (generator, ::xml_schema::Flags (), this)
 {
@@ -1140,12 +1569,15 @@ SimulationConfig (const SimulationConfig& x,
   deltaT_ (x.deltaT_, f, this),
   endTime_ (x.endTime_, f, this),
   scenarioType_ (x.scenarioType_, f, this),
+  domainSize_ (x.domainSize_, f, this),
+  containerType_ (x.containerType_, f, this),
   epsilon_ (x.epsilon_, f, this),
   sigma_ (x.sigma_, f, this),
   outputFrequency_ (x.outputFrequency_, f, this),
   disableOutput_ (x.disableOutput_, f, this),
   loggerConfigFile_ (x.loggerConfigFile_, f, this),
   outputFilePrefix_ (x.outputFilePrefix_, f, this),
+  outputFileType_ (x.outputFileType_, f, this),
   inputFile_ (x.inputFile_, f, this),
   generator_ (x.generator_, f, this)
 {
@@ -1159,12 +1591,15 @@ SimulationConfig (const ::xercesc::DOMElement& e,
   deltaT_ (f, this),
   endTime_ (f, this),
   scenarioType_ (f, this),
+  domainSize_ (f, this),
+  containerType_ (f, this),
   epsilon_ (f, this),
   sigma_ (f, this),
   outputFrequency_ (f, this),
   disableOutput_ (f, this),
   loggerConfigFile_ (f, this),
   outputFilePrefix_ (f, this),
+  outputFileType_ (f, this),
   inputFile_ (f, this),
   generator_ (f, this)
 {
@@ -1217,6 +1652,34 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!scenarioType_.present ())
       {
         this->scenarioType_.set (r);
+        continue;
+      }
+    }
+
+    // domainSize
+    //
+    if (n.name () == "domainSize" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< DomainSizeType > r (
+        DomainSizeTraits::create (i, f, this));
+
+      if (!domainSize_.present ())
+      {
+        this->domainSize_.set (r);
+        continue;
+      }
+    }
+
+    // containerType
+    //
+    if (n.name () == "containerType" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< ContainerTypeType > r (
+        ContainerTypeTraits::create (i, f, this));
+
+      if (!containerType_.present ())
+      {
+        this->containerType_.set (r);
         continue;
       }
     }
@@ -1293,6 +1756,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
+    // outputFileType
+    //
+    if (n.name () == "outputFileType" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< OutputFileTypeType > r (
+        OutputFileTypeTraits::create (i, f, this));
+
+      if (!outputFileType_.present ())
+      {
+        this->outputFileType_.set (r);
+        continue;
+      }
+    }
+
     // inputFile
     //
     if (n.name () == "inputFile" && n.namespace_ ().empty ())
@@ -1345,6 +1822,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
+  if (!domainSize_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "domainSize",
+      "");
+  }
+
+  if (!containerType_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "containerType",
+      "");
+  }
+
   if (!epsilon_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
@@ -1384,6 +1875,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "outputFilePrefix",
+      "");
+  }
+
+  if (!outputFileType_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "outputFileType",
       "");
   }
 

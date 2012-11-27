@@ -9,19 +9,17 @@ ParticleContainer::~ParticleContainer() {
 }
 
 void ParticleContainer::each(std::function<void (Particle&)> fn) {
-	assert(particles.size()!=0);
-
-	for(int i = 0; i < particles.size(); i++) {
+	int s = particles.size();
+	for(int i = 0; i < s; i++) {
 		fn(particles[i]);
 	}
 }
 
 void ParticleContainer::eachPair(std::function<void (Particle&, Particle&)> fn) {
 	std::vector<Particle>::iterator iterator;
-	assert(particles.size()!=0);
-
-	for(int i = 0; i < particles.size(); i++) {
-		for(int j = i + 1; j < particles.size(); j++) {
+	int s = particles.size();
+	for(int i = 0; i < s; i++) {
+		for(int j = i + 1; j < s; j++) {
 			fn(particles[i], particles[j]);
 		}
 	}

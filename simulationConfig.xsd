@@ -2,17 +2,38 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:xse="http://www.codesynthesis.com/xmlns/xml-schema-extension">
+        
+  <xsd:simpleType name="OutputFileType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="xyz" />
+      <xsd:enumeration value="vtk" />
+    </xsd:restriction>
+  </xsd:simpleType>
+        
+  <xsd:simpleType name="ScenarioType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Gravity"/>
+      <xsd:enumeration value="Lennard-Jones"/>
+    </xsd:restriction>
+  </xsd:simpleType>     
+  
+  <xsd:simpleType name="ContainerType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="ParticleContainer"/>
+      <xsd:enumeration value="CelllistContainer"/>
+    </xsd:restriction>
+  </xsd:simpleType>     
                             	
 	<xsd:complexType name="floatVector">
+		<xsd:attribute name="x0" type="xsd:double" use="required"/>
 		<xsd:attribute name="x1" type="xsd:double" use="required"/>
 		<xsd:attribute name="x2" type="xsd:double" use="required"/>
-		<xsd:attribute name="x3" type="xsd:double" use="required"/>
 	</xsd:complexType>
 
 	<xsd:complexType name="intVector">
+		<xsd:attribute name="x0" type="xsd:int" use="required"/>
 		<xsd:attribute name="x1" type="xsd:int" use="required"/>
 		<xsd:attribute name="x2" type="xsd:int" use="required"/>
-		<xsd:attribute name="x3" type="xsd:int" use="required"/>
 	</xsd:complexType>   
 	             
   <xsd:complexType name="cuboid">
@@ -37,13 +58,16 @@
     <xsd:sequence>
       <xsd:element name="deltaT" type="xsd:double"/>
       <xsd:element name="endTime" type="xsd:double"/>
-      <xsd:element name="scenarioType" type="xsd:string"/>
+      <xsd:element name="scenarioType" type="ScenarioType"/>
+      <xsd:element name="domainSize" type="floatVector" />
+      <xsd:element name="containerType" type="ContainerType" />
       <xsd:element name="epsilon" type="xsd:double" />
       <xsd:element name="sigma" type="xsd:double" />
       <xsd:element name="outputFrequency" type="xsd:int"/>
       <xsd:element name="disableOutput" type="xsd:boolean"/>
       <xsd:element name="loggerConfigFile" type="xsd:string"/>
       <xsd:element name="outputFilePrefix" type="xsd:string"/>
+      <xsd:element name="outputFileType" type="OutputFileType"/>
       <xsd:element name="inputFile" type="xsd:string"/>
             
       <xsd:element name="generator" type="generator"/>

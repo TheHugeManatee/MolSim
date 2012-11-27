@@ -56,6 +56,24 @@ class ParticleContainer {
         virtual void add(Particle& p);
 
         virtual int getSize();
+
+        /**
+         * this is called by the simulator after all positions have been updated for the
+         * particles. This function has multiple purposes:
+         *  - copy force vector of each particle onto old_f and reset f to zero
+         *  - optimize the internal structure of the container regarding the updated positions
+         *  - apply boundary conditions
+         */
+        void afterPositionChanges(
+        			std::function<bool (Particle &, utils::Vector<double, 3> &)> boundaryHandler,
+        			std::function<bool (Particle &, utils::Vector<double, 3> &)> haloHandler
+        ) {
+        	int s = particles.size();
+        	for(int i=0; i < s; i++) {
+        		particles[i].old_f = particles[i].f;
+        		particles[i].f = 0;
+        	}
+        };
 };
 
 #endif

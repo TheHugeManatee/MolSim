@@ -28,14 +28,14 @@
 #define SETTINGS_H_
 
 
-#include "simulationConfig.h"
+#include "ScenarioFactory.h"
 
 #include "utils/Vector.h"
 
+#include "simulationConfig.h"
 #include <log4cxx/logger.h>
 
 #include <string>
-
 
 class Settings {
 public:
@@ -77,7 +77,7 @@ public:
 	 * the type of simulation scenario
 	 * @see ScenarioFactory for available types
 	 */
-	static std::string scenarioType;
+	static ScenarioType scenarioType;
 
 	/**
 	 * disable the file output
@@ -130,6 +130,16 @@ public:
 	 * the domain will start at (0,0,0) and have the size of domainSize
 	 */
 	static utils::Vector<double, 3> domainSize;
+
+	/**
+	 * the container type to be used
+	 */
+	static ContainerType containerType;
+
+	/**
+	 * the output file type
+	 */
+	static OutputFileType outputFileType;
 
 private:
 	/**

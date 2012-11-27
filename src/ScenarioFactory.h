@@ -8,13 +8,22 @@
 #ifndef SCENARIOFACTORY_H_
 #define SCENARIOFACTORY_H_
 
-#include <functional>
-#include <string>
+
 #include "Particle.h"
 #include "FileReader.h"
 #include "ParticleContainer.h"
-#include <log4cxx/logger.h>
 
+#include "utils/SimulationConfig.h"
+
+#include <log4cxx/logger.h>
+#include <functional>
+#include <string>
+/*
+enum ScenarioType {
+	GRAVITY,
+	LENNARD_JONES
+};
+*/
 /**
  * this inline struct defines a scenario, which is essentially a strategy describing how the simulation logic works
  */
@@ -70,7 +79,7 @@ public:
 	 * 		- gravity: simple gravity simulation, with hardcoded g = 1
 	 * 		- Lennard-Jones: molecule simulation based on the Lennard-Jones potential
 	 */
-	static SimulationScenario build(std::string type);
+	static SimulationScenario build(ScenarioType type);
 
 	/**
 	 * the static logger instance for the scenario factory

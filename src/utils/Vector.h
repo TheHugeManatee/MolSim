@@ -106,6 +106,13 @@ public:
 		return sqrt(square_sum);
 	}
 
+	/**
+	 * return the squared length of the vector's first three dimensions
+	 */
+	double LengthOptimizedR3Squared() const {
+		return content[0]*content[0] + content[1]*content[1] + content[2]*content[2];
+	}
+
 	bool equals(const Vector& rhs) const {
 		for (int i = 0; i < length; i++) {
 			if (rhs.content[i] != this->content[i]) {

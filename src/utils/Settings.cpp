@@ -27,14 +27,16 @@ int Settings::outputFrequency = 10;
 bool Settings::disableOutput = false;
 double Settings::sigma = 1;
 double Settings::epsilon = 5;
-std::string Settings::scenarioType = "gravity";
-std::string Settings::configFile = "config.cfg";
+ScenarioType Settings::scenarioType = ScenarioType::Gravity;
+std::string Settings::configFile = "simulationConfig.xml";
 std::string Settings::inputFile = "eingabe-sonne.txt";
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
+OutputFileType Settings::outputFileType = OutputFileType::vtk;
 double Settings::rCutoff = 3;
-utils::Vector<double, 3> Settings::domainSize = 10;
+utils::Vector<double, 3> Settings::domainSize = 50;
+ContainerType Settings::containerType = ContainerType::ParticleContainer;
 
 SimulationConfig::GeneratorType Settings::generator;
 
@@ -79,8 +81,6 @@ void Settings::initSettings(int argc, char* argv[]) {
 			Settings::deltaT = atof(argv[i+1]);
 		if(strcmp(argv[i], "-endTime") == 0 && argc > i + 1)
 			Settings::endTime = atof(argv[i+1]);
-		if(strcmp(argv[i], "-scenarioType") == 0 && argc > i + 1)
-			Settings::scenarioType = argv[i+1];
 		if(strcmp(argv[i], "-inputFile") == 0 && argc > i + 1)
 			Settings::inputFile = argv[i+1];
 		if(strcmp(argv[i], "-disableOutput") == 0 && argc > i + 1)
@@ -114,6 +114,12 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::loggerConfigFile = xmlCfg->loggerConfigFile();
 	    Settings::outputFilePrefix = xmlCfg->outputFilePrefix();
 	    Settings::scenarioType = xmlCfg->scenarioType();
+	    Settings::inputFile = xmlCfg->inputFile();
+	    Settings::domainSize[0] = xmlCfg->domainSize().x0();
+	    Settings::domainSize[1] = xmlCfg->domainSize().x1();
+	    Settings::domainSize[2] = xmlCfg->domainSize().x2();
+	    Settings::containerType = xmlCfg->containerType();
+	    Settings::outputFileType = xmlCfg->outputFileType();
 
 	    Settings::generator = xmlCfg->generator();
 
@@ -173,6 +179,7 @@ std::string Settings::toString() {
 	s << "\n\tdeltaT = " << Settings::deltaT ;
 	s << "\n\tendTime = " << Settings::endTime;
 	s << "\n\tscenarioType = " << Settings::scenarioType;
+	s << "\n\tcontainerType = " << Settings::containerType;
 	s << "\n\tepsilon = " << Settings::epsilon;
 	s << "\n\tsigma = " << Settings::sigma;
 	s << "\n\tdisableOutput = " << Settings::disableOutput;
@@ -180,6 +187,8 @@ std::string Settings::toString() {
 	s << "\n\tinputFile = " << Settings::inputFile;
 	s << "\n\tloggerConfigFile = " << Settings::loggerConfigFile;
 	s << "\n\toutputFilePrefix = " << Settings::outputFilePrefix;
+	s << "\n\toutputType = " << Settings::outputFileType;
+	s << "\n\tdomainSize = " << Settings::domainSize;
 
 	return s.str();
 }
