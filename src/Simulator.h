@@ -13,13 +13,14 @@
 #include <list>
 
 #include "Particle.h"
+#include "CellListContainer.h"
 #include "ParticleContainer.h"
 #include "ScenarioFactory.h"
 #include <log4cxx/logger.h>
 
 class Simulator {
 private:
-	ParticleContainer particleContainer;
+	ParticleContainer *particleContainer;
 	SimulationScenario scenario;
 
 public:

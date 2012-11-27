@@ -16,7 +16,7 @@ include files.mk
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive -std=c++0x -O3 -Wno-deprecated
+CFLAGS=-g -fpermissive -std=c++0x -O3 -Wno-deprecated 
 
 # Linker flags
 # ------------

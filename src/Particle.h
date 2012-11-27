@@ -37,8 +37,17 @@ public:
 	 */
 	int type;
 
+	/**
+	 * counter variable for created instances
+	 */
 	static int createdInstances;
+	/**
+	 * counter variable for called copy constructors
+	 */
 	static int createdByCopy;
+	/**
+	 * counter variable for destroyed instances
+	 */
 	static int destroyedInstances;
 
 	Particle(int type = 0);

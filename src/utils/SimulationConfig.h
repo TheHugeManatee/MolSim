@@ -554,6 +554,9 @@ namespace xml_schema
 
 // Forward declarations.
 //
+class OutputFileType;
+class ScenarioType;
+class ContainerType;
 class FloatVector;
 class IntVector;
 class Cuboid;
@@ -574,6 +577,441 @@ class SimulationConfig;
 #include <xsd/cxx/xml/dom/parsing-header.hxx>
 
 /**
+ * @brief Enumeration class corresponding to the %OutputFileType
+ * schema type.
+ */
+class OutputFileType: public ::xml_schema::String
+{
+  public:
+
+  /**
+   * @brief Underlying enum type.
+   */
+  enum Value
+  {
+    xyz,
+    vtk
+  };
+
+  /**
+   * @brief Create an instance from the underlying enum value.
+   *
+   * @param v A enum value.
+   */
+  OutputFileType (Value v);
+
+  /**
+   * @brief Create an instance from a C string.
+   *
+   * @param v A string value.
+   */
+  OutputFileType (const char* v);
+
+  /**
+   * @brief Create an instance from a string.
+   *
+   * @param v A string value.
+   */
+  OutputFileType (const ::std::string& v);
+
+  /**
+   * @brief Create an instance from the base value.
+   *
+   * @param v A base value.
+   */
+  OutputFileType (const ::xml_schema::String& v);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  OutputFileType (const ::xercesc::DOMElement& e,
+                  ::xml_schema::Flags f = 0,
+                  ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a DOM attribute.
+   *
+   * @param a A DOM attribute to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  OutputFileType (const ::xercesc::DOMAttr& a,
+                  ::xml_schema::Flags f = 0,
+                  ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a string fragment.
+   *
+   * @param s A string fragment to extract the data from.
+   * @param e A pointer to DOM element containing the string fragment.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  OutputFileType (const ::std::string& s,
+                  const ::xercesc::DOMElement* e,
+                  ::xml_schema::Flags f = 0,
+                  ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  OutputFileType (const OutputFileType& x,
+                  ::xml_schema::Flags f = 0,
+                  ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual OutputFileType*
+  _clone (::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0) const;
+
+  /**
+   * @brief Assign the underlying enum value.
+   *
+   * @param v A enum value.
+   * @return A refernce to the instance.
+   */
+  OutputFileType&
+  operator= (Value v);
+
+  /**
+   * @brief Implicit conversion operator to the underlying
+   * enum value.
+   *
+   * @return A enum value.
+   */
+  virtual
+  operator Value () const
+  {
+    return _xsd_OutputFileType_convert ();
+  }
+
+  //@cond
+
+  protected:
+  Value
+  _xsd_OutputFileType_convert () const;
+
+  public:
+  static const char* const _xsd_OutputFileType_literals_[2];
+  static const Value _xsd_OutputFileType_indexes_[2];
+
+  //@endcond
+};
+
+/**
+ * @brief Enumeration class corresponding to the %ScenarioType
+ * schema type.
+ */
+class ScenarioType: public ::xml_schema::String
+{
+  public:
+
+  /**
+   * @brief Underlying enum type.
+   */
+  enum Value
+  {
+    Gravity,
+    Lennard_Jones
+  };
+
+  /**
+   * @brief Create an instance from the underlying enum value.
+   *
+   * @param v A enum value.
+   */
+  ScenarioType (Value v);
+
+  /**
+   * @brief Create an instance from a C string.
+   *
+   * @param v A string value.
+   */
+  ScenarioType (const char* v);
+
+  /**
+   * @brief Create an instance from a string.
+   *
+   * @param v A string value.
+   */
+  ScenarioType (const ::std::string& v);
+
+  /**
+   * @brief Create an instance from the base value.
+   *
+   * @param v A base value.
+   */
+  ScenarioType (const ::xml_schema::String& v);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  ScenarioType (const ::xercesc::DOMElement& e,
+                ::xml_schema::Flags f = 0,
+                ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a DOM attribute.
+   *
+   * @param a A DOM attribute to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  ScenarioType (const ::xercesc::DOMAttr& a,
+                ::xml_schema::Flags f = 0,
+                ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a string fragment.
+   *
+   * @param s A string fragment to extract the data from.
+   * @param e A pointer to DOM element containing the string fragment.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  ScenarioType (const ::std::string& s,
+                const ::xercesc::DOMElement* e,
+                ::xml_schema::Flags f = 0,
+                ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  ScenarioType (const ScenarioType& x,
+                ::xml_schema::Flags f = 0,
+                ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual ScenarioType*
+  _clone (::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0) const;
+
+  /**
+   * @brief Assign the underlying enum value.
+   *
+   * @param v A enum value.
+   * @return A refernce to the instance.
+   */
+  ScenarioType&
+  operator= (Value v);
+
+  /**
+   * @brief Implicit conversion operator to the underlying
+   * enum value.
+   *
+   * @return A enum value.
+   */
+  virtual
+  operator Value () const
+  {
+    return _xsd_ScenarioType_convert ();
+  }
+
+  //@cond
+
+  protected:
+  Value
+  _xsd_ScenarioType_convert () const;
+
+  public:
+  static const char* const _xsd_ScenarioType_literals_[2];
+  static const Value _xsd_ScenarioType_indexes_[2];
+
+  //@endcond
+};
+
+/**
+ * @brief Enumeration class corresponding to the %ContainerType
+ * schema type.
+ */
+class ContainerType: public ::xml_schema::String
+{
+  public:
+
+  /**
+   * @brief Underlying enum type.
+   */
+  enum Value
+  {
+    ParticleContainer,
+    CelllistContainer
+  };
+
+  /**
+   * @brief Create an instance from the underlying enum value.
+   *
+   * @param v A enum value.
+   */
+  ContainerType (Value v);
+
+  /**
+   * @brief Create an instance from a C string.
+   *
+   * @param v A string value.
+   */
+  ContainerType (const char* v);
+
+  /**
+   * @brief Create an instance from a string.
+   *
+   * @param v A string value.
+   */
+  ContainerType (const ::std::string& v);
+
+  /**
+   * @brief Create an instance from the base value.
+   *
+   * @param v A base value.
+   */
+  ContainerType (const ::xml_schema::String& v);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  ContainerType (const ::xercesc::DOMElement& e,
+                 ::xml_schema::Flags f = 0,
+                 ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a DOM attribute.
+   *
+   * @param a A DOM attribute to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  ContainerType (const ::xercesc::DOMAttr& a,
+                 ::xml_schema::Flags f = 0,
+                 ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Create an instance from a string fragment.
+   *
+   * @param s A string fragment to extract the data from.
+   * @param e A pointer to DOM element containing the string fragment.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  ContainerType (const ::std::string& s,
+                 const ::xercesc::DOMElement* e,
+                 ::xml_schema::Flags f = 0,
+                 ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  ContainerType (const ContainerType& x,
+                 ::xml_schema::Flags f = 0,
+                 ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual ContainerType*
+  _clone (::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0) const;
+
+  /**
+   * @brief Assign the underlying enum value.
+   *
+   * @param v A enum value.
+   * @return A refernce to the instance.
+   */
+  ContainerType&
+  operator= (Value v);
+
+  /**
+   * @brief Implicit conversion operator to the underlying
+   * enum value.
+   *
+   * @return A enum value.
+   */
+  virtual
+  operator Value () const
+  {
+    return _xsd_ContainerType_convert ();
+  }
+
+  //@cond
+
+  protected:
+  Value
+  _xsd_ContainerType_convert () const;
+
+  public:
+  static const char* const _xsd_ContainerType_literals_[2];
+  static const Value _xsd_ContainerType_indexes_[2];
+
+  //@endcond
+};
+
+/**
  * @brief Class corresponding to the %floatVector schema type.
  *
  * @nosubgrouping
@@ -581,6 +1019,53 @@ class SimulationConfig;
 class FloatVector: public ::xml_schema::Type
 {
   public:
+  /**
+   * @name x0
+   *
+   * @brief Accessor and modifier functions for the %x0
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::Double X0Type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< X0Type, char, ::xsd::cxx::tree::schema_type::double_ > X0Traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const X0Type&
+  x0 () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  X0Type&
+  x0 ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  x0 (const X0Type& x);
+
+  //@}
+
   /**
    * @name x1
    *
@@ -676,53 +1161,6 @@ class FloatVector: public ::xml_schema::Type
   //@}
 
   /**
-   * @name x3
-   *
-   * @brief Accessor and modifier functions for the %x3
-   * required attribute.
-   */
-  //@{
-
-  /**
-   * @brief Attribute type.
-   */
-  typedef ::xml_schema::Double X3Type;
-
-  /**
-   * @brief Attribute traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< X3Type, char, ::xsd::cxx::tree::schema_type::double_ > X3Traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the attribute.
-   *
-   * @return A constant reference to the attribute.
-   */
-  const X3Type&
-  x3 () const;
-
-  /**
-   * @brief Return a read-write reference to the attribute.
-   *
-   * @return A reference to the attribute.
-   */
-  X3Type&
-  x3 ();
-
-  /**
-   * @brief Set the attribute value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the attribute.
-   */
-  void
-  x3 (const X3Type& x);
-
-  //@}
-
-  /**
    * @name Constructors
    */
   //@{
@@ -731,9 +1169,9 @@ class FloatVector: public ::xml_schema::Type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  FloatVector (const X1Type&,
-               const X2Type&,
-               const X3Type&);
+  FloatVector (const X0Type&,
+               const X1Type&,
+               const X2Type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -794,9 +1232,9 @@ class FloatVector: public ::xml_schema::Type
          ::xml_schema::Flags);
 
   protected:
+  ::xsd::cxx::tree::one< X0Type > x0_;
   ::xsd::cxx::tree::one< X1Type > x1_;
   ::xsd::cxx::tree::one< X2Type > x2_;
-  ::xsd::cxx::tree::one< X3Type > x3_;
 
   //@endcond
 };
@@ -809,6 +1247,53 @@ class FloatVector: public ::xml_schema::Type
 class IntVector: public ::xml_schema::Type
 {
   public:
+  /**
+   * @name x0
+   *
+   * @brief Accessor and modifier functions for the %x0
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::xml_schema::Int X0Type;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< X0Type, char > X0Traits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const X0Type&
+  x0 () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  X0Type&
+  x0 ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  x0 (const X0Type& x);
+
+  //@}
+
   /**
    * @name x1
    *
@@ -904,53 +1389,6 @@ class IntVector: public ::xml_schema::Type
   //@}
 
   /**
-   * @name x3
-   *
-   * @brief Accessor and modifier functions for the %x3
-   * required attribute.
-   */
-  //@{
-
-  /**
-   * @brief Attribute type.
-   */
-  typedef ::xml_schema::Int X3Type;
-
-  /**
-   * @brief Attribute traits type.
-   */
-  typedef ::xsd::cxx::tree::traits< X3Type, char > X3Traits;
-
-  /**
-   * @brief Return a read-only (constant) reference to the attribute.
-   *
-   * @return A constant reference to the attribute.
-   */
-  const X3Type&
-  x3 () const;
-
-  /**
-   * @brief Return a read-write reference to the attribute.
-   *
-   * @return A reference to the attribute.
-   */
-  X3Type&
-  x3 ();
-
-  /**
-   * @brief Set the attribute value.
-   *
-   * @param x A new value to set.
-   *
-   * This function makes a copy of its argument and sets it as
-   * the new value of the attribute.
-   */
-  void
-  x3 (const X3Type& x);
-
-  //@}
-
-  /**
    * @name Constructors
    */
   //@{
@@ -959,9 +1397,9 @@ class IntVector: public ::xml_schema::Type
    * @brief Create an instance from the ultimate base and
    * initializers for required elements and attributes.
    */
-  IntVector (const X1Type&,
-             const X2Type&,
-             const X3Type&);
+  IntVector (const X0Type&,
+             const X1Type&,
+             const X2Type&);
 
   /**
    * @brief Create an instance from a DOM element.
@@ -1022,9 +1460,9 @@ class IntVector: public ::xml_schema::Type
          ::xml_schema::Flags);
 
   protected:
+  ::xsd::cxx::tree::one< X0Type > x0_;
   ::xsd::cxx::tree::one< X1Type > x1_;
   ::xsd::cxx::tree::one< X2Type > x2_;
-  ::xsd::cxx::tree::one< X3Type > x3_;
 
   //@endcond
 };
@@ -1762,7 +2200,7 @@ class SimulationConfig: public ::xml_schema::Type
   /**
    * @brief Element type.
    */
-  typedef ::xml_schema::String ScenarioTypeType;
+  typedef ::ScenarioType ScenarioTypeType;
 
   /**
    * @brief Element traits type.
@@ -1806,6 +2244,122 @@ class SimulationConfig: public ::xml_schema::Type
    */
   void
   scenarioType (::std::auto_ptr< ScenarioTypeType > p);
+
+  //@}
+
+  /**
+   * @name domainSize
+   *
+   * @brief Accessor and modifier functions for the %domainSize
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::FloatVector DomainSizeType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< DomainSizeType, char > DomainSizeTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const DomainSizeType&
+  domainSize () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  DomainSizeType&
+  domainSize ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  domainSize (const DomainSizeType& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  domainSize (::std::auto_ptr< DomainSizeType > p);
+
+  //@}
+
+  /**
+   * @name containerType
+   *
+   * @brief Accessor and modifier functions for the %containerType
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::ContainerType ContainerTypeType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< ContainerTypeType, char > ContainerTypeTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const ContainerTypeType&
+  containerType () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  ContainerTypeType&
+  containerType ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  containerType (const ContainerTypeType& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  containerType (::std::auto_ptr< ContainerTypeType > p);
 
   //@}
 
@@ -2114,6 +2668,64 @@ class SimulationConfig: public ::xml_schema::Type
   //@}
 
   /**
+   * @name outputFileType
+   *
+   * @brief Accessor and modifier functions for the %outputFileType
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::OutputFileType OutputFileTypeType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< OutputFileTypeType, char > OutputFileTypeTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const OutputFileTypeType&
+  outputFileType () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  OutputFileTypeType&
+  outputFileType ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  outputFileType (const OutputFileTypeType& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  outputFileType (::std::auto_ptr< OutputFileTypeType > p);
+
+  //@}
+
+  /**
    * @name inputFile
    *
    * @brief Accessor and modifier functions for the %inputFile
@@ -2241,12 +2853,15 @@ class SimulationConfig: public ::xml_schema::Type
   SimulationConfig (const DeltaTType&,
                     const EndTimeType&,
                     const ScenarioTypeType&,
+                    const DomainSizeType&,
+                    const ContainerTypeType&,
                     const EpsilonType&,
                     const SigmaType&,
                     const OutputFrequencyType&,
                     const DisableOutputType&,
                     const LoggerConfigFileType&,
                     const OutputFilePrefixType&,
+                    const OutputFileTypeType&,
                     const InputFileType&,
                     const GeneratorType&);
 
@@ -2261,12 +2876,15 @@ class SimulationConfig: public ::xml_schema::Type
   SimulationConfig (const DeltaTType&,
                     const EndTimeType&,
                     const ScenarioTypeType&,
+                    ::std::auto_ptr< DomainSizeType >&,
+                    const ContainerTypeType&,
                     const EpsilonType&,
                     const SigmaType&,
                     const OutputFrequencyType&,
                     const DisableOutputType&,
                     const LoggerConfigFileType&,
                     const OutputFilePrefixType&,
+                    const OutputFileTypeType&,
                     const InputFileType&,
                     ::std::auto_ptr< GeneratorType >&);
 
@@ -2332,12 +2950,15 @@ class SimulationConfig: public ::xml_schema::Type
   ::xsd::cxx::tree::one< DeltaTType > deltaT_;
   ::xsd::cxx::tree::one< EndTimeType > endTime_;
   ::xsd::cxx::tree::one< ScenarioTypeType > scenarioType_;
+  ::xsd::cxx::tree::one< DomainSizeType > domainSize_;
+  ::xsd::cxx::tree::one< ContainerTypeType > containerType_;
   ::xsd::cxx::tree::one< EpsilonType > epsilon_;
   ::xsd::cxx::tree::one< SigmaType > sigma_;
   ::xsd::cxx::tree::one< OutputFrequencyType > outputFrequency_;
   ::xsd::cxx::tree::one< DisableOutputType > disableOutput_;
   ::xsd::cxx::tree::one< LoggerConfigFileType > loggerConfigFile_;
   ::xsd::cxx::tree::one< OutputFilePrefixType > outputFilePrefix_;
+  ::xsd::cxx::tree::one< OutputFileTypeType > outputFileType_;
   ::xsd::cxx::tree::one< InputFileType > inputFile_;
   ::xsd::cxx::tree::one< GeneratorType > generator_;
 

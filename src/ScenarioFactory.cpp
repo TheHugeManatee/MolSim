@@ -14,6 +14,7 @@
 #include <cstdlib>
 #include <cassert>
 
+#define TWORAISED1_6 1.12246204830937298143353304967917
 
 log4cxx::LoggerPtr ScenarioFactory::logger = log4cxx::Logger::getLogger("ScenarioFactory");
 
@@ -34,10 +35,11 @@ std::function<void (Particle&)> ScenarioFactory::verletUpdateVelocity = [] (Part
 
 std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
     utils::Vector<double, 3> xDif = p2.x - p1.x;
-    double norm = xDif.L2Norm();
-    double sigmaNormalized = Settings::sigma/norm;
-    double sigmaNormailzedRaisedBySix = sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized;
-    utils::Vector<double, 3> resultForce = (24*Settings::epsilon / (norm * norm)) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+    //double norm = xDif.L2Norm();
+    double normSquared = xDif.LengthOptimizedR3Squared();
+    double sigmaNormalizedSquared = Settings::sigma*Settings::sigma/normSquared;
+    double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
+    utils::Vector<double, 3> resultForce = (24*Settings::epsilon / normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
     p1.f = p1.f + resultForce;
 
     //resultForce = resultForce * -1;
@@ -56,31 +58,30 @@ std::function<void (Particle&, Particle&)> ScenarioFactory::calculateGravityForc
 
 std::function<void (ParticleContainer &container)> ScenarioFactory::basicFileReaderSetup = [](ParticleContainer& container){
 	LOG4CXX_DEBUG(logger, "Performing basic scenario setup");
-	FileReader fileReader;
-	fileReader.readFile(container, (char*)Settings::inputFile.c_str());
-	// the forces are needed to calculate x, but are not given in the input file.
-	container.each(ScenarioFactory::verletUpdateVelocity);
+	if(!Settings::inputFile.empty()) {
+		FileReader fileReader;
+		fileReader.readFile(container, (char*)Settings::inputFile.c_str());
+	}
 };
 
 
 std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJonesSetup = [](ParticleContainer& container){
 	LOG4CXX_DEBUG(logger, "Performing Lennard-Jones setup");
-	FileReader fileReader;
-	fileReader.readFile(container, (char*)Settings::inputFile.c_str());
-	// the forces are needed to calculate x, but are not given in the input file.
-	container.each(ScenarioFactory::verletUpdateVelocity);
-
+	if(!Settings::inputFile.empty()) {
+		FileReader fileReader;
+		fileReader.readFile(container, (char*)Settings::inputFile.c_str());
+	}
 	LOG4CXX_TRACE(logger, "Cuboid generation:");
 	for(auto it = Settings::generator.cuboid().begin();
 			it != Settings::generator.cuboid().end();
 			++it) {
 
 		auto c = (*it);
-		double bl[] = {c.initialVelocity().x1(), c.initialVelocity().x2(), c.initialVelocity().x3()};
-		double v[] = {c.bottomLeft().x1(), c.bottomLeft().x2(), c.bottomLeft().x3()};
+		double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
+		double bl[] = {c.bottomLeft().x0(), c.bottomLeft().x1(), c.bottomLeft().x2()};
 		ParticleGenerator::regularCuboid(container,
 				utils::Vector<double, 3> (bl),
-				c.nX().x1(), c.nX().x2(), c.nX().x3(),
+				c.nX().x0(), c.nX().x1(), c.nX().x2(),
 				c.stepWidth(), c.mass(), c.type(),
 				utils::Vector<double, 3> (v),
 				c.brownianMeanVelocity()
@@ -95,9 +96,9 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 
 };
 
-SimulationScenario ScenarioFactory::build(std::string type) {
+SimulationScenario ScenarioFactory::build(ScenarioType type) {
 	SimulationScenario scenario;
-	if(!type.compare("gravity")) {
+	if(type == ScenarioType::Gravity) {
 		//Simple gravity simulation with gravitational constant g = 1
 		scenario.calculateForce = ScenarioFactory::calculateGravityForce;
 
@@ -105,9 +106,9 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 
 		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
-		LOG4CXX_INFO(logger,"Built Gravity Scenario");
+		LOG4CXX_DEBUG(logger,"Built Gravity Scenario");
 	}
-	else if(!type.compare("Lennard-Jones")){
+	else if(type == ScenarioType::Lennard_Jones){
 		scenario.calculateForce = ScenarioFactory::calculateLennardJonesPotentialForce;
 
 		scenario.setup = ScenarioFactory::LennardJonesSetup;
@@ -115,7 +116,7 @@ SimulationScenario ScenarioFactory::build(std::string type) {
 		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
 
-		LOG4CXX_INFO(logger,"Built Lennard-Jones Scenario");
+		LOG4CXX_DEBUG(logger,"Built Lennard-Jones Scenario");
 	} else {
 		LOG4CXX_FATAL(logger, "Unknown Simulation type!");
 		exit(-1);

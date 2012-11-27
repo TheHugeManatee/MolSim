@@ -15,19 +15,27 @@
 log4cxx::LoggerPtr Simulator::logger = log4cxx::Logger::getLogger("Simulator");
 
 Simulator::Simulator() {
+	if(Settings::containerType == ContainerType::ParticleContainer) {
+		particleContainer = new ParticleContainer();
+	}
+	else {
+		particleContainer = new CellListContainer();
+	}
 	scenario = ScenarioFactory::build(Settings::scenarioType);
 
-	scenario.setup(particleContainer);
+	scenario.setup(*particleContainer);
+	//pre-calculate the forces for the first update
+	calculateF();
 
 	LOG4CXX_INFO(logger, "Simulator set up.");
 	LOG4CXX_INFO(logger, "Will run scenario " << Settings::scenarioType);
-	LOG4CXX_INFO(logger, "World has " << particleContainer.getSize() << " particles");
+	LOG4CXX_INFO(logger, "World has " << particleContainer->getSize() << " particles");
 
 	//plotParticles(0);
 }
 
 Simulator::~Simulator() {
-
+	delete particleContainer;
 }
 
 
@@ -37,47 +45,69 @@ Simulator::~Simulator() {
 */
 
 void Simulator::calculateF() {
-	particleContainer.each([] (Particle& p) {
-		p.old_f = p.f;
-		p.f = 0;
-	});
-
-	particleContainer.eachPair(scenario.calculateForce);
-	LOG4CXX_TRACE(logger,"Finished Force Calculation" );
+	particleContainer->eachPair(scenario.calculateForce);
+	//LOG4CXX_TRACE(logger,"Finished Force Calculation" );
 }
 
 
 void Simulator::calculateX() {
-    particleContainer.each(scenario.updatePosition);
-    LOG4CXX_TRACE(logger,"Finished Position Calculation" );
+    particleContainer->each(scenario.updatePosition);
+    //LOG4CXX_TRACE(logger,"Finished Position Calculation" );
 }
 
 void Simulator::calculateV() {
-	particleContainer.each(scenario.updateVelocity);
-	LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
+	particleContainer->each(scenario.updateVelocity);
+	//LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
 }
 
 void Simulator::plotParticles(int iteration) {
-	outputWriter::VTKWriter writer;
+	outputWriter::VTKWriter vtkWriter;
+	outputWriter::XYZWriter xyzWriter;
 
-	writer.initializeOutput(particleContainer.getSize());
+	switch (Settings::outputFileType) {
+	case OutputFileType::xyz:
 
-	particleContainer.each([&] (Particle& p) {
-        writer.plotParticle(p);
-    });
+		xyzWriter.plotParticles(*particleContainer, Settings::outputFilePrefix, iteration);
+	break;
+	case OutputFileType::vtk:
 
-	writer.writeFile(Settings::outputFilePrefix, iteration);
+		vtkWriter.initializeOutput(particleContainer->getSize());
+
+		particleContainer->each([&] (Particle& p) {
+			vtkWriter.plotParticle(p);
+		});
+
+		vtkWriter.writeFile(Settings::outputFilePrefix, iteration);
+
+	break;
+	}
 
 	LOG4CXX_TRACE(logger,"Plotted \t"<< iteration << "\t Particles" );
 }
 
 
 void Simulator::nextTimeStep() {
+
 	// calculate new positions
 	calculateX();
 
-	// calculate new f
+	//the boundary handler
+	auto boundaryHandler = [] (Particle &p, utils::Vector<double, 3> & boundaryVector) {
+		double d = boundaryVector.LengthOptimizedR3Squared();
+		//if(boundaryVector.LengthOptimizedR3Squared() < )
+		return false;
+	};
+	//The Halo handler function:
+	auto haloHandler = [] (Particle &p, utils::Vector<double, 3> & boundaryVector) {
+				std::cout << "Particle in the halo.. removed!!";
+				return true;
+			};
+
+	//clear force accumulation vector and rearrange internal particle container structure
+	particleContainer->afterPositionChanges(boundaryHandler,haloHandler);
+
+	// calculate new forces
 	calculateF();
-	// calculate new v
+	// calculate new velocities
 	calculateV();
 }
