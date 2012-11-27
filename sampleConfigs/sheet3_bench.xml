@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+  <deltaT>0.0005</deltaT>
+  <endTime>20</endTime>
+  <scenarioType>Lennard-Jones</scenarioType>
+  <domainSize x0="180.0" x1="90.0" x2="1.0" />
+  <containerType>ParticleContainer</containerType>
+  <epsilon>5</epsilon>
+  <sigma>1</sigma>
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_benchmark</outputFilePrefix>
+  <outputFileType>vtk</outputFileType>
+  <inputFile></inputFile>
+
+  <generator>
+   <cuboid>
+      <bottomLeft x0="20.0" x1="20.0" x2="0.0" />
+      <nX x0="100" x1="20" x2="1" />
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0.1</brownianMeanVelocity>
+    </cuboid>
+    <cuboid>
+      <bottomLeft x0="70.0" x1="60.0" x2="0.0" />
+      <nX x0="20" x1="20" x2="1" />
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>2</type>
+      <initialVelocity x0="0" x1="-10" x2="0"/>
+      <brownianMeanVelocity>0.1</brownianMeanVelocity>
+    </cuboid>
+    
+  </generator>
+  
+
+</simulationConfig>
