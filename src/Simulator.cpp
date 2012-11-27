@@ -23,7 +23,9 @@ Simulator::Simulator() {
 	}
 	scenario = ScenarioFactory::build(Settings::scenarioType);
 
-	scenario.setup(*particleContainer);
+	scenario->setup(*particleContainer);
+
+	LOG4CXX_TRACE(logger, "Scenario set up.");
 	//pre-calculate the forces for the first update
 	calculateF();
 
@@ -36,6 +38,7 @@ Simulator::Simulator() {
 
 Simulator::~Simulator() {
 	delete particleContainer;
+	delete scenario;
 }
 
 
@@ -45,18 +48,18 @@ Simulator::~Simulator() {
 */
 
 void Simulator::calculateF() {
-	particleContainer->eachPair(scenario.calculateForce);
+	particleContainer->eachPair(scenario->calculateForce);
 	//LOG4CXX_TRACE(logger,"Finished Force Calculation" );
 }
 
 
 void Simulator::calculateX() {
-    particleContainer->each(scenario.updatePosition);
+    particleContainer->each(scenario->updatePosition);
     //LOG4CXX_TRACE(logger,"Finished Position Calculation" );
 }
 
 void Simulator::calculateV() {
-	particleContainer->each(scenario.updateVelocity);
+	particleContainer->each(scenario->updateVelocity);
 	//LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
 }
 
@@ -91,20 +94,9 @@ void Simulator::nextTimeStep() {
 	// calculate new positions
 	calculateX();
 
-	//the boundary handler
-	auto boundaryHandler = [] (Particle &p, utils::Vector<double, 3> & boundaryVector) {
-		double d = boundaryVector.LengthOptimizedR3Squared();
-		//if(boundaryVector.LengthOptimizedR3Squared() < )
-		return false;
-	};
-	//The Halo handler function:
-	auto haloHandler = [] (Particle &p, utils::Vector<double, 3> & boundaryVector) {
-				std::cout << "Particle in the halo.. removed!!";
-				return true;
-			};
 
 	//clear force accumulation vector and rearrange internal particle container structure
-	particleContainer->afterPositionChanges(boundaryHandler,haloHandler);
+	particleContainer->afterPositionChanges(scenario->boundaryHandler,scenario->haloHandler);
 
 	// calculate new forces
 	calculateF();

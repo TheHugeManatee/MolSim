@@ -6,7 +6,8 @@
   <deltaT>0.0003</deltaT>
   <endTime>6</endTime>
   <scenarioType>Lennard-Jones</scenarioType>
-  <domainSize x0="50.0" x1="25.0" x2="1.0" />
+  <domainSize x0="60.0" x1="35.0" x2="10.0" />
+  <boundaryCondition>Reflect</boundaryCondition>
   <containerType>CelllistContainer</containerType>
   <epsilon>5</epsilon>
   <sigma>1</sigma>

@@ -21,7 +21,7 @@
 class Simulator {
 private:
 	ParticleContainer *particleContainer;
-	SimulationScenario scenario;
+	SimulationScenario *scenario;
 
 public:
 	Simulator();

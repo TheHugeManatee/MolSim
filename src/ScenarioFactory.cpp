@@ -46,6 +46,17 @@ std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJone
     p2.f = p2.f - resultForce;
 };
 
+/*std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
+    utils::Vector<double, 3> xDif = p2.x - p1.x;
+    double norm = xDif.L2Norm();
+    double sigmaNormalized = Settings::sigma/norm;
+    double sigmaNormailzedRaisedBySix = sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized;
+    utils::Vector<double, 3> resultForce = (24*Settings::epsilon / (norm * norm)) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+    p1.f = p1.f + resultForce;
+    //resultForce = resultForce * -1;
+    p2.f = p2.f - resultForce;
+};*/
+
 std::function<void (Particle&, Particle&)> ScenarioFactory::calculateGravityForce = [] (Particle& p1, Particle& p2) {
 	utils::Vector<double, 3> xDif = p2.x - p1.x;
 	double normRaised3 = xDif.L2Norm() * xDif.L2Norm() * xDif.L2Norm();
@@ -96,30 +107,110 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 
 };
 
-SimulationScenario ScenarioFactory::build(ScenarioType type) {
-	SimulationScenario scenario;
+SimulationScenario *ScenarioFactory::build(ScenarioType type) {
+	SimulationScenario *scenario = new SimulationScenario;
 	if(type == ScenarioType::Gravity) {
 		//Simple gravity simulation with gravitational constant g = 1
-		scenario.calculateForce = ScenarioFactory::calculateGravityForce;
+		scenario->calculateForce = ScenarioFactory::calculateGravityForce;
 
-		scenario.setup = ScenarioFactory::basicFileReaderSetup;
+		scenario->setup = ScenarioFactory::basicFileReaderSetup;
 
-		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
-		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
+		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
+		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
 		LOG4CXX_DEBUG(logger,"Built Gravity Scenario");
 	}
 	else if(type == ScenarioType::Lennard_Jones){
-		scenario.calculateForce = ScenarioFactory::calculateLennardJonesPotentialForce;
+		scenario->calculateForce = ScenarioFactory::calculateLennardJonesPotentialForce;
 
-		scenario.setup = ScenarioFactory::LennardJonesSetup;
+		scenario->setup = ScenarioFactory::LennardJonesSetup;
 
-		scenario.updatePosition = ScenarioFactory::verletUpdatePosition;
-		scenario.updateVelocity = ScenarioFactory::verletUpdateVelocity;
+		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
+		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
 
 		LOG4CXX_DEBUG(logger,"Built Lennard-Jones Scenario");
 	} else {
 		LOG4CXX_FATAL(logger, "Unknown Simulation type!");
 		exit(-1);
 	}
+
+	LOG4CXX_TRACE(logger, "Determining boundary condition..");
+
+	auto calcForce = scenario->calculateForce;
+
+	switch (Settings::boundaryCondition) {
+	case BoundaryConditionType::Outflow:
+		LOG4CXX_TRACE(logger, "Condition is outflow");
+		scenario->boundaryHandler = [] (ParticleContainer &container, Particle &p) {
+			return false; //dont delete anything
+		};
+		scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
+			return true; //delete all halo particles
+		};
+	break;
+	case BoundaryConditionType::Reflect:
+		LOG4CXX_TRACE(logger, "Condition is reflect");
+
+		scenario->boundaryHandler = [calcForce] (ParticleContainer &container, Particle &p) {
+			Particle phantom(-1);
+
+			if(p.x[0] < TWORAISED1_6 * Settings::sigma) {
+				phantom.x[0] = 0;
+				phantom.x[1] = p.x[1];
+				phantom.x[2] = p.x[2];
+				calcForce(p, phantom);
+			}
+			if(p.x[1] < TWORAISED1_6 * Settings::sigma) {
+				phantom.x[0] = p.x[0];
+				phantom.x[1] = 0;
+				phantom.x[2] = p.x[2];
+				calcForce(p, phantom);
+			}
+			if(p.x[2] < TWORAISED1_6 * Settings::sigma) {
+				phantom.x[0] = p.x[0];
+				phantom.x[1] = p.x[1];
+				phantom.x[2] = 0;
+				calcForce(p, phantom);
+			}
+
+			if(p.x[0] > (Settings::domainSize[0] - TWORAISED1_6 * Settings::sigma)) {
+				phantom.x[0] = Settings::domainSize[0];
+				phantom.x[1] = p.x[1];
+				phantom.x[2] = p.x[2];
+				calcForce(p, phantom);
+			}
+			if(p.x[1] > (Settings::domainSize[1] - TWORAISED1_6 * Settings::sigma)) {
+				phantom.x[0] = p.x[0];
+				phantom.x[1] = Settings::domainSize[1];
+				phantom.x[2] = p.x[2];
+				calcForce(p, phantom);
+			}
+			if(p.x[2] > (Settings::domainSize[2] - TWORAISED1_6 * Settings::sigma)) {
+				phantom.x[0] = p.x[0];
+				phantom.x[1] = p.x[1];
+				phantom.x[2] = Settings::domainSize[2];
+				calcForce(p, phantom);
+			}
+
+			return false; //dont delete anything
+		};
+		scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
+			LOG4CXX_WARN(logger, "Particles should not get into the halo layer!! Deleted the bad guy...")
+			return true;
+		};
+	break;
+	case BoundaryConditionType::Periodic:
+		//TODO!!!
+		LOG4CXX_TRACE(logger, "Condition is Periodic");
+		scenario->boundaryHandler = [] (ParticleContainer &container, Particle &p) {
+			return false; //dont delete anything
+		};
+		scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
+			return true; //delete all halo particles
+		};
+	break;
+	}
+	LOG4CXX_TRACE(logger, "Boundary condition established..");
+
+
 	return scenario;
 }

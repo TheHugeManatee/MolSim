@@ -40,6 +40,51 @@
 
 #include "simulationConfig.h"
 
+// BoundaryConditionType
+// 
+
+BoundaryConditionType::
+BoundaryConditionType (Value v)
+: ::xml_schema::String (_xsd_BoundaryConditionType_literals_[v])
+{
+}
+
+BoundaryConditionType::
+BoundaryConditionType (const char* v)
+: ::xml_schema::String (v)
+{
+}
+
+BoundaryConditionType::
+BoundaryConditionType (const ::std::string& v)
+: ::xml_schema::String (v)
+{
+}
+
+BoundaryConditionType::
+BoundaryConditionType (const ::xml_schema::String& v)
+: ::xml_schema::String (v)
+{
+}
+
+BoundaryConditionType::
+BoundaryConditionType (const BoundaryConditionType& v,
+                       ::xml_schema::Flags f,
+                       ::xml_schema::Container* c)
+: ::xml_schema::String (v, f, c)
+{
+}
+
+BoundaryConditionType& BoundaryConditionType::
+operator= (Value v)
+{
+  static_cast< ::xml_schema::String& > (*this) = 
+  ::xml_schema::String (_xsd_BoundaryConditionType_literals_[v]);
+
+  return *this;
+}
+
+
 // OutputFileType
 // 
 
@@ -548,6 +593,30 @@ domainSize (::std::auto_ptr< DomainSizeType > x)
   this->domainSize_.set (x);
 }
 
+const SimulationConfig::BoundaryConditionType& SimulationConfig::
+boundaryCondition () const
+{
+  return this->boundaryCondition_.get ();
+}
+
+SimulationConfig::BoundaryConditionType& SimulationConfig::
+boundaryCondition ()
+{
+  return this->boundaryCondition_.get ();
+}
+
+void SimulationConfig::
+boundaryCondition (const BoundaryConditionType& x)
+{
+  this->boundaryCondition_.set (x);
+}
+
+void SimulationConfig::
+boundaryCondition (::std::auto_ptr< BoundaryConditionType > x)
+{
+  this->boundaryCondition_.set (x);
+}
+
 const SimulationConfig::ContainerTypeType& SimulationConfig::
 containerType () const
 {
@@ -766,6 +835,78 @@ generator (::std::auto_ptr< GeneratorType > x)
 
 
 #include <xsd/cxx/xml/dom/parsing-source.hxx>
+
+// BoundaryConditionType
+//
+
+BoundaryConditionType::
+BoundaryConditionType (const ::xercesc::DOMElement& e,
+                       ::xml_schema::Flags f,
+                       ::xml_schema::Container* c)
+: ::xml_schema::String (e, f, c)
+{
+  _xsd_BoundaryConditionType_convert ();
+}
+
+BoundaryConditionType::
+BoundaryConditionType (const ::xercesc::DOMAttr& a,
+                       ::xml_schema::Flags f,
+                       ::xml_schema::Container* c)
+: ::xml_schema::String (a, f, c)
+{
+  _xsd_BoundaryConditionType_convert ();
+}
+
+BoundaryConditionType::
+BoundaryConditionType (const ::std::string& s,
+                       const ::xercesc::DOMElement* e,
+                       ::xml_schema::Flags f,
+                       ::xml_schema::Container* c)
+: ::xml_schema::String (s, e, f, c)
+{
+  _xsd_BoundaryConditionType_convert ();
+}
+
+BoundaryConditionType* BoundaryConditionType::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class BoundaryConditionType (*this, f, c);
+}
+
+BoundaryConditionType::Value BoundaryConditionType::
+_xsd_BoundaryConditionType_convert () const
+{
+  ::xsd::cxx::tree::enum_comparator< char > c (_xsd_BoundaryConditionType_literals_);
+  const Value* i (::std::lower_bound (
+                    _xsd_BoundaryConditionType_indexes_,
+                    _xsd_BoundaryConditionType_indexes_ + 3,
+                    *this,
+                    c));
+
+  if (i == _xsd_BoundaryConditionType_indexes_ + 3 || _xsd_BoundaryConditionType_literals_[*i] != *this)
+  {
+    throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
+  }
+
+  return *i;
+}
+
+const char* const BoundaryConditionType::
+_xsd_BoundaryConditionType_literals_[3] =
+{
+  "Outflow",
+  "Reflect",
+  "Periodic"
+};
+
+const BoundaryConditionType::Value BoundaryConditionType::
+_xsd_BoundaryConditionType_indexes_[3] =
+{
+  ::BoundaryConditionType::Outflow,
+  ::BoundaryConditionType::Periodic,
+  ::BoundaryConditionType::Reflect
+};
 
 // OutputFileType
 //
@@ -1500,6 +1641,7 @@ SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
                   const DomainSizeType& domainSize,
+                  const BoundaryConditionType& boundaryCondition,
                   const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
@@ -1515,6 +1657,7 @@ SimulationConfig (const DeltaTType& deltaT,
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
+  boundaryCondition_ (boundaryCondition, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
@@ -1533,6 +1676,7 @@ SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
                   ::std::auto_ptr< DomainSizeType >& domainSize,
+                  const BoundaryConditionType& boundaryCondition,
                   const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
@@ -1548,6 +1692,7 @@ SimulationConfig (const DeltaTType& deltaT,
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
+  boundaryCondition_ (boundaryCondition, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
@@ -1570,6 +1715,7 @@ SimulationConfig (const SimulationConfig& x,
   endTime_ (x.endTime_, f, this),
   scenarioType_ (x.scenarioType_, f, this),
   domainSize_ (x.domainSize_, f, this),
+  boundaryCondition_ (x.boundaryCondition_, f, this),
   containerType_ (x.containerType_, f, this),
   epsilon_ (x.epsilon_, f, this),
   sigma_ (x.sigma_, f, this),
@@ -1592,6 +1738,7 @@ SimulationConfig (const ::xercesc::DOMElement& e,
   endTime_ (f, this),
   scenarioType_ (f, this),
   domainSize_ (f, this),
+  boundaryCondition_ (f, this),
   containerType_ (f, this),
   epsilon_ (f, this),
   sigma_ (f, this),
@@ -1666,6 +1813,20 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!domainSize_.present ())
       {
         this->domainSize_.set (r);
+        continue;
+      }
+    }
+
+    // boundaryCondition
+    //
+    if (n.name () == "boundaryCondition" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< BoundaryConditionType > r (
+        BoundaryConditionTraits::create (i, f, this));
+
+      if (!boundaryCondition_.present ())
+      {
+        this->boundaryCondition_.set (r);
         continue;
       }
     }
@@ -1826,6 +1987,13 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
   {
     throw ::xsd::cxx::tree::expected_element< char > (
       "domainSize",
+      "");
+  }
+
+  if (!boundaryCondition_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "boundaryCondition",
       "");
   }
 
