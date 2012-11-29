@@ -3,10 +3,8 @@
 
 #include "ParticleContainer.h"
 
-
-ParticleContainer::~ParticleContainer() {
-
-}
+//base virtual constructor
+ParticleContainer::~ParticleContainer() {}
 
 void ParticleContainer::each(std::function<void (Particle&)> fn) {
 	int s = particles.size();

@@ -111,7 +111,7 @@ int main(int argc, char* argsv[]) {
 	}
 
 	LOG4CXX_TRACE(rootLogger, "Creating Simulator instance...");
-	Simulator sim;
+	Simulator *sim = new Simulator();
 
 	double current_time = Settings::startTime;
 
@@ -128,10 +128,10 @@ int main(int argc, char* argsv[]) {
 
 	while (current_time < Settings::endTime) {
 		if (!Settings::disableOutput && (iteration % Settings::outputFrequency == 0)) {
-			sim.plotParticles(iteration);
+			sim->plotParticles(iteration);
 		}
 
-		sim.nextTimeStep();
+		sim->nextTimeStep();
 
 		iteration++;
 		
@@ -149,9 +149,18 @@ int main(int argc, char* argsv[]) {
 	int benchmarkEndTime = getMilliCount();
 
 	LOG4CXX_INFO(rootLogger, "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds");
+
+	delete sim;
 	
 	LOG4CXX_DEBUG(rootLogger, "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)");
 	LOG4CXX_DEBUG(rootLogger, "Destroyed " << Particle::destroyedInstances << " Particle instances");
+
+	//10 is arbitrarily chosen. there will always be some stray particles because of
+	//static instances that will be destroyed at program exit
+	if(Particle::createdInstances - Particle::destroyedInstances > 10) {
+		LOG4CXX_WARN(rootLogger, "Significant mismatch between created and destroyed particle instances. This can be a memory leak!" << (Particle::createdInstances - Particle::destroyedInstances));
+	}
+
 	LOG4CXX_DEBUG(rootLogger, "output written. Terminating...");
 	return 0;
 }
