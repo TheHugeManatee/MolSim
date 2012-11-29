@@ -96,7 +96,7 @@ void Simulator::nextTimeStep() {
 
 
 	//clear force accumulation vector and rearrange internal particle container structure
-	particleContainer->afterPositionChanges(scenario->boundaryHandler,scenario->haloHandler);
+	particleContainer->afterPositionChanges(scenario->boundaryHandlers, scenario->haloHandler);
 
 	// calculate new forces
 	calculateF();

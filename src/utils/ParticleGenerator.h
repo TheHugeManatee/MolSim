@@ -4,7 +4,7 @@
  * @date Nov 6, 2012
  * @author Jakob Weiss
  *
- * Particle generation functions to batch create particles instead of specifying 
+ * Particle generation functions to batch create particles instead of specifying every one by hand
  */
 
 #ifndef PARTICLEGENERATOR_H_

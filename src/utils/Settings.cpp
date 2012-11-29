@@ -37,7 +37,14 @@ OutputFileType Settings::outputFileType = OutputFileType::vtk;
 double Settings::rCutoff = 3;
 utils::Vector<double, 3> Settings::domainSize = 50;
 ContainerType Settings::containerType = ContainerType::ParticleContainer;
-BoundaryConditionType Settings::boundaryCondition = BoundaryConditionType::Outflow;
+BoundaryConditionType Settings::boundaryCondition[6] = {
+		BoundaryConditionType::Outflow,
+		BoundaryConditionType::Outflow,
+		BoundaryConditionType::Outflow,
+		BoundaryConditionType::Outflow,
+		BoundaryConditionType::Outflow,
+		BoundaryConditionType::Outflow
+};
 
 SimulationConfig::GeneratorType Settings::generator;
 
@@ -119,7 +126,12 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::domainSize[0] = xmlCfg->domainSize().x0();
 	    Settings::domainSize[1] = xmlCfg->domainSize().x1();
 	    Settings::domainSize[2] = xmlCfg->domainSize().x2();
-	    Settings::boundaryCondition = xmlCfg->boundaryCondition();
+	    Settings::boundaryCondition[0] = xmlCfg->boundaryHandling().right();
+	    Settings::boundaryCondition[1] = xmlCfg->boundaryHandling().left();
+	    Settings::boundaryCondition[2] = xmlCfg->boundaryHandling().top();
+	    Settings::boundaryCondition[3] = xmlCfg->boundaryHandling().bottom();
+	    Settings::boundaryCondition[4] = xmlCfg->boundaryHandling().front();
+	    Settings::boundaryCondition[5] = xmlCfg->boundaryHandling().back();
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
 

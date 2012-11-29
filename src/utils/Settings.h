@@ -144,7 +144,7 @@ public:
 	/**
 	 * the boundary condition
 	 */
-	static BoundaryConditionType boundaryCondition;
+	static BoundaryConditionType boundaryCondition[6];
 
 private:
 	/**

@@ -63,10 +63,30 @@ class ParticleContainer {
          *  - copy force vector of each particle onto old_f and reset f to zero
          *  - optimize the internal structure of the container regarding the updated positions
          *  - apply boundary conditions
+         *
+         *  @param boundaryHandler the handler function that will be called when a particle is
+         *  	detected to be near a boundary. This MAY be called for all particles, but "smart"
+         *  	containers will sort out particles in the inner areas of the domain
+         *  	- param ParticleContainer &container: the container instance we are working on
+         *  	- param Particle &p: reference to the particle in question
+         *  	- return bool: whether the particle should be removed (deleted) from the container
+         *
+         *  @param haloHandler the handler function that will be called when a particle is in the halo,
+         *  	i.e. out of the simulation domain. This MAY be called for all particles, but "smart"
+         *  	containers will sort out particles in the inner areas of the domain
+         *  	- param ParticleContainer &container: the container instance we are working on
+         *  	- param Particle &p: reference to the particle in question
+         *  	- return bool: whether the particle should be removed (deleted) from the container
+         *
+         *  @param haloHandler
+         *
+         *  @warn The boundaryHandler and haloHandler functionals may be called more than once for
+         *  	one unique particle due to the internal restructuring of the particle container
+         *  	so make sure this will not be a problem
          */
         virtual void afterPositionChanges(
-        			std::function<bool (ParticleContainer &container, Particle &)> boundaryHandler,
-        			std::function<bool (ParticleContainer &container, Particle &)> haloHandler
+        			std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6],
+        			std::function<bool (ParticleContainer &container, Particle &p)> haloHandler
         ) {
         	int s = particles.size();
         	for(int i=0; i < s; i++) {

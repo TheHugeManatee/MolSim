@@ -220,6 +220,154 @@ operator= (Value v)
 }
 
 
+// BoundaryHandlingType
+// 
+
+const BoundaryHandlingType::RightType& BoundaryHandlingType::
+right () const
+{
+  return this->right_.get ();
+}
+
+BoundaryHandlingType::RightType& BoundaryHandlingType::
+right ()
+{
+  return this->right_.get ();
+}
+
+void BoundaryHandlingType::
+right (const RightType& x)
+{
+  this->right_.set (x);
+}
+
+void BoundaryHandlingType::
+right (::std::auto_ptr< RightType > x)
+{
+  this->right_.set (x);
+}
+
+const BoundaryHandlingType::LeftType& BoundaryHandlingType::
+left () const
+{
+  return this->left_.get ();
+}
+
+BoundaryHandlingType::LeftType& BoundaryHandlingType::
+left ()
+{
+  return this->left_.get ();
+}
+
+void BoundaryHandlingType::
+left (const LeftType& x)
+{
+  this->left_.set (x);
+}
+
+void BoundaryHandlingType::
+left (::std::auto_ptr< LeftType > x)
+{
+  this->left_.set (x);
+}
+
+const BoundaryHandlingType::TopType& BoundaryHandlingType::
+top () const
+{
+  return this->top_.get ();
+}
+
+BoundaryHandlingType::TopType& BoundaryHandlingType::
+top ()
+{
+  return this->top_.get ();
+}
+
+void BoundaryHandlingType::
+top (const TopType& x)
+{
+  this->top_.set (x);
+}
+
+void BoundaryHandlingType::
+top (::std::auto_ptr< TopType > x)
+{
+  this->top_.set (x);
+}
+
+const BoundaryHandlingType::BottomType& BoundaryHandlingType::
+bottom () const
+{
+  return this->bottom_.get ();
+}
+
+BoundaryHandlingType::BottomType& BoundaryHandlingType::
+bottom ()
+{
+  return this->bottom_.get ();
+}
+
+void BoundaryHandlingType::
+bottom (const BottomType& x)
+{
+  this->bottom_.set (x);
+}
+
+void BoundaryHandlingType::
+bottom (::std::auto_ptr< BottomType > x)
+{
+  this->bottom_.set (x);
+}
+
+const BoundaryHandlingType::FrontType& BoundaryHandlingType::
+front () const
+{
+  return this->front_.get ();
+}
+
+BoundaryHandlingType::FrontType& BoundaryHandlingType::
+front ()
+{
+  return this->front_.get ();
+}
+
+void BoundaryHandlingType::
+front (const FrontType& x)
+{
+  this->front_.set (x);
+}
+
+void BoundaryHandlingType::
+front (::std::auto_ptr< FrontType > x)
+{
+  this->front_.set (x);
+}
+
+const BoundaryHandlingType::BackType& BoundaryHandlingType::
+back () const
+{
+  return this->back_.get ();
+}
+
+BoundaryHandlingType::BackType& BoundaryHandlingType::
+back ()
+{
+  return this->back_.get ();
+}
+
+void BoundaryHandlingType::
+back (const BackType& x)
+{
+  this->back_.set (x);
+}
+
+void BoundaryHandlingType::
+back (::std::auto_ptr< BackType > x)
+{
+  this->back_.set (x);
+}
+
+
 // FloatVector
 // 
 
@@ -593,28 +741,28 @@ domainSize (::std::auto_ptr< DomainSizeType > x)
   this->domainSize_.set (x);
 }
 
-const SimulationConfig::BoundaryConditionType& SimulationConfig::
-boundaryCondition () const
+const SimulationConfig::BoundaryHandlingType& SimulationConfig::
+boundaryHandling () const
 {
-  return this->boundaryCondition_.get ();
+  return this->boundaryHandling_.get ();
 }
 
-SimulationConfig::BoundaryConditionType& SimulationConfig::
-boundaryCondition ()
+SimulationConfig::BoundaryHandlingType& SimulationConfig::
+boundaryHandling ()
 {
-  return this->boundaryCondition_.get ();
-}
-
-void SimulationConfig::
-boundaryCondition (const BoundaryConditionType& x)
-{
-  this->boundaryCondition_.set (x);
+  return this->boundaryHandling_.get ();
 }
 
 void SimulationConfig::
-boundaryCondition (::std::auto_ptr< BoundaryConditionType > x)
+boundaryHandling (const BoundaryHandlingType& x)
 {
-  this->boundaryCondition_.set (x);
+  this->boundaryHandling_.set (x);
+}
+
+void SimulationConfig::
+boundaryHandling (::std::auto_ptr< BoundaryHandlingType > x)
+{
+  this->boundaryHandling_.set (x);
 }
 
 const SimulationConfig::ContainerTypeType& SimulationConfig::
@@ -1117,6 +1265,179 @@ _xsd_ContainerType_indexes_[2] =
   ::ContainerType::CelllistContainer,
   ::ContainerType::ParticleContainer
 };
+
+// BoundaryHandlingType
+//
+
+BoundaryHandlingType::
+BoundaryHandlingType (const RightType& right,
+                      const LeftType& left,
+                      const TopType& top,
+                      const BottomType& bottom,
+                      const FrontType& front,
+                      const BackType& back)
+: ::xml_schema::Type (),
+  right_ (right, ::xml_schema::Flags (), this),
+  left_ (left, ::xml_schema::Flags (), this),
+  top_ (top, ::xml_schema::Flags (), this),
+  bottom_ (bottom, ::xml_schema::Flags (), this),
+  front_ (front, ::xml_schema::Flags (), this),
+  back_ (back, ::xml_schema::Flags (), this)
+{
+}
+
+BoundaryHandlingType::
+BoundaryHandlingType (const BoundaryHandlingType& x,
+                      ::xml_schema::Flags f,
+                      ::xml_schema::Container* c)
+: ::xml_schema::Type (x, f, c),
+  right_ (x.right_, f, this),
+  left_ (x.left_, f, this),
+  top_ (x.top_, f, this),
+  bottom_ (x.bottom_, f, this),
+  front_ (x.front_, f, this),
+  back_ (x.back_, f, this)
+{
+}
+
+BoundaryHandlingType::
+BoundaryHandlingType (const ::xercesc::DOMElement& e,
+                      ::xml_schema::Flags f,
+                      ::xml_schema::Container* c)
+: ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
+  right_ (f, this),
+  left_ (f, this),
+  top_ (f, this),
+  bottom_ (f, this),
+  front_ (f, this),
+  back_ (f, this)
+{
+  if ((f & ::xml_schema::Flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, false, true);
+    this->parse (p, f);
+  }
+}
+
+void BoundaryHandlingType::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::Flags f)
+{
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "right" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< RightType > r (
+        RightTraits::create (i, f, this));
+
+      this->right_.set (r);
+      continue;
+    }
+
+    if (n.name () == "left" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< LeftType > r (
+        LeftTraits::create (i, f, this));
+
+      this->left_.set (r);
+      continue;
+    }
+
+    if (n.name () == "top" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< TopType > r (
+        TopTraits::create (i, f, this));
+
+      this->top_.set (r);
+      continue;
+    }
+
+    if (n.name () == "bottom" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< BottomType > r (
+        BottomTraits::create (i, f, this));
+
+      this->bottom_.set (r);
+      continue;
+    }
+
+    if (n.name () == "front" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< FrontType > r (
+        FrontTraits::create (i, f, this));
+
+      this->front_.set (r);
+      continue;
+    }
+
+    if (n.name () == "back" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< BackType > r (
+        BackTraits::create (i, f, this));
+
+      this->back_.set (r);
+      continue;
+    }
+  }
+
+  if (!right_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "right",
+      "");
+  }
+
+  if (!left_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "left",
+      "");
+  }
+
+  if (!top_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "top",
+      "");
+  }
+
+  if (!bottom_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "bottom",
+      "");
+  }
+
+  if (!front_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "front",
+      "");
+  }
+
+  if (!back_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "back",
+      "");
+  }
+}
+
+BoundaryHandlingType* BoundaryHandlingType::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class BoundaryHandlingType (*this, f, c);
+}
+
+BoundaryHandlingType::
+~BoundaryHandlingType ()
+{
+}
 
 // FloatVector
 //
@@ -1641,7 +1962,7 @@ SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
                   const DomainSizeType& domainSize,
-                  const BoundaryConditionType& boundaryCondition,
+                  const BoundaryHandlingType& boundaryHandling,
                   const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
@@ -1657,7 +1978,7 @@ SimulationConfig (const DeltaTType& deltaT,
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
-  boundaryCondition_ (boundaryCondition, ::xml_schema::Flags (), this),
+  boundaryHandling_ (boundaryHandling, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
@@ -1676,7 +1997,7 @@ SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
                   ::std::auto_ptr< DomainSizeType >& domainSize,
-                  const BoundaryConditionType& boundaryCondition,
+                  ::std::auto_ptr< BoundaryHandlingType >& boundaryHandling,
                   const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
@@ -1692,7 +2013,7 @@ SimulationConfig (const DeltaTType& deltaT,
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
-  boundaryCondition_ (boundaryCondition, ::xml_schema::Flags (), this),
+  boundaryHandling_ (boundaryHandling, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
@@ -1715,7 +2036,7 @@ SimulationConfig (const SimulationConfig& x,
   endTime_ (x.endTime_, f, this),
   scenarioType_ (x.scenarioType_, f, this),
   domainSize_ (x.domainSize_, f, this),
-  boundaryCondition_ (x.boundaryCondition_, f, this),
+  boundaryHandling_ (x.boundaryHandling_, f, this),
   containerType_ (x.containerType_, f, this),
   epsilon_ (x.epsilon_, f, this),
   sigma_ (x.sigma_, f, this),
@@ -1738,7 +2059,7 @@ SimulationConfig (const ::xercesc::DOMElement& e,
   endTime_ (f, this),
   scenarioType_ (f, this),
   domainSize_ (f, this),
-  boundaryCondition_ (f, this),
+  boundaryHandling_ (f, this),
   containerType_ (f, this),
   epsilon_ (f, this),
   sigma_ (f, this),
@@ -1817,16 +2138,16 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
-    // boundaryCondition
+    // boundaryHandling
     //
-    if (n.name () == "boundaryCondition" && n.namespace_ ().empty ())
+    if (n.name () == "boundaryHandling" && n.namespace_ ().empty ())
     {
-      ::std::auto_ptr< BoundaryConditionType > r (
-        BoundaryConditionTraits::create (i, f, this));
+      ::std::auto_ptr< BoundaryHandlingType > r (
+        BoundaryHandlingTraits::create (i, f, this));
 
-      if (!boundaryCondition_.present ())
+      if (!boundaryHandling_.present ())
       {
-        this->boundaryCondition_.set (r);
+        this->boundaryHandling_.set (r);
         continue;
       }
     }
@@ -1990,10 +2311,10 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
-  if (!boundaryCondition_.present ())
+  if (!boundaryHandling_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
-      "boundaryCondition",
+      "boundaryHandling",
       "");
   }
 

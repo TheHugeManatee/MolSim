@@ -108,6 +108,8 @@ public:
 
 	/**
 	 * return the squared length of the vector's first three dimensions
+	 *
+	 * @warning this is an optimization that will only work and yield meaningful results if dimensions = 3
 	 */
 	double LengthOptimizedR3Squared() const {
 		return content[0]*content[0] + content[1]*content[1] + content[2]*content[2];

@@ -58,7 +58,13 @@ typedef struct {
 
 	std::function<bool (ParticleContainer &container, Particle & p)> haloHandler;
 
-	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandler;
+	/**
+	 * the boundary handlers for each boundary:
+	 * indices are used as boundaryHandlers[axis + (inPositiveDirection?0:1)]
+	 * that means [0] handles boundary at x0 = 0,
+	 * [5] handles boundary at x3 = domainSize[3]
+	 */
+	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
 
 } SimulationScenario;
 
