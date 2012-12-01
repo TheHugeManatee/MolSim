@@ -23,7 +23,8 @@
  * being a standard particle container. The cell size depends on the Settings::rCutoff parameter, which defines the minimum
  * distance where forces will be neglected between particles.
  *
- * This approximation reduces the complexity from O(n^2) to O(n) because only particles in neighboring cells will be compared and computed
+ * This approximation reduces the complexity of the eachPairs method from O(n^2) to O(n) because the function will only be
+ * executed for pairs of particles which lie in adjacent cells
  *
  *
  */
@@ -71,10 +72,22 @@ private:
 	 */
 	inline void eachPair(std::function<void (Particle&, Particle&)> fn, ParticleContainer &p1, ParticleContainer &p2);
 
+	/**
+	 * checks if a cell is in the halo
+	 * @param x0 cell index in x0 direction
+	 * @param x1 cell index in x1 direction
+	 * @param x2 cell index in x2 direction
+	 */
 	inline bool isHaloCell(int x0, int x1, int x2) {
 		return (!x0 || !x1 || !x2 || (x0 == (nX0-1)) || (x1 == (nX1-1)) || (x2 == (nX2-1)));
 	}
 
+	/**
+	 * checks if the cell is a boundary cell
+	 * @param x0 cell index in x0 direction
+	 * @param x1 cell index in x1 direction
+	 * @param x2 cell index in x2 direction
+	 */
 	inline bool isBoundaryCell(int x0, int x1, int x2) {
 		return (x0 == 1 || x1 == 1 || x2 == 1 ||
 				x0 == (nX0 - 2) ||
@@ -91,11 +104,10 @@ public:
 	virtual ~CellListContainer();
 
 	void afterPositionChanges(
-			std::function<bool (ParticleContainer &container, Particle &)> boundaryHandler,
+			std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6],
 			std::function<bool (ParticleContainer &container, Particle &)> haloHandler
 	);
 
-	//Overridden members from ParticleContainer base class
     void each(std::function<void (Particle&)> fn);
 
     /**

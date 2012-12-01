@@ -19,7 +19,7 @@
 log4cxx::LoggerPtr ScenarioFactory::logger = log4cxx::Logger::getLogger("ScenarioFactory");
 
 std::function<void (Particle&)> ScenarioFactory::verletUpdatePosition =
-[] (Particle& p) {
+		[] (Particle& p) {
 	double dt = Settings::deltaT;
 
 	utils::Vector<double, 3> resultX;
@@ -28,22 +28,22 @@ std::function<void (Particle&)> ScenarioFactory::verletUpdatePosition =
 };
 
 std::function<void (Particle&)> ScenarioFactory::verletUpdateVelocity = [] (Particle& p) {
-    utils::Vector<double, 3> resultV;
+	utils::Vector<double, 3> resultV;
 	resultV = p.v + Settings::deltaT / (2 * p.m) * (p.old_f + p.f);
 	p.v = resultV;
 };
 
 std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
-    utils::Vector<double, 3> xDif = p2.x - p1.x;
-    //double norm = xDif.L2Norm();
-    double normSquared = xDif.LengthOptimizedR3Squared();
-    double sigmaNormalizedSquared = Settings::sigma*Settings::sigma/normSquared;
-    double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
-    utils::Vector<double, 3> resultForce = (24*Settings::epsilon / normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
-    p1.f = p1.f + resultForce;
+	utils::Vector<double, 3> xDif = p2.x - p1.x;
+	//double norm = xDif.L2Norm();
+	double normSquared = xDif.LengthOptimizedR3Squared();
+	double sigmaNormalizedSquared = Settings::sigma*Settings::sigma/normSquared;
+	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
+	utils::Vector<double, 3> resultForce = (24*Settings::epsilon / normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+	p1.f = p1.f + resultForce;
 
-    //resultForce = resultForce * -1;
-    p2.f = p2.f - resultForce;
+	//resultForce = resultForce * -1;
+	p2.f = p2.f - resultForce;
 };
 
 /*std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
@@ -133,82 +133,111 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		exit(-1);
 	}
 
-	LOG4CXX_TRACE(logger, "Determining boundary condition..");
+	//For now, the halo handler always deletes the particles
+	scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
+		std::cout << "particle in the halo!" << std::endl;
+		return true; //delete all halo particles
+	};
 
+	//these are the boundary handlers for the reflect condition
+	//this is ugly but they have to be defined here so we can capture
+	//the scenario->calculateForce closure from the current context
 	auto calcForce = scenario->calculateForce;
-
-	switch (Settings::boundaryCondition) {
-	case BoundaryConditionType::Outflow:
-		LOG4CXX_TRACE(logger, "Condition is outflow");
-		scenario->boundaryHandler = [] (ParticleContainer &container, Particle &p) {
-			return false; //dont delete anything
-		};
-		scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
-			return true; //delete all halo particles
-		};
-	break;
-	case BoundaryConditionType::Reflect:
-		LOG4CXX_TRACE(logger, "Condition is reflect");
-
-		scenario->boundaryHandler = [calcForce] (ParticleContainer &container, Particle &p) {
-			Particle phantom(-1);
-
+	//phantom particle to be reused to avoid constructing/destructing particles
+	static Particle phantom;
+	//FYI: this is an array of closures, initialized inline. c++11 is awesome :)
+	std::function<bool (ParticleContainer &, Particle &p)> reflectHandlers [] = {
+		//x0 = 0 boundary
+		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[0] < TWORAISED1_6 * Settings::sigma) {
 				phantom.x[0] = 0;
 				phantom.x[1] = p.x[1];
 				phantom.x[2] = p.x[2];
 				calcForce(p, phantom);
 			}
-			if(p.x[1] < TWORAISED1_6 * Settings::sigma) {
-				phantom.x[0] = p.x[0];
-				phantom.x[1] = 0;
-				phantom.x[2] = p.x[2];
-				calcForce(p, phantom);
-			}
-			if(p.x[2] < TWORAISED1_6 * Settings::sigma) {
-				phantom.x[0] = p.x[0];
-				phantom.x[1] = p.x[1];
-				phantom.x[2] = 0;
-				calcForce(p, phantom);
-			}
-
+			return false;
+		},
+		//x0 = domain[0] boundary
+		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[0] > (Settings::domainSize[0] - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = Settings::domainSize[0];
 				phantom.x[1] = p.x[1];
 				phantom.x[2] = p.x[2];
 				calcForce(p, phantom);
 			}
+			return false;
+		},
+		//x1 = 0 boundary
+		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+			if(p.x[1] < TWORAISED1_6 * Settings::sigma) {
+				phantom.x[0] = p.x[0];
+				phantom.x[1] = 0;
+				phantom.x[2] = p.x[2];
+				calcForce(p, phantom);
+			}
+			return false;
+		},
+		//x1 = domain[1] boundary
+		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[1] > (Settings::domainSize[1] - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = p.x[0];
 				phantom.x[1] = Settings::domainSize[1];
 				phantom.x[2] = p.x[2];
 				calcForce(p, phantom);
 			}
+			return false;
+		},
+		//x2 = 0 boundary
+		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+			if(p.x[2] < TWORAISED1_6 * Settings::sigma) {
+				phantom.x[0] = p.x[0];
+				phantom.x[1] = p.x[1];
+				phantom.x[2] = 0;
+				calcForce(p, phantom);
+			}
+			return false;
+		},
+		//x2 = domain[2] boundary
+		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[2] > (Settings::domainSize[2] - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = p.x[0];
 				phantom.x[1] = p.x[1];
 				phantom.x[2] = Settings::domainSize[2];
 				calcForce(p, phantom);
 			}
+			return false;
+		}
+	};
 
-			return false; //dont delete anything
-		};
-		scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
-			LOG4CXX_WARN(logger, "Particles should not get into the halo layer!! Deleted the bad guy...")
-			return true;
-		};
-	break;
-	case BoundaryConditionType::Periodic:
-		//TODO!!!
-		LOG4CXX_TRACE(logger, "Condition is Periodic");
-		scenario->boundaryHandler = [] (ParticleContainer &container, Particle &p) {
-			return false; //dont delete anything
-		};
-		scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
-			return true; //delete all halo particles
-		};
-	break;
-	}
+	LOG4CXX_TRACE(logger, "Determining boundary conditions..");
+
+	for(int i=0; i < 6; i++) {
+
+		switch (Settings::boundaryCondition[i]) {
+		case BoundaryConditionType::Outflow:
+			LOG4CXX_DEBUG(logger, "Condition " << i << " is outflow");
+			scenario->boundaryHandlers[i] = [] (ParticleContainer &container, Particle &p) {
+				//do nothing until it reaches the halo
+				return false;
+			};
+			break;
+		case BoundaryConditionType::Reflect:
+			LOG4CXX_DEBUG(logger, "Condition " << i << " is reflect");
+
+			scenario->boundaryHandlers[i] = reflectHandlers[i];
+
+			break;
+		case BoundaryConditionType::Periodic:
+			//TODO!!!
+			LOG4CXX_DEBUG(logger, "Condition " << i << " is Periodic");
+			scenario->boundaryHandlers[i] = [] (ParticleContainer &container, Particle &p) {
+				LOG4CXX_WARN(logger, "Periodic condition is not yet implemented!");
+				return false; //dont delete anything
+			};
+
+			break;
+		}
+	};
 	LOG4CXX_TRACE(logger, "Boundary condition established..");
 
 

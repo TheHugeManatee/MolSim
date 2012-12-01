@@ -1,3 +1,32 @@
+/**
+ * @mainpage
+ *
+ * @section Authors
+ * 		Leonhard Rannabauer
+ *
+ * 		Jakob Weiss
+ *
+ * 		Alexander Winkler
+ *
+ *
+ * @section Purpose
+ * 		molecular dynamics simulation for approximating the behavior of arbitrary systems composed of molecules
+ *
+ * @section usage Usage
+ * 		The program does not have any mandatory command line parameters. If it is run without parameters, it will look for
+ * 		a file named <tt>simulationConfig.xml</tt> in the CWD. This will be used as the configuration file to set up the
+ * 		simulation.
+ *
+ * 		All parameters specified on the command line will override the specifications of the config file.
+ *
+ * @subsection params Command Line Parameters
+ *
+ * @subsection cfg Config Files
+ *
+ * @subsection input Input Files
+ *
+ */
+
 #include <list>
 #include <cstring>
 #include <cstdlib>
@@ -131,23 +160,8 @@ int main(int argc, char* argsv[]) {
  * execute a specific or all test cases, depending on the Settings::testCase parameter
  */
 int executeTests() {
-	std::cout << "Test.." << std::endl;
-	Settings::domainSize = 100;
-	Settings::rCutoff = 3;
-	CellListContainer c;
+	std::cout << "Running tests..." << std::endl;
 
-	Particle p;
-	for(int i=0; i < 100; i++) {
-		p.x[0] = i;
-		p.x[1] = i;
-		p.x[2] = i;
-		c.add(p);
-	}
-
-	int i=0;
-	c.eachPair([&] (Particle&p1, Particle&p2) {i++;});
-
-	std::cout << i << " pairs compared.." << std::endl;
 
 	CppUnit::TextUi::TestRunner runner;
 
@@ -164,7 +178,10 @@ int executeTests() {
 
 	// Return error code 1 if the one of test failed.
 	if(wasSuccessful) {
-	  std::cout << "Tests ok!";
+	  std::cout << "Tests ok!" << std::endl;
+	}
+	else {
+		std::cout << "Some tests failed!" << std::endl;
 	}
 
 	return wasSuccessful ? 0 : 1;

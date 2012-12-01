@@ -141,7 +141,7 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 }
 
 void CellListContainer::afterPositionChanges(
-		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandler,
+		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6],
 		std::function<bool (ParticleContainer &container, Particle &)> haloHandler) {
 	int cellcount = cells.size();
 	int emptyCells = 0;
@@ -161,33 +161,33 @@ void CellListContainer::afterPositionChanges(
 
 					//if the halo handler or the boundary handler say the particle should be removed, kill it
 
-				//	LOG4CXX_DEBUG(logger,"Checking for"<<x0<<x1<<x2);
-				//	LOG4CXX_DEBUG(logger,"isHalo"<<isHaloCell(x0, x1, x2));
-
 					if(isHaloCell(x0, x1, x2)) {
-						LOG4CXX_TRACE(logger,"Halo cell called");
+						LOG4CXX_DEBUG(logger, "Halo particle!");
 						particleToBeRemoved = haloHandler(*this, p);
 					}
-					else if(isBoundaryCell(x0, x1, x2)) {
-						LOG4CXX_TRACE(logger,"Boundary cell called");
-						particleToBeRemoved = boundaryHandler(*this, p);
+					//Check for all boundaries
+					else {
+						if(x0 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[0](*this, p);
+						if(x0 == (nX0 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[1](*this, p);
+						if(x1 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[2](*this, p);
+						if(x1 == (nX1 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[3](*this, p);
+						if(x2 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
+						if(x2 == (nX2 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
 					}
 
+					//if particle is not deleted, check if it should be in some different cell than it is now
 					if(!particleToBeRemoved) {
 						ParticleContainer *cc = getContainingCell(p);
 						if(cc != &c) {
 							cellSwitches++;
-							if(cc == NULL) {
-								LOG4CXX_WARN(logger, "Particle " << p.toString() << " dropped out somehow..");
-							} else {
-								cc->add(p);
-							}
 
+							assert(cc != NULL);
+
+							cc->add(p);
 							particleToBeRemoved = true;
 						}
 					}
-
-					//perform the removal
+					//Perform the removal
 					if(particleToBeRemoved) {
 						//switch last one and the one to be deleted
 						c.particles[i] = c.particles[c.particles.size() - 1];
@@ -201,7 +201,7 @@ void CellListContainer::afterPositionChanges(
 				}
 				if(!cellParticleCount) emptyCells++;
 	}
-	//LOG4CXX_DEBUG(logger, "Cell switches: " << cellSwitches);
+	//LOG4CXX_TRACE(logger, "Cell switches: " << cellSwitches);
 	//LOG4CXX_TRACE(logger, "Particles Left: " << getSize());
 	//LOG4CXX_TRACE(logger, "Empty cells: " << emptyCells);
 }
