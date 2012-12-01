@@ -188,6 +188,16 @@ void CellListContainer::afterPositionChanges(
 						i--;
 						size_--;
 					}
+#ifndef NDEBUG
+					//some color coding for the cells for debugging
+					else {
+						int _x0 = (p.x[0]) / edgeLength + 1,
+							_x1 = (p.x[1]) / edgeLength + 1,
+							_x2 = (p.x[2]) / edgeLength + 1;
+						p.type = (_x2 + _x1 + _x0) % 10;
+						//p.type = (_x2 + _x1*nX2 + _x0*nX2*nX1) % 9;
+					}
+#endif
 				}
 				if(!cellParticleCount) emptyCells++;
 	}
