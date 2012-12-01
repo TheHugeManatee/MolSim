@@ -34,7 +34,6 @@ CellListContainer::CellListContainer() {
 }
 
 CellListContainer::~CellListContainer() {
-	// TODO Auto-generated destructor stub
 }
 
 inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
@@ -73,18 +72,10 @@ void CellListContainer::add(Particle & p) {
 
 	ParticleContainer *cell = getContainingCell(p);
 
-	size_++;
-
 	assert(cell != NULL);
 	cell->add(p);
 
-	/*if(cell != NULL) {
-		cell->add(p);
-	}
-	else {
-		//TODO: possibly apply boundary condition
-		LOG4CXX_ERROR(logger, "No matching cell found. Ignoring particle.");
-	}*/
+	size_++;
 }
 
 void CellListContainer::each(std::function<void (Particle &)> fn) {
@@ -162,7 +153,6 @@ void CellListContainer::afterPositionChanges(
 					//if the halo handler or the boundary handler say the particle should be removed, kill it
 
 					if(isHaloCell(x0, x1, x2)) {
-						LOG4CXX_DEBUG(logger, "Halo particle!");
 						particleToBeRemoved = haloHandler(*this, p);
 					}
 					//Check for all boundaries

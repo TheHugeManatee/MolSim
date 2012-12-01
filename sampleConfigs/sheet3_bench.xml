@@ -8,7 +8,7 @@
   <scenarioType>Lennard-Jones</scenarioType>
   <domainSize x0="180.0" x1="90.0" x2="3.0" />
   <boundaryCondition>Reflect</boundaryCondition>
-  <containerType>ParticleContainer</containerType>
+  <containerType>CellistContainer</containerType>
   <epsilon>5</epsilon>
   <sigma>1</sigma>
   <outputFrequency>100</outputFrequency>
