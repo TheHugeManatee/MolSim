@@ -632,6 +632,148 @@ brownianMeanVelocity (const BrownianMeanVelocityType& x)
 }
 
 
+// Sphere
+// 
+
+const Sphere::CenterType& Sphere::
+center () const
+{
+  return this->center_.get ();
+}
+
+Sphere::CenterType& Sphere::
+center ()
+{
+  return this->center_.get ();
+}
+
+void Sphere::
+center (const CenterType& x)
+{
+  this->center_.set (x);
+}
+
+void Sphere::
+center (::std::auto_ptr< CenterType > x)
+{
+  this->center_.set (x);
+}
+
+const Sphere::RadiusType& Sphere::
+radius () const
+{
+  return this->radius_.get ();
+}
+
+Sphere::RadiusType& Sphere::
+radius ()
+{
+  return this->radius_.get ();
+}
+
+void Sphere::
+radius (const RadiusType& x)
+{
+  this->radius_.set (x);
+}
+
+const Sphere::StepWidthType& Sphere::
+stepWidth () const
+{
+  return this->stepWidth_.get ();
+}
+
+Sphere::StepWidthType& Sphere::
+stepWidth ()
+{
+  return this->stepWidth_.get ();
+}
+
+void Sphere::
+stepWidth (const StepWidthType& x)
+{
+  this->stepWidth_.set (x);
+}
+
+const Sphere::MassType& Sphere::
+mass () const
+{
+  return this->mass_.get ();
+}
+
+Sphere::MassType& Sphere::
+mass ()
+{
+  return this->mass_.get ();
+}
+
+void Sphere::
+mass (const MassType& x)
+{
+  this->mass_.set (x);
+}
+
+const Sphere::TypeType& Sphere::
+type () const
+{
+  return this->type_.get ();
+}
+
+Sphere::TypeType& Sphere::
+type ()
+{
+  return this->type_.get ();
+}
+
+void Sphere::
+type (const TypeType& x)
+{
+  this->type_.set (x);
+}
+
+const Sphere::InitialVelocityType& Sphere::
+initialVelocity () const
+{
+  return this->initialVelocity_.get ();
+}
+
+Sphere::InitialVelocityType& Sphere::
+initialVelocity ()
+{
+  return this->initialVelocity_.get ();
+}
+
+void Sphere::
+initialVelocity (const InitialVelocityType& x)
+{
+  this->initialVelocity_.set (x);
+}
+
+void Sphere::
+initialVelocity (::std::auto_ptr< InitialVelocityType > x)
+{
+  this->initialVelocity_.set (x);
+}
+
+const Sphere::BrownianMeanVelocityType& Sphere::
+brownianMeanVelocity () const
+{
+  return this->brownianMeanVelocity_.get ();
+}
+
+Sphere::BrownianMeanVelocityType& Sphere::
+brownianMeanVelocity ()
+{
+  return this->brownianMeanVelocity_.get ();
+}
+
+void Sphere::
+brownianMeanVelocity (const BrownianMeanVelocityType& x)
+{
+  this->brownianMeanVelocity_.set (x);
+}
+
+
 // Generator
 // 
 
@@ -651,6 +793,24 @@ void Generator::
 cuboid (const CuboidSequence& s)
 {
   this->cuboid_ = s;
+}
+
+const Generator::SphereSequence& Generator::
+sphere () const
+{
+  return this->sphere_;
+}
+
+Generator::SphereSequence& Generator::
+sphere ()
+{
+  return this->sphere_;
+}
+
+void Generator::
+sphere (const SphereSequence& s)
+{
+  this->sphere_ = s;
 }
 
 
@@ -1884,13 +2044,248 @@ Cuboid::
 {
 }
 
+// Sphere
+//
+
+Sphere::
+Sphere (const CenterType& center,
+        const RadiusType& radius,
+        const StepWidthType& stepWidth,
+        const MassType& mass,
+        const TypeType& type,
+        const InitialVelocityType& initialVelocity,
+        const BrownianMeanVelocityType& brownianMeanVelocity)
+: ::xml_schema::Type (),
+  center_ (center, ::xml_schema::Flags (), this),
+  radius_ (radius, ::xml_schema::Flags (), this),
+  stepWidth_ (stepWidth, ::xml_schema::Flags (), this),
+  mass_ (mass, ::xml_schema::Flags (), this),
+  type_ (type, ::xml_schema::Flags (), this),
+  initialVelocity_ (initialVelocity, ::xml_schema::Flags (), this),
+  brownianMeanVelocity_ (brownianMeanVelocity, ::xml_schema::Flags (), this)
+{
+}
+
+Sphere::
+Sphere (::std::auto_ptr< CenterType >& center,
+        const RadiusType& radius,
+        const StepWidthType& stepWidth,
+        const MassType& mass,
+        const TypeType& type,
+        ::std::auto_ptr< InitialVelocityType >& initialVelocity,
+        const BrownianMeanVelocityType& brownianMeanVelocity)
+: ::xml_schema::Type (),
+  center_ (center, ::xml_schema::Flags (), this),
+  radius_ (radius, ::xml_schema::Flags (), this),
+  stepWidth_ (stepWidth, ::xml_schema::Flags (), this),
+  mass_ (mass, ::xml_schema::Flags (), this),
+  type_ (type, ::xml_schema::Flags (), this),
+  initialVelocity_ (initialVelocity, ::xml_schema::Flags (), this),
+  brownianMeanVelocity_ (brownianMeanVelocity, ::xml_schema::Flags (), this)
+{
+}
+
+Sphere::
+Sphere (const Sphere& x,
+        ::xml_schema::Flags f,
+        ::xml_schema::Container* c)
+: ::xml_schema::Type (x, f, c),
+  center_ (x.center_, f, this),
+  radius_ (x.radius_, f, this),
+  stepWidth_ (x.stepWidth_, f, this),
+  mass_ (x.mass_, f, this),
+  type_ (x.type_, f, this),
+  initialVelocity_ (x.initialVelocity_, f, this),
+  brownianMeanVelocity_ (x.brownianMeanVelocity_, f, this)
+{
+}
+
+Sphere::
+Sphere (const ::xercesc::DOMElement& e,
+        ::xml_schema::Flags f,
+        ::xml_schema::Container* c)
+: ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
+  center_ (f, this),
+  radius_ (f, this),
+  stepWidth_ (f, this),
+  mass_ (f, this),
+  type_ (f, this),
+  initialVelocity_ (f, this),
+  brownianMeanVelocity_ (f, this)
+{
+  if ((f & ::xml_schema::Flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false);
+    this->parse (p, f);
+  }
+}
+
+void Sphere::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::Flags f)
+{
+  for (; p.more_elements (); p.next_element ())
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // center
+    //
+    if (n.name () == "center" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< CenterType > r (
+        CenterTraits::create (i, f, this));
+
+      if (!center_.present ())
+      {
+        this->center_.set (r);
+        continue;
+      }
+    }
+
+    // radius
+    //
+    if (n.name () == "radius" && n.namespace_ ().empty ())
+    {
+      if (!radius_.present ())
+      {
+        this->radius_.set (RadiusTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // stepWidth
+    //
+    if (n.name () == "stepWidth" && n.namespace_ ().empty ())
+    {
+      if (!stepWidth_.present ())
+      {
+        this->stepWidth_.set (StepWidthTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // mass
+    //
+    if (n.name () == "mass" && n.namespace_ ().empty ())
+    {
+      if (!mass_.present ())
+      {
+        this->mass_.set (MassTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (TypeTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // initialVelocity
+    //
+    if (n.name () == "initialVelocity" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< InitialVelocityType > r (
+        InitialVelocityTraits::create (i, f, this));
+
+      if (!initialVelocity_.present ())
+      {
+        this->initialVelocity_.set (r);
+        continue;
+      }
+    }
+
+    // brownianMeanVelocity
+    //
+    if (n.name () == "brownianMeanVelocity" && n.namespace_ ().empty ())
+    {
+      if (!brownianMeanVelocity_.present ())
+      {
+        this->brownianMeanVelocity_.set (BrownianMeanVelocityTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!center_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "center",
+      "");
+  }
+
+  if (!radius_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "radius",
+      "");
+  }
+
+  if (!stepWidth_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "stepWidth",
+      "");
+  }
+
+  if (!mass_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "mass",
+      "");
+  }
+
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
+      "");
+  }
+
+  if (!initialVelocity_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "initialVelocity",
+      "");
+  }
+
+  if (!brownianMeanVelocity_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "brownianMeanVelocity",
+      "");
+  }
+}
+
+Sphere* Sphere::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class Sphere (*this, f, c);
+}
+
+Sphere::
+~Sphere ()
+{
+}
+
 // Generator
 //
 
 Generator::
 Generator ()
 : ::xml_schema::Type (),
-  cuboid_ (::xml_schema::Flags (), this)
+  cuboid_ (::xml_schema::Flags (), this),
+  sphere_ (::xml_schema::Flags (), this)
 {
 }
 
@@ -1899,7 +2294,8 @@ Generator (const Generator& x,
            ::xml_schema::Flags f,
            ::xml_schema::Container* c)
 : ::xml_schema::Type (x, f, c),
-  cuboid_ (x.cuboid_, f, this)
+  cuboid_ (x.cuboid_, f, this),
+  sphere_ (x.sphere_, f, this)
 {
 }
 
@@ -1908,7 +2304,8 @@ Generator (const ::xercesc::DOMElement& e,
            ::xml_schema::Flags f,
            ::xml_schema::Container* c)
 : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-  cuboid_ (f, this)
+  cuboid_ (f, this),
+  sphere_ (f, this)
 {
   if ((f & ::xml_schema::Flags::base) == 0)
   {
@@ -1935,6 +2332,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
         CuboidTraits::create (i, f, this));
 
       this->cuboid_.push_back (r);
+      continue;
+    }
+
+    // sphere
+    //
+    if (n.name () == "sphere" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< SphereType > r (
+        SphereTraits::create (i, f, this));
+
+      this->sphere_.push_back (r);
       continue;
     }
 
