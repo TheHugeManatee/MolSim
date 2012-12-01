@@ -107,6 +107,37 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 
 };
 
+std::function<bool (ParticleContainer &, Particle &p)> ScenarioFactory::periodicHandlers [] = {
+	//x0 = 0 boundary
+	[] (ParticleContainer &container, Particle &p) {
+		if(p.x[0] < 0) { //wrap particle around if we are outside the domain
+			p.x[0] += Settings::domainSize[0];
+		}
+		return false;
+	},
+	//x0 = domain[0] boundary
+	[] (ParticleContainer &container, Particle &p) {
+
+		return false;
+	},
+	//x1 = 0 boundary
+	[] (ParticleContainer &container, Particle &p) {
+		return false;
+	},
+	//x1 = domain[1] boundary
+	[] (ParticleContainer &container, Particle &p) {
+		return false;
+	},
+	//x2 = 0 boundary
+	[] (ParticleContainer &container, Particle &p) {
+		return false;
+	},
+	//x2 = domain[2] boundary
+	[] (ParticleContainer &container, Particle &p) {
+		return false;
+	}
+};
+
 SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 	SimulationScenario *scenario = new SimulationScenario;
 	if(type == ScenarioType::Gravity) {
@@ -135,20 +166,19 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 
 	//For now, the halo handler always deletes the particles
 	scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
-		std::cout << "particle in the halo!" << std::endl;
 		return true; //delete all halo particles
 	};
 
 	//these are the boundary handlers for the reflect condition
 	//this is ugly but they have to be defined here so we can capture
 	//the scenario->calculateForce closure from the current context
-	auto calcForce = scenario->calculateForce;
-	//phantom particle to be reused to avoid constructing/destructing particles
+	static auto calcForce = scenario->calculateForce;
+	//phantom particle to be reused to avoid constructing/destructing particles in every closure call
 	static Particle phantom;
 	//FYI: this is an array of closures, initialized inline. c++11 is awesome :)
 	std::function<bool (ParticleContainer &, Particle &p)> reflectHandlers [] = {
-		//x0 = 0 boundary
-		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+		//x0 = 0 boundary, "left"
+		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[0] < TWORAISED1_6 * Settings::sigma) {
 				phantom.x[0] = 0;
 				phantom.x[1] = p.x[1];
@@ -157,8 +187,8 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 			}
 			return false;
 		},
-		//x0 = domain[0] boundary
-		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+		//x0 = domain[0] boundary, "right"
+		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[0] > (Settings::domainSize[0] - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = Settings::domainSize[0];
 				phantom.x[1] = p.x[1];
@@ -167,8 +197,8 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 			}
 			return false;
 		},
-		//x1 = 0 boundary
-		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+		//x1 = 0 boundary, "bottom"
+		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[1] < TWORAISED1_6 * Settings::sigma) {
 				phantom.x[0] = p.x[0];
 				phantom.x[1] = 0;
@@ -177,8 +207,8 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 			}
 			return false;
 		},
-		//x1 = domain[1] boundary
-		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+		//x1 = domain[1] boundary, "top"
+		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[1] > (Settings::domainSize[1] - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = p.x[0];
 				phantom.x[1] = Settings::domainSize[1];
@@ -187,8 +217,8 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 			}
 			return false;
 		},
-		//x2 = 0 boundary
-		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+		//x2 = 0 boundary, "back"
+		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[2] < TWORAISED1_6 * Settings::sigma) {
 				phantom.x[0] = p.x[0];
 				phantom.x[1] = p.x[1];
@@ -197,8 +227,8 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 			}
 			return false;
 		},
-		//x2 = domain[2] boundary
-		[calcForce, &phantom] (ParticleContainer &container, Particle &p) {
+		//x2 = domain[2] boundary, "front"
+		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
 			if(p.x[2] > (Settings::domainSize[2] - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = p.x[0];
 				phantom.x[1] = p.x[1];

@@ -66,6 +66,7 @@ typedef struct {
 	 */
 	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
 
+
 } SimulationScenario;
 
 
@@ -130,6 +131,9 @@ public:
 	 * will generate cuboids and spheres based on the Settings::generator object
 	 */
 	static std::function<void (ParticleContainer &container)> LennardJonesSetup;
+
+
+	static std::function<bool (ParticleContainer &container, Particle &p)> periodicHandlers[6];
 };
 
 

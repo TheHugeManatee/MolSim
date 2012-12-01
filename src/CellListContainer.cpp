@@ -153,7 +153,6 @@ void CellListContainer::afterPositionChanges(
 					//if the halo handler or the boundary handler say the particle should be removed, kill it
 
 					if(isHaloCell(x0, x1, x2)) {
-						LOG4CXX_DEBUG(logger, "Halo particle!");
 						particleToBeRemoved = haloHandler(*this, p);
 					}
 					//Check for all boundaries

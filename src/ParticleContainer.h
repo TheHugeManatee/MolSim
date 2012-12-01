@@ -16,7 +16,6 @@
 
 #include "Particle.h"
 
-
 #include <vector>
 #include <functional>
 
@@ -64,7 +63,7 @@ class ParticleContainer {
          *  - optimize the internal structure of the container regarding the updated positions
          *  - apply boundary conditions
          *
-         *  @param boundaryHandler the handler function that will be called when a particle is
+         *  @param boundaryHandlers the handler function that will be called when a particle is
          *  	detected to be near a boundary. This MAY be called for all particles, but "smart"
          *  	containers will sort out particles in the inner areas of the domain
          *  	- param ParticleContainer &container: the container instance we are working on
@@ -80,7 +79,7 @@ class ParticleContainer {
          *
          *  @param haloHandler
          *
-         *  @warn The boundaryHandler and haloHandler functionals may be called more than once for
+         *  @warning The boundaryHandler and haloHandler functionals may be called more than once for
          *  	one unique particle due to the internal restructuring of the particle container
          *  	so make sure this will not be a problem
          */
