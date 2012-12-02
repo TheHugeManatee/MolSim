@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+  <deltaT>0.0003</deltaT>
+  <endTime>10</endTime>
+  <scenarioType>Lennard-Jones</scenarioType>
+  <domainSize x0="120.0" x1="120.0" x2="120" />
+  <boundaryHandling
+  	top="Reflect" bottom="Reflect"
+  	left="Reflect" right="Reflect"
+  	front="Reflect" back="Reflect"
+  />
+  <containerType>CelllistContainer</containerType>
+  <epsilon>5</epsilon>
+  <sigma>1</sigma>
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <outputFileType>vtk</outputFileType>
+  <inputFile>eingabe_2.txt</inputFile>
+
+  <generator>
+  <sphere>
+      <center x0="0" x1="20.0" x2="0.0" />
+      <radius>10</radius>
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="-20" x2="0"/>
+      <brownianMeanVelocity>0.0</brownianMeanVelocity>
+    </sphere>  
+	 <cuboid>
+      <bottomLeft x0="-25" x1="-10" x2="-5" />
+      <nX x0="50" x1="4" x2="10" />
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>2</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0.1</brownianMeanVelocity>
+   </cuboid>
+    
+  </generator>
+  
+
+</simulationConfig>
