@@ -54,15 +54,15 @@ void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vect
 	diffs.push_back(-1);
 	diffs.push_back(1);
 
-	for(int heigth=0 ; heigth < radiusSphere; heigth++){
-		LOG4CXX_TRACE(ParticleGenerator::logger, "Heigth: \t " << heigth);
+	for(int height=0 ; height < radiusSphere; height++){
+		LOG4CXX_TRACE(ParticleGenerator::logger, "Height: \t " << height);
 
-		int radiusCircle = sqrt(radiusSphere * radiusSphere - heigth*heigth) ;
+		int radiusCircle = floor(sqrt(radiusSphere * radiusSphere - height*height)+0.5) ;
 		LOG4CXX_TRACE(ParticleGenerator::logger, "New sphere radius \t" <<radiusCircle );
 
 		for(int x1 = 0 ; x1 < radiusCircle; x1++  ){
 
-			int boundaryCircle = sqrt(radiusCircle * radiusCircle - x1 * x1);
+			int boundaryCircle = floor(sqrt(radiusCircle * radiusCircle - x1 * x1) + 0.5);
 			LOG4CXX_TRACE(ParticleGenerator::logger, "New boundary circle \t" <<boundaryCircle );
 
 			for(int x2 = 0 ; x2 < boundaryCircle; x2++){
@@ -73,9 +73,9 @@ void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vect
 
 							utils::Vector<double,3> xParticle;
 
-							xParticle[0] = center[0] + h * heigth * *diffX;
-							xParticle[1] = center[1] + h * x1 * *diffY;
-							xParticle[2] = center[2] + h * x2 * *diffZ;
+							xParticle[0] = center[0] + (h * height) * *diffX ;
+							xParticle[1] = center[1] + (h * x1) * *diffY ;
+							xParticle[2] = center[2] + (h * x2) * *diffZ ;
 
 							Particle p(xParticle , initialVelocity, m ,type);
 
@@ -88,12 +88,9 @@ void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vect
 						if(x1 == 0)
 							break;
 					}
-					if(heigth == 0)
+					if(height == 0)
 						break;
 				}
-
-
-
 			}
 		}
 	}
