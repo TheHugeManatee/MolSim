@@ -100,7 +100,21 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 	}
 	LOG4CXX_TRACE(logger, "Generation finished!");
 
-	//TODO: sphere generation
+	for(auto it = Settings::generator.sphere().begin();
+				it != Settings::generator.sphere().end();
+				++it) {
+
+			auto c = (*it);
+			double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
+			double center[] = {c.center().x0(), c.center().x1(), c.center().x2()};
+			ParticleGenerator::generateSphere(container,
+					utils::Vector<double, 3> (center),
+					c.radius(),
+					c.stepWidth(), c.mass(), c.type(),
+					utils::Vector<double, 3> (v),
+					c.brownianMeanVelocity()
+			);
+		}
 
 	assert(Settings::epsilon > 0);
 	assert(Settings::sigma > 0);
