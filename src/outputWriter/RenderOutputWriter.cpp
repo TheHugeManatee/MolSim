@@ -139,11 +139,14 @@ static void display(void)
 
 	glPushMatrix();
 
-	glTranslated(0, 0, -camPosition[2]);
+
+	glTranslated(-camPosition[0], -camPosition[1], -camPosition[2]);
+
+	glTranslated(Settings::domainSize[0]/2, Settings::domainSize[1]/2, Settings::domainSize[2]/2);
 	glRotated(camRotation[0], 1, 0, 0);
 	glRotated(camRotation[1], 0, 1, 0);
 	glRotated(camRotation[2], 0, 0, 1);
-	glTranslated(-camPosition[0], -camPosition[1], 0);
+	glTranslated(-Settings::domainSize[0]/2, -Settings::domainSize[1]/2, -Settings::domainSize[2]/2);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -277,6 +280,71 @@ static void special (int key, int x, int y)
 	glutPostRedisplay();
 }
 
+enum MouseAction {
+	 NONE, ROTATE, MOVE, ZOOM
+};
+MouseAction currentMouseState = NONE;
+int lastMouseX = 0;
+int lastMouseY = 0;
+
+static void mouse(int button, int state, int x, int y) {
+	if(state == GLUT_UP) {
+		currentMouseState = NONE;
+	}
+	else {
+		lastMouseX = x;
+		lastMouseY = y;
+		switch (button) {
+		case GLUT_LEFT_BUTTON:
+			currentMouseState = ROTATE;
+			break;
+		case GLUT_RIGHT_BUTTON:
+			currentMouseState = MOVE;
+			break;
+		case GLUT_MIDDLE_BUTTON:
+			currentMouseState = ZOOM;
+			break;
+		default:
+			currentMouseState = NONE;
+			break;
+		}
+	}
+}
+
+#define ROTATION_SPEED 1
+#define MOVE_SPEED -0.05
+#define ZOOM_SPEED 0.05
+
+static void mouseactivemove(int x, int y) {
+	int dx = x - lastMouseX;
+	int dy = y - lastMouseY;
+	switch (currentMouseState) {
+	case NONE: break;
+	case ROTATE:
+		camRotation[0] += dy * ROTATION_SPEED;
+		camRotation[1] += dx * ROTATION_SPEED;
+		glutPostRedisplay();
+		break;
+	case MOVE:
+		camPosition[0] += dx * MOVE_SPEED;
+		camPosition[1] -= dy * MOVE_SPEED;
+		glutPostRedisplay();
+		break;
+	case ZOOM:
+		camPosition[2] += dy * ZOOM_SPEED;
+		glutPostRedisplay();
+		break;
+	}
+	lastMouseX = x;
+	lastMouseY = y;
+}
+
+#define WHEEL_ZOOM_SPEED 0.3
+void mousewheel(int wheelno, int direction, int x, int y) {
+	camPosition[2] += direction * 0.5;
+	glutPostRedisplay();
+}
+
 /**
  * check if a redraw has been requested by another thread - that is, when new particles have been
  * drawn etc.
@@ -311,6 +379,9 @@ void * renderFunction(void* arg) {
 	glutKeyboardFunc(key);
 	glutSpecialFunc(special);
 	glutIdleFunc(idle);
+	glutMouseFunc(mouse);
+	glutMotionFunc(mouseactivemove);
+	glutMouseWheelFunc(mousewheel);
 
 	glutSetOption ( GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION ) ;
 
