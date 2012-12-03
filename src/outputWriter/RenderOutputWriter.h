@@ -30,14 +30,15 @@ namespace outputWriter {
  * will have to suffice.
  *
  * \subsection rUsage Usage
- *  - Use the arrow keys to rotate the view
- *  - use wasd to move the domain around
- *  - use q and e to zoom in/out
+ *  - Use the arrow keys or left mouse button to rotate the view
+ *  - use wasd or right mouse button to move the domain around
+ *  - use q and e or the mouse wheel to zoom in/out
  *
  * @warning Since GLUT and FreeGLUT are not designed for multithreading, they are somewhat tricky to use
  * 	in our scenario. It seems the glut functions have to be called by the same thread that did the initialization,
  * 	which is why for example the idle callback polls the redrawRequested boolean to issue a call to glutPostRedisplay()
- * 	from within the the glut thread.
+ * 	from within the the glut thread. No thread synchronization is used so there may be concurrency issues, but it seems
+ * 	that most things are not critical with respect to timing, so this should be ok..
  *
  */
 class RenderOutputWriter {

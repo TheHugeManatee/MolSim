@@ -31,15 +31,35 @@ const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
 const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat high_shininess[] = { 100.0f };
 
+/**
+ * global list containing the particles in the rendering
+ */
 std::vector<Particle> render3dParticles;
 
+/**
+ * OpenGL display list ID for the particle "primitive", normally a sphere
+ */
 int particleGeoList;
+/**
+ * OpenGL display list ID for the complete collection of particles currently in the view
+ * the particles are rendered into a display list whenever the particles change, which greatly improves
+ * rendering performance because the geometry has to be run down the GL pipeline only once
+ */
 int particlesTotalList;
 
+/**
+ * this flag is polled by the rendering thread to determine if a redraw should be issued
+ */
 bool redrawRequested = false;
+/**
+ * this flag is polled by the main thred to determine if the display lists should be updated/recompiled
+ */
 bool recompileRequested = false;
+/// the current iteration being displayed
 int currentIteration = 0;
+/// the camera position in 3d space
 static double camPosition[3] = {10, 10, 10};
+/// the rotation around the three primary axes in degrees
 static double camRotation[3] = {0,0,0};
 
 
@@ -139,18 +159,24 @@ static void display(void)
 
 	glPushMatrix();
 
-
+	//set the current viewing position
 	glTranslated(-camPosition[0], -camPosition[1], -camPosition[2]);
 
-	glTranslated(Settings::domainSize[0]/2, Settings::domainSize[1]/2, Settings::domainSize[2]/2);
+	const auto d = Settings::domainSize;
+
+
+	//move to domain center
+	glTranslated(d[0]/2, d[1]/2, d[2]/2);
+	//apply rotation around the center of the domain
 	glRotated(camRotation[0], 1, 0, 0);
 	glRotated(camRotation[1], 0, 1, 0);
 	glRotated(camRotation[2], 0, 0, 1);
-	glTranslated(-Settings::domainSize[0]/2, -Settings::domainSize[1]/2, -Settings::domainSize[2]/2);
+	//translate back
+	glTranslated(-d[0]/2, -d[1]/2, -d[2]/2);
 
+	//clear the buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	auto d = Settings::domainSize;
 
 	//draw the simulation domain box
 	glLineWidth(2.0);
@@ -225,7 +251,7 @@ static void display(void)
 	glDisable(GL_LIGHTING);
 	glColor3d(0.1,0.1,0.4);
 
-	shapesPrintf(1, 3, "%i particles", render3dParticles.size());
+	shapesPrintf(1, 3, "%i articles", render3dParticles.size());
 	shapesPrintf(2, 3, "Iteration %i", currentIteration);
 	shapesPrintf(3, 3, "Time %f", currentIteration*Settings::deltaT);
 
@@ -280,13 +306,26 @@ static void special (int key, int x, int y)
 	glutPostRedisplay();
 }
 
+/**
+ * available mouse action types
+ */
 enum MouseAction {
 	 NONE, ROTATE, MOVE, ZOOM
 };
+/**
+ * the current mouse state (determined by the mouse button handler)
+ */
 MouseAction currentMouseState = NONE;
+/// last registered mouse location x
 int lastMouseX = 0;
+/// last registered mouse location y
 int lastMouseY = 0;
 
+/**
+ * mouse button handler - called when mouse button is pressed or released
+ * saves the last button press to specify the action to be performed if the
+ * mouse is moved
+ */
 static void mouse(int button, int state, int x, int y) {
 	if(state == GLUT_UP) {
 		currentMouseState = NONE;
@@ -315,6 +354,10 @@ static void mouse(int button, int state, int x, int y) {
 #define MOVE_SPEED -0.05
 #define ZOOM_SPEED 0.05
 
+/**
+ * glut mouse handler - called when mouse is moved while a buttons pressed
+ * handles movement (right mouse), rotation (left mouse) and zoom (middle mouse)
+ */
 static void mouseactivemove(int x, int y) {
 	int dx = x - lastMouseX;
 	int dy = y - lastMouseY;
@@ -339,15 +382,20 @@ static void mouseactivemove(int x, int y) {
 	lastMouseY = y;
 }
 
-#define WHEEL_ZOOM_SPEED 0.3
+#define WHEEL_ZOOM_SPEED (-0.3)
+/**
+ * freeglut mouse wheel handler function - handles zooming
+ */
 void mousewheel(int wheelno, int direction, int x, int y) {
 	camPosition[2] += direction * 0.5;
 	glutPostRedisplay();
 }
 
 /**
- * check if a redraw has been requested by another thread - that is, when new particles have been
- * drawn etc.
+ * glut idle function callback
+ *
+ * checks if a redraw has been requested by another thread - that is, when new particles have been
+ * drawn etc and then redraws the frame
  */
 static void idle() {
 	if(redrawRequested) {
@@ -357,14 +405,17 @@ static void idle() {
 }
 
 /**
- * thread main routine for initializing glut and entering main loop..
+ * rendering thread main routine
+ * handles setup of freeglut framework and enters the glutMainLoop()
  */
 void * renderFunction(void* arg) {
 	int argc = 1;
 	char* argv[] = {"MolSim"};
 
+	//intialize camera position to match current simulation domain
 	camPosition[0] = Settings::domainSize[0]/2.0;
 	camPosition[1] = Settings::domainSize[1]/2.0;
+	//most times this works to display the whole region at an adequate zoom level
 	camPosition[2] = Settings::domainSize[2] + (Settings::domainSize[0] + Settings::domainSize[1]) / 2;
 
 	glutInitWindowSize(640,480);
@@ -424,9 +475,12 @@ void * renderFunction(void* arg) {
 }
 
 RenderOutputWriter::RenderOutputWriter() {
-	//check if the rendering thread is active, otherwise create one
+	//check if the rendering thread is active
+	//kill with a signal of 0 does not actually kill the thread, but returns an error
+	//if the thread does not exist
 	int status = pthread_kill(renderingThread, 0);
 
+	//if an error occurred, the thread did not exists, so we create a new rendering thread
 	if(status) {
 		pthread_create(&renderingThread, NULL, renderFunction, NULL);
 	}
@@ -438,9 +492,11 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 
 	render3dParticles.resize(container.getSize());
 	int i = 0;
+	//copy particle data over
 	container.each([&] (Particle &p) {
 		render3dParticles[i++] = p;
 	});
+	//signal the rendering thread to recompile display list and redraw buffer
 	redrawRequested = true;
 	recompileRequested = true;
 }
