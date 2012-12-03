@@ -45,6 +45,8 @@ BoundaryConditionType Settings::boundaryCondition[6] = {
 		BoundaryConditionType::Outflow,
 		BoundaryConditionType::Outflow
 };
+bool Settings::show3DVisual = false;
+bool Settings::encodeCellsInType = false;
 
 SimulationConfig::GeneratorType Settings::generator;
 
@@ -91,12 +93,16 @@ void Settings::initSettings(int argc, char* argv[]) {
 			Settings::endTime = atof(argv[i+1]);
 		if(strcmp(argv[i], "-inputFile") == 0 && argc > i + 1)
 			Settings::inputFile = argv[i+1];
-		if(strcmp(argv[i], "-disableOutput") == 0 && argc > i + 1)
-			Settings::disableOutput = atoi(argv[i+1]);
+		if(strcmp(argv[i], "-disableOutput") == 0)
+			Settings::disableOutput = true;
 		if(strcmp(argv[i], "-test") == 0 && argc > i + 1)
 			Settings::testCase = argv[i+1];
 		if(strcmp(argv[i], "-outputFilePrefix") == 0 && argc > i + 1)
 			Settings::outputFilePrefix = argv[i+1];
+		if(strcmp(argv[i], "-visualize") == 0)
+			Settings::show3DVisual = true;
+		if(strcmp(argv[i], "-colorByCell") == 0)
+			Settings::encodeCellsInType = true;
 	}
 
 	//Re-initialize the logger with possibly new configuration file
@@ -134,7 +140,6 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::boundaryCondition[5] = xmlCfg->boundaryHandling().back();
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
-
 
 	    Settings::generator = xmlCfg->generator();
 

@@ -12,4 +12,5 @@ SOURCES=\
 	src/ScenarioFactory.cpp\
 	src/utils/MaxwellBoltzmannDistribution.cpp\
 	src/utils/ParticleGenerator.cpp\
-	src/utils/SimulationConfig.cpp
+	src/utils/SimulationConfig.cpp\
+	src/outputWriter/RenderOutputWriter.cpp

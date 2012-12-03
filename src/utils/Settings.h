@@ -133,18 +133,37 @@ public:
 
 	/**
 	 * the container type to be used
+	 * either standard ParticleContainer or CelllistContainer
 	 */
 	static ContainerType containerType;
 
 	/**
 	 * the output file type
+	 * xyz or vtk
 	 */
 	static OutputFileType outputFileType;
 
 	/**
-	 * the boundary condition
+	 * the boundary conditions
+	 * for every boundary, a different condition can be specified
+	 * [0] ~ left
+	 * [1] ~ right
+	 * [2] ~ bottom
+	 * [3] ~ top
+	 * [4] ~ back
+	 * [5] ~ front
 	 */
 	static BoundaryConditionType boundaryCondition[6];
+
+	/**
+	 * open an interactive 3d view of the last rendered frame
+	 */
+	static bool show3DVisual;
+
+	/**
+	 * CellListContainer changes the type for each cell to visualize the particles belonging to same cells
+	 */
+	static bool encodeCellsInType;
 
 private:
 	/**

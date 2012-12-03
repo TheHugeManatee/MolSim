@@ -190,7 +190,7 @@ void CellListContainer::afterPositionChanges(
 					}
 #ifndef NDEBUG
 					//some color coding for the cells for debugging
-					else {
+					else if(Settings::encodeCellsInType){
 						int _x0 = (p.x[0]) / edgeLength + 1,
 							_x1 = (p.x[1]) / edgeLength + 1,
 							_x2 = (p.x[2]) / edgeLength + 1;
