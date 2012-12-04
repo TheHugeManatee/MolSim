@@ -62,6 +62,7 @@
 
 
 #include "UnitTests/ParticleContainerTests.h"
+#include "UnitTests/ParticleGeneratorTests.h"
 
 #include "utils/Settings.h"
 #include "Simulator.h"
@@ -120,6 +121,7 @@ int main(int argc, char* argsv[]) {
 
 
 	Settings::initSettings(argc, argsv);
+
 	LOG4CXX_TRACE(rootLogger, "Settings initialized!");
 
 	//Check if we should be executing some unit tests
@@ -189,12 +191,16 @@ int executeTests() {
 	std::cout << "Running tests..." << std::endl;
 
 
+
 	CppUnit::TextUi::TestRunner runner;
 
 	bool all = !Settings::testCase.compare("all");
 
 	if(all || !Settings::testCase.compare("ParticleContainer"))
 	  runner.addTest(ParticleContainerTests::suite());
+
+	if(all || !Settings::testCase.compare("ParticleGenerator"))
+		 runner.addTest(ParticleGeneratorTests::suite());
 
 
 	runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
