@@ -122,6 +122,7 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::boundaryCondition = xmlCfg->boundaryCondition();
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
+	    Settings::rCutoff = xmlCfg->cutoffRadius();
 
 
 	    Settings::generator = xmlCfg->generator();
@@ -193,6 +194,7 @@ std::string Settings::toString() {
 	s << "\n\toutputType = " << Settings::outputFileType;
 	s << "\n\tdomainSize = " << Settings::domainSize;
 	s << "\n\tboundaryCondition = " << Settings::boundaryCondition;
+	s << "\n\trCutoff = " << Settings::rCutoff;
 
 	return s.str();
 }

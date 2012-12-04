@@ -68,6 +68,7 @@
       <xsd:element name="endTime" type="xsd:double"/>
       <xsd:element name="scenarioType" type="ScenarioType"/>
       <xsd:element name="domainSize" type="floatVector" />
+      <xsd:element name="cutoffRadius" type="xsd:double" />
       <xsd:element name="boundaryCondition" type="BoundaryConditionType" />
       <xsd:element name="containerType" type="ContainerType" />
       <xsd:element name="epsilon" type="xsd:double" />
