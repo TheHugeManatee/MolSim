@@ -49,7 +49,7 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vector<double, 3> center, int radiusSphere,
 										double h, double m , int type, utils::Vector<double, 3> initialVelocity, double brownianMean){
 
-//	LOG4CXX_INFO(ParticleGenerator::logger, "Generating " << (4 * radiusSphere*radiusSphere) << " Particles on a sphere");
+	LOG4CXX_INFO(ParticleGenerator::logger, "Generating " << (4 * radiusSphere*radiusSphere) << " Particles on a sphere");
 	std::vector<int> diffs;
 	diffs.push_back(-1);
 	diffs.push_back(1);

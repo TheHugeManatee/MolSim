@@ -12,3 +12,4 @@ doxy/
 *.exe
 *.stackdump
 doxys_documentation/
+src/utils/simulationConfig.*
