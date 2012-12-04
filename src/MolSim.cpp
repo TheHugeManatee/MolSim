@@ -123,7 +123,6 @@ int main(int argc, char* argsv[]) {
 	Settings::initSettings(argc, argsv);
 
 	LOG4CXX_TRACE(rootLogger, "Settings initialized!");
-	//Settings::testCase = "ParticleGenerator";
 
 	//Check if we should be executing some unit tests
 	if(!Settings::testCase.empty()) {
