@@ -1,3 +1,49 @@
+/**
+ * @mainpage
+ *
+ * @section Authors
+ * Leonhard Rannabauer
+ *
+ * Jakob Weiss
+ *
+ * Alexander Winkler
+ *
+ *
+ * @section Purpose
+ * molecular dynamics simulation for approximating the behavior of arbitrary systems composed of molecules
+ *
+ * @section usage Usage
+ * The program does not have any mandatory command line parameters. If it is run without parameters, it will look for
+ * a file named <tt>simulationConfig.xml</tt> in the CWD. This will be used as the configuration file to set up the
+ * simulation.
+ *
+ *  All parameters specified on the command line will override the specifications of the config file.
+ *
+ * @subsection params Command Line Parameters
+ * certain parameters can be specified via command line to override the builtin defaults and the values given in the
+ * configuration file
+ *
+ * available parameters are:
+ *
+ * - <tt>-configFile <pathToFile></tt>: path to a custom configuration file (xml or cfg)
+ *
+ * - <tt>-inputFile <pathToFile></tt>: path to a custom input file
+ *
+ * - <tt>-endTime <double> </tt>: simulation end time
+ *
+ * - <tt>-disableOutput <1 or 0></tt>: explicitly disable output (for benchmarking)
+ *
+ * - <tt>-outputFilePrefix <pathAndFilePrefix></tt>: the file prefix for output files
+ *
+ * - <tt>-test <testName></tt>: run specific unit test ("all" to run all available)
+ *
+ *
+ * @subsection cfg Config Files
+ *
+ * @subsection input Input Files
+ *
+ */
+
 #include <list>
 #include <cstring>
 #include <cstdlib>
@@ -82,7 +128,7 @@ int main(int argc, char* argsv[]) {
 	}
 
 	LOG4CXX_TRACE(rootLogger, "Creating Simulator instance...");
-	Simulator sim;
+	Simulator *sim = new Simulator();
 
 	double current_time = Settings::startTime;
 
@@ -99,10 +145,10 @@ int main(int argc, char* argsv[]) {
 
 	while (current_time < Settings::endTime) {
 		if (!Settings::disableOutput && (iteration % Settings::outputFrequency == 0)) {
-			sim.plotParticles(iteration);
+			sim->plotParticles(iteration);
 		}
 
-		sim.nextTimeStep();
+		sim->nextTimeStep();
 
 		iteration++;
 		
@@ -120,9 +166,18 @@ int main(int argc, char* argsv[]) {
 	int benchmarkEndTime = getMilliCount();
 
 	LOG4CXX_INFO(rootLogger, "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds");
+
+	delete sim;
 	
 	LOG4CXX_DEBUG(rootLogger, "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)");
 	LOG4CXX_DEBUG(rootLogger, "Destroyed " << Particle::destroyedInstances << " Particle instances");
+
+	//10 is arbitrarily chosen. there will always be some stray particles because of
+	//static instances that will be destroyed at program exit
+	if(Particle::createdInstances - Particle::destroyedInstances > 10) {
+		LOG4CXX_WARN(rootLogger, "Significant mismatch between created and destroyed particle instances. This can be a memory leak!" << (Particle::createdInstances - Particle::destroyedInstances));
+	}
+
 	LOG4CXX_DEBUG(rootLogger, "output written. Terminating...");
 	return 0;
 }
@@ -131,23 +186,8 @@ int main(int argc, char* argsv[]) {
  * execute a specific or all test cases, depending on the Settings::testCase parameter
  */
 int executeTests() {
-	std::cout << "Test.." << std::endl;
-	Settings::domainSize = 100;
-	Settings::rCutoff = 3;
-	CellListContainer c;
+	std::cout << "Running tests..." << std::endl;
 
-	Particle p;
-	for(int i=0; i < 100; i++) {
-		p.x[0] = i;
-		p.x[1] = i;
-		p.x[2] = i;
-		c.add(p);
-	}
-
-	int i=0;
-	c.eachPair([&] (Particle&p1, Particle&p2) {i++;});
-
-	std::cout << i << " pairs compared.." << std::endl;
 
 	CppUnit::TextUi::TestRunner runner;
 
@@ -164,7 +204,10 @@ int executeTests() {
 
 	// Return error code 1 if the one of test failed.
 	if(wasSuccessful) {
-	  std::cout << "Tests ok!";
+	  std::cout << "Tests ok!" << std::endl;
+	}
+	else {
+		std::cout << "Some tests failed!" << std::endl;
 	}
 
 	return wasSuccessful ? 0 : 1;

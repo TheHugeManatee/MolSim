@@ -16,11 +16,11 @@ include files.mk
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive -std=c++0x -O3 -Wno-deprecated 
+CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated 
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32
 
 INCLUDES= -I./src -I./libxsd
 
@@ -50,3 +50,7 @@ src/outputWriter/vtk-unstructured.cpp: src/outputWriter/vtk-unstructured.xsd
 
 test: all
 	./$(EXECUTABLE) -test all
+	
+gltest: gltest.o src/Particle.cpp src/outputWriter/RenderOutputWriter.o src/ParticleContainer.o
+	g++ gltest.o src/outputWriter/RenderOutputWriter.o src/ParticleContainer.o src/Particle.o -llog4cxx -lopengl32 -lglut -o gltest
+

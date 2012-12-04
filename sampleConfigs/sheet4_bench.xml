@@ -3,40 +3,44 @@
 <simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
        
-  <deltaT>0.0005</deltaT>
-  <endTime>20</endTime>
+  <deltaT>0.0003</deltaT>
+  <endTime>10</endTime>
   <scenarioType>Lennard-Jones</scenarioType>
-  <domainSize x0="180.0" x1="90.0" x2="3.0" />
-  <boundaryCondition>Reflect</boundaryCondition>
-  <containerType>CellistContainer</containerType>
+  <domainSize x0="80.0" x1="80.0" x2="80" />
+  <boundaryHandling
+  	top="Reflect" bottom="Reflect"
+  	left="Reflect" right="Reflect"
+  	front="Reflect" back="Reflect"
+  />
+  <containerType>CelllistContainer</containerType>
   <epsilon>5</epsilon>
   <sigma>1</sigma>
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
   <loggerConfigFile>Logger.properties</loggerConfigFile>
-  <outputFilePrefix>OutputFiles/MD_benchmark</outputFilePrefix>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType>
   <inputFile></inputFile>
 
   <generator>
-   <cuboid>
-      <bottomLeft x0="20.0" x1="20.0" x2="1.5" />
-      <nX x0="100" x1="20" x2="1" />
+  <sphere>
+      <center x0="30" x1="40.0" x2="20.0" />
+      <radius>10</radius>
       <stepWidth>1.1225</stepWidth>
       <mass>1</mass>
       <type>1</type>
-      <initialVelocity x0="0" x1="0" x2="0"/>
-      <brownianMeanVelocity>0.1</brownianMeanVelocity>
-    </cuboid>
-    <cuboid>
-      <bottomLeft x0="70.0" x1="60.0" x2="1.5" />
-      <nX x0="20" x1="20" x2="1" />
+      <initialVelocity x0="0" x1="-20" x2="0"/>
+      <brownianMeanVelocity>0.0</brownianMeanVelocity>
+    </sphere>  
+	 <cuboid>
+      <bottomLeft x0="5" x1="10" x2="15" />
+      <nX x0="50" x1="4" x2="10" />
       <stepWidth>1.1225</stepWidth>
       <mass>1</mass>
       <type>2</type>
-      <initialVelocity x0="0" x1="-10" x2="0"/>
+      <initialVelocity x0="0" x1="0" x2="0"/>
       <brownianMeanVelocity>0.1</brownianMeanVelocity>
-    </cuboid>
+   </cuboid>
     
   </generator>
   

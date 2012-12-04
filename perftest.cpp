@@ -4,17 +4,18 @@
 #include <cstdlib>
 #include <algorithm>
 
+
 #define PUT_BLOCKS(A, B, C, D) \
-	for(int k=0; k<r; k++) {    \
-    A;                          \
-    B;                        \
-    C;                        \
-    D;                          \
-    std::cout << "." << std::flush; \
-	}                               \
-	std::cout << std::endl;       \
-	
-	
+		for(int k=0; k<r; k++) {    \
+			A;                          \
+			B;                        \
+			C;                        \
+			D;                          \
+			std::cout << "." << std::flush; \
+		}                               \
+		std::cout << std::endl;       \
+
+
 #define ITERATOR_BLOCK \
 		startTime = getMilliCount();                        \
 		for(auto it = l.begin(); it != l.end(); ++it) {    \
@@ -31,7 +32,7 @@
 		});                                                 \
 		endTime = getMilliCount();                          \
 		timeLambda += (endTime - startTime);                
-		
+
 #define FOR_BLOCK \
 		startTime = getMilliCount();                        \
 		for(int i=0; i < n; i++) {                         \
@@ -47,8 +48,8 @@
 		}                                                   \
 		endTime = getMilliCount();                          \
 		timeExtFor += (endTime - startTime);
-	
-		
+
+
 #define EXT_FOR_BLOCK \
 		startTime = getMilliCount();                        \
 		for(test &tt : l) {                                 \
@@ -56,7 +57,7 @@
 		}                                                   \
 		endTime = getMilliCount();                          \
 		timeExtFor += (endTime - startTime);
-		
+
 typedef struct {
 	int a,b,c;
 	double d, e, f;
@@ -87,10 +88,9 @@ int main() {
 	l.resize(n);
 	//init
 	for(int i=0; i < n; i++) {
-		t.a = i;
-		t.b = 2*i + 1;
-		t.d = i/2.0 + i*i;
-		l.push_back(t);
+		l[i].a = i;
+		l[i].b = 2*i + 1;
+		l[i].d = i/2.0 + i*i;
 	}
 
 
@@ -100,9 +100,9 @@ int main() {
 	int timeLoop = 0;
 	int timeExtFor = 0;
 
-  std::cout << "Working..." << std::endl;
+	std::cout << "Working..." << std::endl;
 
-  PUT_BLOCKS(ITERATOR_BLOCK, LAMBDA_BLOCK, FOR_BLOCK, OPT_FOR_BLOCK);
+	PUT_BLOCKS(ITERATOR_BLOCK, LAMBDA_BLOCK, FOR_BLOCK, OPT_FOR_BLOCK);
 
 	std::cout << "lambda          " << timeLambda << std::endl;
 	std::cout << "for loop:       " << timeLoop << std::endl;

@@ -4,7 +4,7 @@
  * @date Nov 6, 2012
  * @author Jakob Weiss
  *
- * Particle generation functions to batch create particles instead of specifying 
+ * Particle generation functions to batch create particles instead of specifying every one by hand
  */
 
 #ifndef PARTICLEGENERATOR_H_
@@ -41,6 +41,22 @@ namespace ParticleGenerator {
 		double h, double m, int type,
 			utils::Vector<double, 3> initialVelocity,
 			double brownianMean);
+	/**
+	 * generates a sphere on a cuboid grid
+	 *
+	 * @param container the particle container that receives the generated particles
+	 * @param center The center coordinates of the sphere
+	 * @param radius The radius as amount of particles of the sphere
+	 * @param h distance between particles (in every direction)
+	 * @param m mass of the particles
+	 * @param type type of the particles
+	 * @param initialVelocity base velocity of the particles
+	 * @param brownianMean mean velocity for brownian motion specify (0,0,0) to disable brownian motion
+	 */
+	void generateSphere(ParticleContainer& container, utils::Vector<double, 3> center, int radiusSphere,
+											double h, double m , int type, utils::Vector<double, 3> initialVelocity,
+											double brownianMean);
+
 
 }
 #endif /* PARTICLEGENERATOR_H_ */

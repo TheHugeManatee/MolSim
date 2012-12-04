@@ -220,6 +220,154 @@ operator= (Value v)
 }
 
 
+// BoundaryHandlingType
+// 
+
+const BoundaryHandlingType::RightType& BoundaryHandlingType::
+right () const
+{
+  return this->right_.get ();
+}
+
+BoundaryHandlingType::RightType& BoundaryHandlingType::
+right ()
+{
+  return this->right_.get ();
+}
+
+void BoundaryHandlingType::
+right (const RightType& x)
+{
+  this->right_.set (x);
+}
+
+void BoundaryHandlingType::
+right (::std::auto_ptr< RightType > x)
+{
+  this->right_.set (x);
+}
+
+const BoundaryHandlingType::LeftType& BoundaryHandlingType::
+left () const
+{
+  return this->left_.get ();
+}
+
+BoundaryHandlingType::LeftType& BoundaryHandlingType::
+left ()
+{
+  return this->left_.get ();
+}
+
+void BoundaryHandlingType::
+left (const LeftType& x)
+{
+  this->left_.set (x);
+}
+
+void BoundaryHandlingType::
+left (::std::auto_ptr< LeftType > x)
+{
+  this->left_.set (x);
+}
+
+const BoundaryHandlingType::TopType& BoundaryHandlingType::
+top () const
+{
+  return this->top_.get ();
+}
+
+BoundaryHandlingType::TopType& BoundaryHandlingType::
+top ()
+{
+  return this->top_.get ();
+}
+
+void BoundaryHandlingType::
+top (const TopType& x)
+{
+  this->top_.set (x);
+}
+
+void BoundaryHandlingType::
+top (::std::auto_ptr< TopType > x)
+{
+  this->top_.set (x);
+}
+
+const BoundaryHandlingType::BottomType& BoundaryHandlingType::
+bottom () const
+{
+  return this->bottom_.get ();
+}
+
+BoundaryHandlingType::BottomType& BoundaryHandlingType::
+bottom ()
+{
+  return this->bottom_.get ();
+}
+
+void BoundaryHandlingType::
+bottom (const BottomType& x)
+{
+  this->bottom_.set (x);
+}
+
+void BoundaryHandlingType::
+bottom (::std::auto_ptr< BottomType > x)
+{
+  this->bottom_.set (x);
+}
+
+const BoundaryHandlingType::FrontType& BoundaryHandlingType::
+front () const
+{
+  return this->front_.get ();
+}
+
+BoundaryHandlingType::FrontType& BoundaryHandlingType::
+front ()
+{
+  return this->front_.get ();
+}
+
+void BoundaryHandlingType::
+front (const FrontType& x)
+{
+  this->front_.set (x);
+}
+
+void BoundaryHandlingType::
+front (::std::auto_ptr< FrontType > x)
+{
+  this->front_.set (x);
+}
+
+const BoundaryHandlingType::BackType& BoundaryHandlingType::
+back () const
+{
+  return this->back_.get ();
+}
+
+BoundaryHandlingType::BackType& BoundaryHandlingType::
+back ()
+{
+  return this->back_.get ();
+}
+
+void BoundaryHandlingType::
+back (const BackType& x)
+{
+  this->back_.set (x);
+}
+
+void BoundaryHandlingType::
+back (::std::auto_ptr< BackType > x)
+{
+  this->back_.set (x);
+}
+
+
 // FloatVector
 // 
 
@@ -484,6 +632,148 @@ brownianMeanVelocity (const BrownianMeanVelocityType& x)
 }
 
 
+// Sphere
+// 
+
+const Sphere::CenterType& Sphere::
+center () const
+{
+  return this->center_.get ();
+}
+
+Sphere::CenterType& Sphere::
+center ()
+{
+  return this->center_.get ();
+}
+
+void Sphere::
+center (const CenterType& x)
+{
+  this->center_.set (x);
+}
+
+void Sphere::
+center (::std::auto_ptr< CenterType > x)
+{
+  this->center_.set (x);
+}
+
+const Sphere::RadiusType& Sphere::
+radius () const
+{
+  return this->radius_.get ();
+}
+
+Sphere::RadiusType& Sphere::
+radius ()
+{
+  return this->radius_.get ();
+}
+
+void Sphere::
+radius (const RadiusType& x)
+{
+  this->radius_.set (x);
+}
+
+const Sphere::StepWidthType& Sphere::
+stepWidth () const
+{
+  return this->stepWidth_.get ();
+}
+
+Sphere::StepWidthType& Sphere::
+stepWidth ()
+{
+  return this->stepWidth_.get ();
+}
+
+void Sphere::
+stepWidth (const StepWidthType& x)
+{
+  this->stepWidth_.set (x);
+}
+
+const Sphere::MassType& Sphere::
+mass () const
+{
+  return this->mass_.get ();
+}
+
+Sphere::MassType& Sphere::
+mass ()
+{
+  return this->mass_.get ();
+}
+
+void Sphere::
+mass (const MassType& x)
+{
+  this->mass_.set (x);
+}
+
+const Sphere::TypeType& Sphere::
+type () const
+{
+  return this->type_.get ();
+}
+
+Sphere::TypeType& Sphere::
+type ()
+{
+  return this->type_.get ();
+}
+
+void Sphere::
+type (const TypeType& x)
+{
+  this->type_.set (x);
+}
+
+const Sphere::InitialVelocityType& Sphere::
+initialVelocity () const
+{
+  return this->initialVelocity_.get ();
+}
+
+Sphere::InitialVelocityType& Sphere::
+initialVelocity ()
+{
+  return this->initialVelocity_.get ();
+}
+
+void Sphere::
+initialVelocity (const InitialVelocityType& x)
+{
+  this->initialVelocity_.set (x);
+}
+
+void Sphere::
+initialVelocity (::std::auto_ptr< InitialVelocityType > x)
+{
+  this->initialVelocity_.set (x);
+}
+
+const Sphere::BrownianMeanVelocityType& Sphere::
+brownianMeanVelocity () const
+{
+  return this->brownianMeanVelocity_.get ();
+}
+
+Sphere::BrownianMeanVelocityType& Sphere::
+brownianMeanVelocity ()
+{
+  return this->brownianMeanVelocity_.get ();
+}
+
+void Sphere::
+brownianMeanVelocity (const BrownianMeanVelocityType& x)
+{
+  this->brownianMeanVelocity_.set (x);
+}
+
+
 // Generator
 // 
 
@@ -503,6 +793,24 @@ void Generator::
 cuboid (const CuboidSequence& s)
 {
   this->cuboid_ = s;
+}
+
+const Generator::SphereSequence& Generator::
+sphere () const
+{
+  return this->sphere_;
+}
+
+Generator::SphereSequence& Generator::
+sphere ()
+{
+  return this->sphere_;
+}
+
+void Generator::
+sphere (const SphereSequence& s)
+{
+  this->sphere_ = s;
 }
 
 
@@ -593,28 +901,28 @@ domainSize (::std::auto_ptr< DomainSizeType > x)
   this->domainSize_.set (x);
 }
 
-const SimulationConfig::BoundaryConditionType& SimulationConfig::
-boundaryCondition () const
+const SimulationConfig::BoundaryHandlingType& SimulationConfig::
+boundaryHandling () const
 {
-  return this->boundaryCondition_.get ();
+  return this->boundaryHandling_.get ();
 }
 
-SimulationConfig::BoundaryConditionType& SimulationConfig::
-boundaryCondition ()
+SimulationConfig::BoundaryHandlingType& SimulationConfig::
+boundaryHandling ()
 {
-  return this->boundaryCondition_.get ();
-}
-
-void SimulationConfig::
-boundaryCondition (const BoundaryConditionType& x)
-{
-  this->boundaryCondition_.set (x);
+  return this->boundaryHandling_.get ();
 }
 
 void SimulationConfig::
-boundaryCondition (::std::auto_ptr< BoundaryConditionType > x)
+boundaryHandling (const BoundaryHandlingType& x)
 {
-  this->boundaryCondition_.set (x);
+  this->boundaryHandling_.set (x);
+}
+
+void SimulationConfig::
+boundaryHandling (::std::auto_ptr< BoundaryHandlingType > x)
+{
+  this->boundaryHandling_.set (x);
 }
 
 const SimulationConfig::ContainerTypeType& SimulationConfig::
@@ -1118,6 +1426,179 @@ _xsd_ContainerType_indexes_[2] =
   ::ContainerType::ParticleContainer
 };
 
+// BoundaryHandlingType
+//
+
+BoundaryHandlingType::
+BoundaryHandlingType (const RightType& right,
+                      const LeftType& left,
+                      const TopType& top,
+                      const BottomType& bottom,
+                      const FrontType& front,
+                      const BackType& back)
+: ::xml_schema::Type (),
+  right_ (right, ::xml_schema::Flags (), this),
+  left_ (left, ::xml_schema::Flags (), this),
+  top_ (top, ::xml_schema::Flags (), this),
+  bottom_ (bottom, ::xml_schema::Flags (), this),
+  front_ (front, ::xml_schema::Flags (), this),
+  back_ (back, ::xml_schema::Flags (), this)
+{
+}
+
+BoundaryHandlingType::
+BoundaryHandlingType (const BoundaryHandlingType& x,
+                      ::xml_schema::Flags f,
+                      ::xml_schema::Container* c)
+: ::xml_schema::Type (x, f, c),
+  right_ (x.right_, f, this),
+  left_ (x.left_, f, this),
+  top_ (x.top_, f, this),
+  bottom_ (x.bottom_, f, this),
+  front_ (x.front_, f, this),
+  back_ (x.back_, f, this)
+{
+}
+
+BoundaryHandlingType::
+BoundaryHandlingType (const ::xercesc::DOMElement& e,
+                      ::xml_schema::Flags f,
+                      ::xml_schema::Container* c)
+: ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
+  right_ (f, this),
+  left_ (f, this),
+  top_ (f, this),
+  bottom_ (f, this),
+  front_ (f, this),
+  back_ (f, this)
+{
+  if ((f & ::xml_schema::Flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, false, true);
+    this->parse (p, f);
+  }
+}
+
+void BoundaryHandlingType::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::Flags f)
+{
+  while (p.more_attributes ())
+  {
+    const ::xercesc::DOMAttr& i (p.next_attribute ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    if (n.name () == "right" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< RightType > r (
+        RightTraits::create (i, f, this));
+
+      this->right_.set (r);
+      continue;
+    }
+
+    if (n.name () == "left" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< LeftType > r (
+        LeftTraits::create (i, f, this));
+
+      this->left_.set (r);
+      continue;
+    }
+
+    if (n.name () == "top" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< TopType > r (
+        TopTraits::create (i, f, this));
+
+      this->top_.set (r);
+      continue;
+    }
+
+    if (n.name () == "bottom" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< BottomType > r (
+        BottomTraits::create (i, f, this));
+
+      this->bottom_.set (r);
+      continue;
+    }
+
+    if (n.name () == "front" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< FrontType > r (
+        FrontTraits::create (i, f, this));
+
+      this->front_.set (r);
+      continue;
+    }
+
+    if (n.name () == "back" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< BackType > r (
+        BackTraits::create (i, f, this));
+
+      this->back_.set (r);
+      continue;
+    }
+  }
+
+  if (!right_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "right",
+      "");
+  }
+
+  if (!left_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "left",
+      "");
+  }
+
+  if (!top_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "top",
+      "");
+  }
+
+  if (!bottom_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "bottom",
+      "");
+  }
+
+  if (!front_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "front",
+      "");
+  }
+
+  if (!back_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_attribute< char > (
+      "back",
+      "");
+  }
+}
+
+BoundaryHandlingType* BoundaryHandlingType::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class BoundaryHandlingType (*this, f, c);
+}
+
+BoundaryHandlingType::
+~BoundaryHandlingType ()
+{
+}
+
 // FloatVector
 //
 
@@ -1563,13 +2044,248 @@ Cuboid::
 {
 }
 
+// Sphere
+//
+
+Sphere::
+Sphere (const CenterType& center,
+        const RadiusType& radius,
+        const StepWidthType& stepWidth,
+        const MassType& mass,
+        const TypeType& type,
+        const InitialVelocityType& initialVelocity,
+        const BrownianMeanVelocityType& brownianMeanVelocity)
+: ::xml_schema::Type (),
+  center_ (center, ::xml_schema::Flags (), this),
+  radius_ (radius, ::xml_schema::Flags (), this),
+  stepWidth_ (stepWidth, ::xml_schema::Flags (), this),
+  mass_ (mass, ::xml_schema::Flags (), this),
+  type_ (type, ::xml_schema::Flags (), this),
+  initialVelocity_ (initialVelocity, ::xml_schema::Flags (), this),
+  brownianMeanVelocity_ (brownianMeanVelocity, ::xml_schema::Flags (), this)
+{
+}
+
+Sphere::
+Sphere (::std::auto_ptr< CenterType >& center,
+        const RadiusType& radius,
+        const StepWidthType& stepWidth,
+        const MassType& mass,
+        const TypeType& type,
+        ::std::auto_ptr< InitialVelocityType >& initialVelocity,
+        const BrownianMeanVelocityType& brownianMeanVelocity)
+: ::xml_schema::Type (),
+  center_ (center, ::xml_schema::Flags (), this),
+  radius_ (radius, ::xml_schema::Flags (), this),
+  stepWidth_ (stepWidth, ::xml_schema::Flags (), this),
+  mass_ (mass, ::xml_schema::Flags (), this),
+  type_ (type, ::xml_schema::Flags (), this),
+  initialVelocity_ (initialVelocity, ::xml_schema::Flags (), this),
+  brownianMeanVelocity_ (brownianMeanVelocity, ::xml_schema::Flags (), this)
+{
+}
+
+Sphere::
+Sphere (const Sphere& x,
+        ::xml_schema::Flags f,
+        ::xml_schema::Container* c)
+: ::xml_schema::Type (x, f, c),
+  center_ (x.center_, f, this),
+  radius_ (x.radius_, f, this),
+  stepWidth_ (x.stepWidth_, f, this),
+  mass_ (x.mass_, f, this),
+  type_ (x.type_, f, this),
+  initialVelocity_ (x.initialVelocity_, f, this),
+  brownianMeanVelocity_ (x.brownianMeanVelocity_, f, this)
+{
+}
+
+Sphere::
+Sphere (const ::xercesc::DOMElement& e,
+        ::xml_schema::Flags f,
+        ::xml_schema::Container* c)
+: ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
+  center_ (f, this),
+  radius_ (f, this),
+  stepWidth_ (f, this),
+  mass_ (f, this),
+  type_ (f, this),
+  initialVelocity_ (f, this),
+  brownianMeanVelocity_ (f, this)
+{
+  if ((f & ::xml_schema::Flags::base) == 0)
+  {
+    ::xsd::cxx::xml::dom::parser< char > p (e, true, false);
+    this->parse (p, f);
+  }
+}
+
+void Sphere::
+parse (::xsd::cxx::xml::dom::parser< char >& p,
+       ::xml_schema::Flags f)
+{
+  for (; p.more_elements (); p.next_element ())
+  {
+    const ::xercesc::DOMElement& i (p.cur_element ());
+    const ::xsd::cxx::xml::qualified_name< char > n (
+      ::xsd::cxx::xml::dom::name< char > (i));
+
+    // center
+    //
+    if (n.name () == "center" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< CenterType > r (
+        CenterTraits::create (i, f, this));
+
+      if (!center_.present ())
+      {
+        this->center_.set (r);
+        continue;
+      }
+    }
+
+    // radius
+    //
+    if (n.name () == "radius" && n.namespace_ ().empty ())
+    {
+      if (!radius_.present ())
+      {
+        this->radius_.set (RadiusTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // stepWidth
+    //
+    if (n.name () == "stepWidth" && n.namespace_ ().empty ())
+    {
+      if (!stepWidth_.present ())
+      {
+        this->stepWidth_.set (StepWidthTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // mass
+    //
+    if (n.name () == "mass" && n.namespace_ ().empty ())
+    {
+      if (!mass_.present ())
+      {
+        this->mass_.set (MassTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // type
+    //
+    if (n.name () == "type" && n.namespace_ ().empty ())
+    {
+      if (!type_.present ())
+      {
+        this->type_.set (TypeTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    // initialVelocity
+    //
+    if (n.name () == "initialVelocity" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< InitialVelocityType > r (
+        InitialVelocityTraits::create (i, f, this));
+
+      if (!initialVelocity_.present ())
+      {
+        this->initialVelocity_.set (r);
+        continue;
+      }
+    }
+
+    // brownianMeanVelocity
+    //
+    if (n.name () == "brownianMeanVelocity" && n.namespace_ ().empty ())
+    {
+      if (!brownianMeanVelocity_.present ())
+      {
+        this->brownianMeanVelocity_.set (BrownianMeanVelocityTraits::create (i, f, this));
+        continue;
+      }
+    }
+
+    break;
+  }
+
+  if (!center_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "center",
+      "");
+  }
+
+  if (!radius_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "radius",
+      "");
+  }
+
+  if (!stepWidth_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "stepWidth",
+      "");
+  }
+
+  if (!mass_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "mass",
+      "");
+  }
+
+  if (!type_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "type",
+      "");
+  }
+
+  if (!initialVelocity_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "initialVelocity",
+      "");
+  }
+
+  if (!brownianMeanVelocity_.present ())
+  {
+    throw ::xsd::cxx::tree::expected_element< char > (
+      "brownianMeanVelocity",
+      "");
+  }
+}
+
+Sphere* Sphere::
+_clone (::xml_schema::Flags f,
+        ::xml_schema::Container* c) const
+{
+  return new class Sphere (*this, f, c);
+}
+
+Sphere::
+~Sphere ()
+{
+}
+
 // Generator
 //
 
 Generator::
 Generator ()
 : ::xml_schema::Type (),
-  cuboid_ (::xml_schema::Flags (), this)
+  cuboid_ (::xml_schema::Flags (), this),
+  sphere_ (::xml_schema::Flags (), this)
 {
 }
 
@@ -1578,7 +2294,8 @@ Generator (const Generator& x,
            ::xml_schema::Flags f,
            ::xml_schema::Container* c)
 : ::xml_schema::Type (x, f, c),
-  cuboid_ (x.cuboid_, f, this)
+  cuboid_ (x.cuboid_, f, this),
+  sphere_ (x.sphere_, f, this)
 {
 }
 
@@ -1587,7 +2304,8 @@ Generator (const ::xercesc::DOMElement& e,
            ::xml_schema::Flags f,
            ::xml_schema::Container* c)
 : ::xml_schema::Type (e, f | ::xml_schema::Flags::base, c),
-  cuboid_ (f, this)
+  cuboid_ (f, this),
+  sphere_ (f, this)
 {
   if ((f & ::xml_schema::Flags::base) == 0)
   {
@@ -1617,6 +2335,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       continue;
     }
 
+    // sphere
+    //
+    if (n.name () == "sphere" && n.namespace_ ().empty ())
+    {
+      ::std::auto_ptr< SphereType > r (
+        SphereTraits::create (i, f, this));
+
+      this->sphere_.push_back (r);
+      continue;
+    }
+
     break;
   }
 }
@@ -1641,7 +2370,7 @@ SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
                   const DomainSizeType& domainSize,
-                  const BoundaryConditionType& boundaryCondition,
+                  const BoundaryHandlingType& boundaryHandling,
                   const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
@@ -1657,7 +2386,7 @@ SimulationConfig (const DeltaTType& deltaT,
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
-  boundaryCondition_ (boundaryCondition, ::xml_schema::Flags (), this),
+  boundaryHandling_ (boundaryHandling, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
@@ -1676,7 +2405,7 @@ SimulationConfig (const DeltaTType& deltaT,
                   const EndTimeType& endTime,
                   const ScenarioTypeType& scenarioType,
                   ::std::auto_ptr< DomainSizeType >& domainSize,
-                  const BoundaryConditionType& boundaryCondition,
+                  ::std::auto_ptr< BoundaryHandlingType >& boundaryHandling,
                   const ContainerTypeType& containerType,
                   const EpsilonType& epsilon,
                   const SigmaType& sigma,
@@ -1692,7 +2421,7 @@ SimulationConfig (const DeltaTType& deltaT,
   endTime_ (endTime, ::xml_schema::Flags (), this),
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
-  boundaryCondition_ (boundaryCondition, ::xml_schema::Flags (), this),
+  boundaryHandling_ (boundaryHandling, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   epsilon_ (epsilon, ::xml_schema::Flags (), this),
   sigma_ (sigma, ::xml_schema::Flags (), this),
@@ -1715,7 +2444,7 @@ SimulationConfig (const SimulationConfig& x,
   endTime_ (x.endTime_, f, this),
   scenarioType_ (x.scenarioType_, f, this),
   domainSize_ (x.domainSize_, f, this),
-  boundaryCondition_ (x.boundaryCondition_, f, this),
+  boundaryHandling_ (x.boundaryHandling_, f, this),
   containerType_ (x.containerType_, f, this),
   epsilon_ (x.epsilon_, f, this),
   sigma_ (x.sigma_, f, this),
@@ -1738,7 +2467,7 @@ SimulationConfig (const ::xercesc::DOMElement& e,
   endTime_ (f, this),
   scenarioType_ (f, this),
   domainSize_ (f, this),
-  boundaryCondition_ (f, this),
+  boundaryHandling_ (f, this),
   containerType_ (f, this),
   epsilon_ (f, this),
   sigma_ (f, this),
@@ -1817,16 +2546,16 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       }
     }
 
-    // boundaryCondition
+    // boundaryHandling
     //
-    if (n.name () == "boundaryCondition" && n.namespace_ ().empty ())
+    if (n.name () == "boundaryHandling" && n.namespace_ ().empty ())
     {
-      ::std::auto_ptr< BoundaryConditionType > r (
-        BoundaryConditionTraits::create (i, f, this));
+      ::std::auto_ptr< BoundaryHandlingType > r (
+        BoundaryHandlingTraits::create (i, f, this));
 
-      if (!boundaryCondition_.present ())
+      if (!boundaryHandling_.present ())
       {
-        this->boundaryCondition_.set (r);
+        this->boundaryHandling_.set (r);
         continue;
       }
     }
@@ -1990,10 +2719,10 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       "");
   }
 
-  if (!boundaryCondition_.present ())
+  if (!boundaryHandling_.present ())
   {
     throw ::xsd::cxx::tree::expected_element< char > (
-      "boundaryCondition",
+      "boundaryHandling",
       "");
   }
 

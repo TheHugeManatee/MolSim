@@ -31,6 +31,15 @@
       <xsd:enumeration value="CelllistContainer"/>
     </xsd:restriction>
   </xsd:simpleType>     
+                       
+  <xsd:complexType name="BoundaryHandlingType">
+    <xsd:attribute name="right" type="BoundaryConditionType" use="required" />
+    <xsd:attribute name="left" type="BoundaryConditionType" use="required" />
+    <xsd:attribute name="top" type="BoundaryConditionType" use="required" />
+    <xsd:attribute name="bottom" type="BoundaryConditionType" use="required" />
+    <xsd:attribute name="front" type="BoundaryConditionType" use="required" />
+    <xsd:attribute name="back" type="BoundaryConditionType" use="required" />
+  </xsd:complexType>
                             	
 	<xsd:complexType name="floatVector">
 		<xsd:attribute name="x0" type="xsd:double" use="required"/>
@@ -69,7 +78,7 @@
       <xsd:element name="scenarioType" type="ScenarioType"/>
       <xsd:element name="domainSize" type="floatVector" />
       <xsd:element name="cutoffRadius" type="xsd:double" />
-      <xsd:element name="boundaryCondition" type="BoundaryConditionType" />
+      <xsd:element name="boundaryHandling" type="BoundaryHandlingType" />
       <xsd:element name="containerType" type="ContainerType" />
       <xsd:element name="epsilon" type="xsd:double" />
       <xsd:element name="sigma" type="xsd:double" />

@@ -37,8 +37,8 @@ void VTKWriter::initializeOutput(int numParticles) {
 	DataArray_t type(type::Int32, "type", 1);
 	pointData.DataArray().push_back(mass);
 	pointData.DataArray().push_back(velocity);
-    pointData.DataArray().push_back(forces);
-    pointData.DataArray().push_back(type);
+	pointData.DataArray().push_back(forces);
+	pointData.DataArray().push_back(type);
 
 	CellData cellData; // we don't have cell data => leave it empty
 

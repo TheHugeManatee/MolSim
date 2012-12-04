@@ -558,9 +558,11 @@ class BoundaryConditionType;
 class OutputFileType;
 class ScenarioType;
 class ContainerType;
+class BoundaryHandlingType;
 class FloatVector;
 class IntVector;
 class Cuboid;
+class Sphere;
 class Generator;
 class SimulationConfig;
 
@@ -1154,6 +1156,447 @@ class ContainerType: public ::xml_schema::String
   public:
   static const char* const _xsd_ContainerType_literals_[2];
   static const Value _xsd_ContainerType_indexes_[2];
+
+  //@endcond
+};
+
+/**
+ * @brief Class corresponding to the %BoundaryHandlingType schema type.
+ *
+ * @nosubgrouping
+ */
+class BoundaryHandlingType: public ::xml_schema::Type
+{
+  public:
+  /**
+   * @name right
+   *
+   * @brief Accessor and modifier functions for the %right
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::BoundaryConditionType RightType;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< RightType, char > RightTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const RightType&
+  right () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  RightType&
+  right ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  right (const RightType& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  right (::std::auto_ptr< RightType > p);
+
+  //@}
+
+  /**
+   * @name left
+   *
+   * @brief Accessor and modifier functions for the %left
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::BoundaryConditionType LeftType;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< LeftType, char > LeftTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const LeftType&
+  left () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  LeftType&
+  left ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  left (const LeftType& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  left (::std::auto_ptr< LeftType > p);
+
+  //@}
+
+  /**
+   * @name top
+   *
+   * @brief Accessor and modifier functions for the %top
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::BoundaryConditionType TopType;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< TopType, char > TopTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const TopType&
+  top () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  TopType&
+  top ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  top (const TopType& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  top (::std::auto_ptr< TopType > p);
+
+  //@}
+
+  /**
+   * @name bottom
+   *
+   * @brief Accessor and modifier functions for the %bottom
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::BoundaryConditionType BottomType;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< BottomType, char > BottomTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const BottomType&
+  bottom () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  BottomType&
+  bottom ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  bottom (const BottomType& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  bottom (::std::auto_ptr< BottomType > p);
+
+  //@}
+
+  /**
+   * @name front
+   *
+   * @brief Accessor and modifier functions for the %front
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::BoundaryConditionType FrontType;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< FrontType, char > FrontTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const FrontType&
+  front () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  FrontType&
+  front ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  front (const FrontType& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  front (::std::auto_ptr< FrontType > p);
+
+  //@}
+
+  /**
+   * @name back
+   *
+   * @brief Accessor and modifier functions for the %back
+   * required attribute.
+   */
+  //@{
+
+  /**
+   * @brief Attribute type.
+   */
+  typedef ::BoundaryConditionType BackType;
+
+  /**
+   * @brief Attribute traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< BackType, char > BackTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the attribute.
+   *
+   * @return A constant reference to the attribute.
+   */
+  const BackType&
+  back () const;
+
+  /**
+   * @brief Return a read-write reference to the attribute.
+   *
+   * @return A reference to the attribute.
+   */
+  BackType&
+  back ();
+
+  /**
+   * @brief Set the attribute value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the attribute.
+   */
+  void
+  back (const BackType& x);
+
+  /**
+   * @brief Set the attribute value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  back (::std::auto_ptr< BackType > p);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  BoundaryHandlingType (const RightType&,
+                        const LeftType&,
+                        const TopType&,
+                        const BottomType&,
+                        const FrontType&,
+                        const BackType&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  BoundaryHandlingType (const ::xercesc::DOMElement& e,
+                        ::xml_schema::Flags f = 0,
+                        ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  BoundaryHandlingType (const BoundaryHandlingType& x,
+                        ::xml_schema::Flags f = 0,
+                        ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual BoundaryHandlingType*
+  _clone (::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0) const;
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~BoundaryHandlingType ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::Flags);
+
+  protected:
+  ::xsd::cxx::tree::one< RightType > right_;
+  ::xsd::cxx::tree::one< LeftType > left_;
+  ::xsd::cxx::tree::one< TopType > top_;
+  ::xsd::cxx::tree::one< BottomType > bottom_;
+  ::xsd::cxx::tree::one< FrontType > front_;
+  ::xsd::cxx::tree::one< BackType > back_;
 
   //@endcond
 };
@@ -2088,6 +2531,468 @@ class Cuboid: public ::xml_schema::Type
 };
 
 /**
+ * @brief Class corresponding to the %sphere schema type.
+ *
+ * @nosubgrouping
+ */
+class Sphere: public ::xml_schema::Type
+{
+  public:
+  /**
+   * @name center
+   *
+   * @brief Accessor and modifier functions for the %center
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::FloatVector CenterType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< CenterType, char > CenterTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const CenterType&
+  center () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  CenterType&
+  center ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  center (const CenterType& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  center (::std::auto_ptr< CenterType > p);
+
+  //@}
+
+  /**
+   * @name radius
+   *
+   * @brief Accessor and modifier functions for the %radius
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::Int RadiusType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< RadiusType, char > RadiusTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const RadiusType&
+  radius () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  RadiusType&
+  radius ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  radius (const RadiusType& x);
+
+  //@}
+
+  /**
+   * @name stepWidth
+   *
+   * @brief Accessor and modifier functions for the %stepWidth
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::Double StepWidthType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< StepWidthType, char, ::xsd::cxx::tree::schema_type::double_ > StepWidthTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const StepWidthType&
+  stepWidth () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  StepWidthType&
+  stepWidth ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  stepWidth (const StepWidthType& x);
+
+  //@}
+
+  /**
+   * @name mass
+   *
+   * @brief Accessor and modifier functions for the %mass
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::Double MassType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< MassType, char, ::xsd::cxx::tree::schema_type::double_ > MassTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const MassType&
+  mass () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  MassType&
+  mass ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  mass (const MassType& x);
+
+  //@}
+
+  /**
+   * @name type
+   *
+   * @brief Accessor and modifier functions for the %type
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::Int TypeType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< TypeType, char > TypeTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const TypeType&
+  type () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  TypeType&
+  type ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  type (const TypeType& x);
+
+  //@}
+
+  /**
+   * @name initialVelocity
+   *
+   * @brief Accessor and modifier functions for the %initialVelocity
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::FloatVector InitialVelocityType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< InitialVelocityType, char > InitialVelocityTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const InitialVelocityType&
+  initialVelocity () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  InitialVelocityType&
+  initialVelocity ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  initialVelocity (const InitialVelocityType& x);
+
+  /**
+   * @brief Set the element value without copying.
+   *
+   * @param p A new value to use.
+   *
+   * This function will try to use the passed value directly
+   * instead of making a copy.
+   */
+  void
+  initialVelocity (::std::auto_ptr< InitialVelocityType > p);
+
+  //@}
+
+  /**
+   * @name brownianMeanVelocity
+   *
+   * @brief Accessor and modifier functions for the %brownianMeanVelocity
+   * required element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::Double BrownianMeanVelocityType;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< BrownianMeanVelocityType, char, ::xsd::cxx::tree::schema_type::double_ > BrownianMeanVelocityTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element.
+   *
+   * @return A constant reference to the element.
+   */
+  const BrownianMeanVelocityType&
+  brownianMeanVelocity () const;
+
+  /**
+   * @brief Return a read-write reference to the element.
+   *
+   * @return A reference to the element.
+   */
+  BrownianMeanVelocityType&
+  brownianMeanVelocity ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  brownianMeanVelocity (const BrownianMeanVelocityType& x);
+
+  //@}
+
+  /**
+   * @name Constructors
+   */
+  //@{
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes.
+   */
+  Sphere (const CenterType&,
+          const RadiusType&,
+          const StepWidthType&,
+          const MassType&,
+          const TypeType&,
+          const InitialVelocityType&,
+          const BrownianMeanVelocityType&);
+
+  /**
+   * @brief Create an instance from the ultimate base and
+   * initializers for required elements and attributes
+   * (auto_ptr version).
+   *
+   * This constructor will try to use the passed values directly
+   * instead of making copies.
+   */
+  Sphere (::std::auto_ptr< CenterType >&,
+          const RadiusType&,
+          const StepWidthType&,
+          const MassType&,
+          const TypeType&,
+          ::std::auto_ptr< InitialVelocityType >&,
+          const BrownianMeanVelocityType&);
+
+  /**
+   * @brief Create an instance from a DOM element.
+   *
+   * @param e A DOM element to extract the data from.
+   * @param f Flags to create the new instance with.
+   * @param c A pointer to the object that will contain the new
+   * instance.
+   */
+  Sphere (const ::xercesc::DOMElement& e,
+          ::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy constructor.
+   *
+   * @param x An instance to make a copy of.
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   *
+   * For polymorphic object models use the @c _clone function instead.
+   */
+  Sphere (const Sphere& x,
+          ::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0);
+
+  /**
+   * @brief Copy the instance polymorphically.
+   *
+   * @param f Flags to create the copy with.
+   * @param c A pointer to the object that will contain the copy.
+   * @return A pointer to the dynamically allocated copy.
+   *
+   * This function ensures that the dynamic type of the instance is
+   * used for copying and should be used for polymorphic object
+   * models instead of the copy constructor.
+   */
+  virtual Sphere*
+  _clone (::xml_schema::Flags f = 0,
+          ::xml_schema::Container* c = 0) const;
+
+  //@}
+
+  /**
+   * @brief Destructor.
+   */
+  virtual 
+  ~Sphere ();
+
+  // Implementation.
+  //
+
+  //@cond
+
+  protected:
+  void
+  parse (::xsd::cxx::xml::dom::parser< char >&,
+         ::xml_schema::Flags);
+
+  protected:
+  ::xsd::cxx::tree::one< CenterType > center_;
+  ::xsd::cxx::tree::one< RadiusType > radius_;
+  ::xsd::cxx::tree::one< StepWidthType > stepWidth_;
+  ::xsd::cxx::tree::one< MassType > mass_;
+  ::xsd::cxx::tree::one< TypeType > type_;
+  ::xsd::cxx::tree::one< InitialVelocityType > initialVelocity_;
+  ::xsd::cxx::tree::one< BrownianMeanVelocityType > brownianMeanVelocity_;
+
+  //@endcond
+};
+
+/**
  * @brief Class corresponding to the %generator schema type.
  *
  * @nosubgrouping
@@ -2156,6 +3061,70 @@ class Generator: public ::xml_schema::Type
    */
   void
   cuboid (const CuboidSequence& s);
+
+  //@}
+
+  /**
+   * @name sphere
+   *
+   * @brief Accessor and modifier functions for the %sphere
+   * sequence element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::Sphere SphereType;
+
+  /**
+   * @brief Element sequence container type.
+   */
+  typedef ::xsd::cxx::tree::sequence< SphereType > SphereSequence;
+
+  /**
+   * @brief Element iterator type.
+   */
+  typedef SphereSequence::iterator SphereIterator;
+
+  /**
+   * @brief Element constant iterator type.
+   */
+  typedef SphereSequence::const_iterator SphereConstIterator;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< SphereType, char > SphereTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * sequence.
+   *
+   * @return A constant reference to the sequence container.
+   */
+  const SphereSequence&
+  sphere () const;
+
+  /**
+   * @brief Return a read-write reference to the element sequence.
+   *
+   * @return A reference to the sequence container.
+   */
+  SphereSequence&
+  sphere ();
+
+  /**
+   * @brief Copy elements from a given sequence.
+   *
+   * @param s A sequence to copy elements from.
+   *
+   * For each element in @a s this function makes a copy and adds it 
+   * to the sequence. Note that this operation completely changes the 
+   * sequence and all old elements will be lost.
+   */
+  void
+  sphere (const SphereSequence& s);
 
   //@}
 
@@ -2230,6 +3199,7 @@ class Generator: public ::xml_schema::Type
 
   protected:
   CuboidSequence cuboid_;
+  SphereSequence sphere_;
 
   //@endcond
 };
@@ -2453,9 +3423,9 @@ class SimulationConfig: public ::xml_schema::Type
   //@}
 
   /**
-   * @name boundaryCondition
+   * @name boundaryHandling
    *
-   * @brief Accessor and modifier functions for the %boundaryCondition
+   * @brief Accessor and modifier functions for the %boundaryHandling
    * required element.
    */
   //@{
@@ -2463,28 +3433,28 @@ class SimulationConfig: public ::xml_schema::Type
   /**
    * @brief Element type.
    */
-  typedef ::BoundaryConditionType BoundaryConditionType;
+  typedef ::BoundaryHandlingType BoundaryHandlingType;
 
   /**
    * @brief Element traits type.
    */
-  typedef ::xsd::cxx::tree::traits< BoundaryConditionType, char > BoundaryConditionTraits;
+  typedef ::xsd::cxx::tree::traits< BoundaryHandlingType, char > BoundaryHandlingTraits;
 
   /**
    * @brief Return a read-only (constant) reference to the element.
    *
    * @return A constant reference to the element.
    */
-  const BoundaryConditionType&
-  boundaryCondition () const;
+  const BoundaryHandlingType&
+  boundaryHandling () const;
 
   /**
    * @brief Return a read-write reference to the element.
    *
    * @return A reference to the element.
    */
-  BoundaryConditionType&
-  boundaryCondition ();
+  BoundaryHandlingType&
+  boundaryHandling ();
 
   /**
    * @brief Set the element value.
@@ -2495,7 +3465,7 @@ class SimulationConfig: public ::xml_schema::Type
    * the new value of the element.
    */
   void
-  boundaryCondition (const BoundaryConditionType& x);
+  boundaryHandling (const BoundaryHandlingType& x);
 
   /**
    * @brief Set the element value without copying.
@@ -2506,7 +3476,7 @@ class SimulationConfig: public ::xml_schema::Type
    * instead of making a copy.
    */
   void
-  boundaryCondition (::std::auto_ptr< BoundaryConditionType > p);
+  boundaryHandling (::std::auto_ptr< BoundaryHandlingType > p);
 
   //@}
 
@@ -3059,7 +4029,7 @@ class SimulationConfig: public ::xml_schema::Type
                     const EndTimeType&,
                     const ScenarioTypeType&,
                     const DomainSizeType&,
-                    const BoundaryConditionType&,
+                    const BoundaryHandlingType&,
                     const ContainerTypeType&,
                     const EpsilonType&,
                     const SigmaType&,
@@ -3083,7 +4053,7 @@ class SimulationConfig: public ::xml_schema::Type
                     const EndTimeType&,
                     const ScenarioTypeType&,
                     ::std::auto_ptr< DomainSizeType >&,
-                    const BoundaryConditionType&,
+                    ::std::auto_ptr< BoundaryHandlingType >&,
                     const ContainerTypeType&,
                     const EpsilonType&,
                     const SigmaType&,
@@ -3158,7 +4128,7 @@ class SimulationConfig: public ::xml_schema::Type
   ::xsd::cxx::tree::one< EndTimeType > endTime_;
   ::xsd::cxx::tree::one< ScenarioTypeType > scenarioType_;
   ::xsd::cxx::tree::one< DomainSizeType > domainSize_;
-  ::xsd::cxx::tree::one< BoundaryConditionType > boundaryCondition_;
+  ::xsd::cxx::tree::one< BoundaryHandlingType > boundaryHandling_;
   ::xsd::cxx::tree::one< ContainerTypeType > containerType_;
   ::xsd::cxx::tree::one< EpsilonType > epsilon_;
   ::xsd::cxx::tree::one< SigmaType > sigma_;

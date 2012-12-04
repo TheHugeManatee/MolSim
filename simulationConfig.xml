@@ -8,7 +8,12 @@
   <scenarioType>Lennard-Jones</scenarioType>
   <domainSize x0="60.0" x1="35.0" x2="10.0" />
   <cutoffRadius>3.0</cutoffRadius>
-  <boundaryCondition>Reflect</boundaryCondition>
+
+  <boundaryHandling
+  	top="Reflect" bottom="Reflect"
+  	left="Reflect" right="Reflect"
+  	front="Outflow" back="Periodic"
+  />
   <containerType>CelllistContainer</containerType>
   <epsilon>5</epsilon>
   <sigma>1</sigma>
