@@ -19,9 +19,11 @@
 #include "../ParticleContainer.h"
 #include "../utils/particleGenerator.h"
 
+#define CIRCLECONSTANT 3.1415926535
+
 class ParticleGeneratorTests : public CppUnit::TestFixture {
 private:
-	ParticleContainer pc;
+	ParticleContainer pcSphereSize, pcSphereDistance, pcCuboid;
 
 public:
 	void setUp() {
@@ -32,30 +34,66 @@ public:
 
 	}
 
+
+	/**
+	 * tests the following conditions:
+	 * - correct amount of particles for a generated cuboid
+	 * - whether all particles are within expected area
+	 */
+	void testCuboid(){
+		int length = 3;
+		int width = 4;
+		int height = 5;
+
+		utils::Vector<double, 3> zero;
+		zero[0] = 0.0;
+		zero[1] = 0.0;
+		zero[2] = 0.0;
+
+		ParticleGenerator::regularCuboid(pcCuboid, zero, length, width, height,1.1225,1.0,1,zero,0.1);
+		bool ok = true;
+		pcCuboid.each([&] (Particle &p){
+			//std::cout << "length: " <<p.x[0] << ", width: " << p.x[1] << ", height: " << p.x[2] <<std::endl;
+			ok = ok && (p.x[0]<=length && p.x[1] <= width && p.x[2] <= height);
+				});
+		CPPUNIT_ASSERT(ok && (pcCuboid.getSize() == length*width*height));
+	}
+	/**
+	 * tests the following conditions:
+	 * - correct amount of particles for a generated sphere (approximated by volume of smaller and larger sphere)
+	 */
 	void testSphereSize(){
 
-		int radius = 6;
-		utils::Vector<double, 3> bla;
-		bla[0] = 0.0;
-		bla[1] = 0.0;
-		bla[2] = 0.0;
+		int radius = 10;
+		utils::Vector<double, 3> zero;
+		zero[0] = 0.0;
+		zero[1] = 0.0;
+		zero[2] = 0.0;
 
-		ParticleGenerator::generateSphere(pc, bla, radius, 1.1225, 1.0, 1, bla, 0.0);
-
-		CPPUNIT_ASSERT((4.0/3.0)*((radius*radius*radius)-1)<pc.getSize() && pc.getSize()<(4.0/3.0)*((radius*radius*radius)+1));
+		ParticleGenerator::generateSphere(pcSphereSize, zero, radius, 1.1225, 1.0, 1, zero, 0.0);
+		//std::cout << "size:  " << pcSize.getSize() << "Particles" << std::endl;
+		int rmo = radius - 1; //radius minus one
+		int rpo = radius + 1; //radius plus one
+		CPPUNIT_ASSERT(CIRCLECONSTANT*(4.0/3.0)*((rmo*rmo*rmo))<pcSphereSize.getSize() && pcSphereSize.getSize() < CIRCLECONSTANT*(4.0/3.0)*((rpo*rpo*rpo)));
 	}
 
-	void testSphereMaximumDistanceToCenter(){
-		int radius = 5;
-		utils::Vector<double, 3> bla;
-		bla[0] = 0.0;
-		bla[1] = 0.0;
-		bla[2] = 0.0;
 
-		ParticleGenerator::generateSphere(pc, bla, 5, 1.1225, 1.0, 1, bla, 0.0);
+	/**
+		 * tests the following conditions:
+		 * - whether all particles are within expected area
+		 */
+	void testSphereMaximumDistanceToCenter(){
+		int radius = 10;
+		utils::Vector<double, 3> zero;
+		zero[0] = 0.0;
+		zero[1] = 0.0;
+		zero[2] = 0.0;
+		double distance = 1.1225;
+
+		ParticleGenerator::generateSphere(pcSphereDistance, zero, radius, distance, 1.0, 1, zero, 0.0);
 		bool ok = true;
-		pc.each([&] (Particle &p){
-			ok && (p.x.L2Norm()<radius);
+		pcSphereDistance.each([&] (Particle &p){
+			ok = ok && (p.x.L2Norm()<radius*distance);
 		});
 		CPPUNIT_ASSERT(ok);
 	}
@@ -67,6 +105,10 @@ public:
 	static CppUnit::Test *suite()
 	{
 		CppUnit::TestSuite *suiteOfTests = new CppUnit::TestSuite( "ParticleGeneratorTests" );
+				suiteOfTests->addTest( new CppUnit::TestCaller<ParticleGeneratorTests>(
+						"testCuboid",
+						&ParticleGeneratorTests::testCuboid) );
+
 		suiteOfTests->addTest( new CppUnit::TestCaller<ParticleGeneratorTests>(
 				"testSphereSize",
 				&ParticleGeneratorTests::testSphereSize) );
