@@ -213,7 +213,8 @@ void CellListContainer::eachPair(std::function<void (Particle&, Particle&)> fn, 
 	//direct looping should achieve better performance than nested lambdas
 	for(int i = 0; i < sc1; i++) {
 		for(int j = 0; j < sc2; j++) {
-			fn(c1.particles[i], c2.particles[j]);
+			if((c1.particles[i].x -c2.particles[j].x).LengthOptimizedR3Squared()<Settings::rCutoff*Settings::rCutoff)
+				fn(c1.particles[i], c2.particles[j]);
 		}
 	}
 	/*c1.each([&] (Particle &particle1) {

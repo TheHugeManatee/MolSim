@@ -26,6 +26,8 @@ Simulator::Simulator() {
 
 	scenario->setup(*particleContainer);
 
+	particleContainer->afterPositionChanges(scenario->boundaryHandlers, scenario->haloHandler);
+
 	LOG4CXX_TRACE(logger, "Scenario set up.");
 	//pre-calculate the forces for the first update
 	calculateF();
