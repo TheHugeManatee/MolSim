@@ -11,7 +11,9 @@
 
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
-#include "outputWriter/RenderOutputWriter.h"
+#ifndef NOGLVISUALIZER
+	#include "outputWriter/RenderOutputWriter.h"
+#endif
 
 log4cxx::LoggerPtr Simulator::logger = log4cxx::Logger::getLogger("Simulator");
 
@@ -70,11 +72,14 @@ void Simulator::plotParticles(int iteration) {
 	outputWriter::VTKWriter vtkWriter;
 	outputWriter::XYZWriter xyzWriter;
 
+
+#ifndef NOGLVISUALIZER
 	if(Settings::show3DVisual) {
 		outputWriter::RenderOutputWriter openglView;
 
 		openglView.plotParticles(*particleContainer, Settings::outputFilePrefix, iteration);
 	}
+#endif
 	switch (Settings::outputFileType) {
 	case OutputFileType::xyz:
 
