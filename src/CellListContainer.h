@@ -26,6 +26,10 @@
  * This approximation reduces the complexity of the eachPairs method from O(n^2) to O(n) because the function will only be
  * executed for pairs of particles which lie in adjacent cells
  *
+ * The graph illustrates the benefit the CelllistContainer yields compared to the old implementation in a simulation of 10 seconds
+ *
+ * \image html https://dl.dropbox.com/u/16135288/MolSim/ComputationTimeCelllistcontainer.png
+ *
  *
  */
 class CellListContainer: public ParticleContainer {

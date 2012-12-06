@@ -20,6 +20,7 @@
   <loggerConfigFile>Logger.properties</loggerConfigFile>
   <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType>
+  <cutoffRadius>1.0</cutoffRadius>
   <inputFile></inputFile>
 
   <generator>
