@@ -63,6 +63,7 @@
 
 #include "UnitTests/ParticleContainerTests.h"
 #include "UnitTests/ParticleGeneratorTests.h"
+#include "UnitTests/SettingsXsdTest.h"
 
 #include "utils/Settings.h"
 #include "Simulator.h"
@@ -201,6 +202,10 @@ int executeTests() {
 
 	if(all || !Settings::testCase.compare("ParticleGenerator"))
 		 runner.addTest(ParticleGeneratorTests::suite());
+
+	if(all || !Settings::testCase.compare("Settings"))
+		 runner.addTest(SettingsXsdTest::suite());
+
 
 
 	runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),

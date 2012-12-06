@@ -136,8 +136,8 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::boundaryCondition[1] = xmlCfg->boundaryHandling().left();
 	    Settings::boundaryCondition[2] = xmlCfg->boundaryHandling().top();
 	    Settings::boundaryCondition[3] = xmlCfg->boundaryHandling().bottom();
-	    Settings::boundaryCondition[4] = xmlCfg->boundaryHandling().front();
-	    Settings::boundaryCondition[5] = xmlCfg->boundaryHandling().back();
+	    Settings::boundaryCondition[4] = xmlCfg->boundaryHandling().back();
+	    Settings::boundaryCondition[5] = xmlCfg->boundaryHandling().front();
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
 	    Settings::rCutoff = xmlCfg->cutoffRadius();
@@ -210,7 +210,14 @@ std::string Settings::toString() {
 	s << "\n\toutputFilePrefix = " << Settings::outputFilePrefix;
 	s << "\n\toutputType = " << Settings::outputFileType;
 	s << "\n\tdomainSize = " << Settings::domainSize;
-	s << "\n\tboundaryCondition = " << Settings::boundaryCondition;
+	s << "\n\tboundaryConditions:";
+	s << "\n\t\tleft:\t"<< Settings::boundaryCondition[0];
+	s << "\n\t\tright:\t"<< Settings::boundaryCondition[1];
+	s << "\n\t\tbottom:\t"<< Settings::boundaryCondition[2];
+	s << "\n\t\ttop:\t"<< Settings::boundaryCondition[3];
+	s << "\n\t\tback:\t"<< Settings::boundaryCondition[4];
+	s << "\n\t\tfront:\t"<< Settings::boundaryCondition[5];
+
 	s << "\n\trCutoff = " << Settings::rCutoff;
 
 	return s.str();
