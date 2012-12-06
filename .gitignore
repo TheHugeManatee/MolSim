@@ -12,4 +12,7 @@ doxy/
 *.exe
 *.stackdump
 doxys_documentation/
-src/utils/simulationConfig.*
+src/utils/simulationConfig.h
+src/utils/simulationConfig.cpp
+src/outputWriter/vtk-unstructured.cpp
+src/outputWriter/vtk-unstructured.h

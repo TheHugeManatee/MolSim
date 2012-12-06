@@ -46,7 +46,7 @@ namespace ParticleGenerator {
 	 *
 	 * @param container the particle container that receives the generated particles
 	 * @param center The center coordinates of the sphere
-	 * @param radius The radius as amount of particles of the sphere
+	 * @param radiusSphere The radius as amount of particles of the sphere
 	 * @param h distance between particles (in every direction)
 	 * @param m mass of the particles
 	 * @param type type of the particles

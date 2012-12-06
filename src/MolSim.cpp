@@ -19,6 +19,23 @@
  *
  *  All parameters specified on the command line will override the specifications of the config file.
  *
+ * @section build Building
+ * Building should happen in a unix environment via the Makefile provided in the root directory.
+ *
+ * To build the project, currently the following is required:
+ *
+ * - Library log4cxx Logging framework [0.10.0-11]
+ * - Library xercesc xml parsing library [3.0.1-10]
+ * - Library cppunit for unit tests [1.12.1-2]
+ * - Codesynthesis xsd tool [3.3.0]
+ * - *Library freeglut for OpenGL Rendering [2.8.0]
+ * 		If you are not able to install the freeglut library, you can use the Makefile_NoGLUT. This will build
+ * 		the Project without the OpenGL live renderer to remove the dependency to OpenGL and freeglut
+ *
+ * @note The Makefile automatically builds the utils/simulationConfig.cpp and .h files by using the codesynthesis
+ * 	xsd converter.
+ *
+ *
  * @subsection params Command Line Parameters
  * certain parameters can be specified via command line to override the builtin defaults and the values given in the
  * configuration file
@@ -31,16 +48,40 @@
  *
  * - <tt>-endTime <double> </tt>: simulation end time
  *
- * - <tt>-disableOutput <1 or 0></tt>: explicitly disable output (for benchmarking)
+ * - <tt>-disableOutput: explicitly disable output (for benchmarking)
  *
  * - <tt>-outputFilePrefix <pathAndFilePrefix></tt>: the file prefix for output files
  *
- * - <tt>-test <testName></tt>: run specific unit test ("all" to run all available)
+ * - <tt>-test <testName></tt>: run specific unit test ("all" to run all available unit tests)
  *
+ * - <tt>-visualize</tt>: show a live rendering of the current simulator state
  *
  * @subsection cfg Config Files
+ * Config files can have either .cfg or .xml format
+ * @subsubsection cfgcfg .cfg Format
+ * The .cfg format is a simple line-based format to specify configuration parameters.
+ * Lines beginning with "# " will be ignored as comments.
+ * Every non-comment-line first specifies the name of the config parameter and then, separated
+ * by a space, the value to be assigned to that parameter.
+ *
+ * @warning the .cfg Format is obsolete and usage is discouraged. .xml format offers more advanced options becuase
+ * the parser for .cfg Format has not been updated to read new config parameters introduced in more recent versions.
+ *
+ * @subsubsection cfgxml .xml Format
+ * The XML config file format allows to specify Settings in a easily readable, strictly well-formed format. The parser is
+ * generated from the simulationConfig.xsd schema file by the Codesynthesis XSD tool. This means that the XML configuration
+ * file has to fulfill the XML Schema Definitions in simulationConfig.xsd. Use simulationConfig.xml as a starting point to
+ * build your own configurations.
  *
  * @subsection input Input Files
+ * Input files contain particle definition data. The first lines starting with "#" will be ignored. The first non-comment line
+ * specifies the number of explicit particle definitions in the file.
+ *
+ * After this line, as many lines are expected, each defining a particle by position, type, mass and velocity.
+ *
+ * After the explicit particle definitions, there can be arbitrarily many cuboid definitions. Since cuboids are easier defined
+ * in the XML Config files, that should be the preferred way to do it. Cuboid functionality in the input files is only
+ * kept for backwards compatibility.
  *
  */
 
@@ -190,8 +231,6 @@ int main(int argc, char* argsv[]) {
  */
 int executeTests() {
 	std::cout << "Running tests..." << std::endl;
-
-
 
 	CppUnit::TextUi::TestRunner runner;
 
