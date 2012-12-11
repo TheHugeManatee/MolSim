@@ -48,6 +48,7 @@ BoundaryConditionType Settings::boundaryCondition[6] = {
 bool Settings::show3DVisual = false;
 bool Settings::encodeCellsInType = false;
 
+SimulationConfig::Thermostat Settings::thermostat;
 SimulationConfig::GeneratorType Settings::generator;
 
 log4cxx::LoggerPtr Settings::logger = log4cxx::Logger::getLogger("Settings");
