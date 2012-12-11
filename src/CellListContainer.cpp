@@ -11,6 +11,9 @@
 
 #include <cassert>
 #include <algorithm>
+#include<float.h>
+
+
 
 
 log4cxx::LoggerPtr CellListContainer::logger = log4cxx::Logger::getLogger("CellListContainer");
@@ -54,9 +57,35 @@ inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 };
 
 ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
+	utils::Vector<double, 3> ROUNDINGERROR = p.v * Settings::deltaT; //I guess that's the maximum distance a particle can get into the halo layer in one time step
+
 	int x0 = (p.x[0]) / edgeLength + 1,
 		x1 = (p.x[1]) / edgeLength + 1,
 		x2 = (p.x[2]) / edgeLength + 1;
+
+	/*Particles sitting exactly on a boundary halo line should be put in the boundary cell (rounding mistake is recognized)*/
+/*
+	if(p.x[0] > Settings::domainSize[0] && p.x[0] - ROUNDINGERROR[0] < Settings::domainSize[0] )
+			x0 = nX0 - 2;
+	if(p.x[1] > Settings::domainSize[1] && p.x[1] - ROUNDINGERROR[1] < Settings::domainSize[1] ){
+			LOG4CXX_INFO(logger,"Particle lying on Y boundary halo line");
+			x1 = nX1 - 2;
+	}
+	if(p.x[2] > Settings::domainSize[2] && p.x[2] - ROUNDINGERROR[2] < Settings::domainSize[2] )
+			x2 = nX2 - 2;
+
+
+	if(p.x[0] < 0 && p.x[0] + ROUNDINGERROR[0] > 0 )
+			x0 = 1;
+
+	if(p.x[1] < 0 && p.x[1] + ROUNDINGERROR[1] > 0 ){
+			LOG4CXX_INFO(logger,"Particle lying on Y boundary halo line");
+			x1 = 1;
+	}
+	if(p.x[2] < 0 && p.x[2] + ROUNDINGERROR[2] > 0 )
+			x2 = 1;
+*/
+
 
 	//LOG4CXX_TRACE(logger, "Cell position for particle " << p.x.toString() <<": " << x0 << " " << x1 << " " << x2);
 
@@ -179,7 +208,7 @@ void CellListContainer::afterPositionChanges(
 					}
 					//Perform the removal
 					if(particleToBeRemoved) {
-						//switch last one and the one to be deleted
+						//switch last one and the one to be delete
 						c.particles[i] = c.particles[c.particles.size() - 1];
 						//then delete the new last one and decrement the loop counter to check
 						//the one at position i again
@@ -205,6 +234,7 @@ void CellListContainer::afterPositionChanges(
 	//LOG4CXX_TRACE(logger, "Particles Left: " << getSize());
 	//LOG4CXX_TRACE(logger, "Empty cells: " << emptyCells);
 }
+
 
 void CellListContainer::eachPair(std::function<void (Particle&, Particle&)> fn, ParticleContainer &c1, ParticleContainer &c2) {
 	int sc1 = c1.getSize(),
@@ -233,3 +263,5 @@ int CellListContainer::getSize() {
 //	assert(size == size_);
 	return size;
 }
+
+

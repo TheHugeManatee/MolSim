@@ -123,6 +123,7 @@ public:
     void eachPair(std::function<void (Particle&, Particle&)> fn);
     void add(Particle& p);
     int getSize();
+
 };
 
 #endif /* CELLLISTCONTAINER_H_ */

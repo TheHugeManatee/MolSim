@@ -107,12 +107,26 @@ void Simulator::nextTimeStep() {
 	// calculate new positions
 	calculateX();
 
+	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
 
-	//clear force accumulation vector and rearrange internal particle container structure
-	particleContainer->afterPositionChanges(scenario->boundaryHandlers, scenario->haloHandler);
+	/*just a do nothing function TODO: find a better place for this*/
+	for(int i = 0 ; i<6 ; i++){
+	boundaryHandlers[i] = [] (ParticleContainer &container, Particle &p) {
+		return false;
+	};
+	}
 
-	// calculate new forces
+	//clear force accumulation vector and rearrange internal particle container structure		/*This move is ugly but necessary for periodic boundary Handling*/
+	particleContainer->afterPositionChanges(scenario->boundaryHandlers, boundaryHandlers[0]);	/*Without it we wouldn't have any way to calculate forces between */
+																								/*two opposite cells*/
+																								/*TODO:Maybe we should seperate afterPostionChages in one method
+																								*applying bounderyHandling an one to apply haloHandling an sort the cells
+	// calculate new forces																		*after force calculation*/
 	calculateF();
+
+	particleContainer->afterPositionChanges(boundaryHandlers, scenario->haloHandler );
+
+
 	// calculate new velocities
 	calculateV();
 }

@@ -13,6 +13,8 @@
 #include "utils/Vector.h"
 #include <cstdlib>
 #include <cassert>
+#include <float.h>
+
 
 #define TWORAISED1_6 1.12246204830937298143353304967917
 
@@ -26,6 +28,7 @@ std::function<void (Particle&)> ScenarioFactory::verletUpdatePosition =
 	resultX= p.x + dt * p.v + dt * dt / (2 * p.m) * p.f;
 	p.x = resultX;
 };
+
 
 std::function<void (Particle&)> ScenarioFactory::verletUpdateVelocity = [] (Particle& p) {
 	utils::Vector<double, 3> resultV;
@@ -121,34 +124,132 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 
 };
 
+/*These are the handlers for a periodic boundaryHandling
+ * Particles in boundary cells have to be copied to the opposite halo cell for forceCalculations on relying cells  */
+
 std::function<bool (ParticleContainer &, Particle &p)> ScenarioFactory::periodicHandlers [] = {
 	//x0 = 0 boundary
 	[] (ParticleContainer &container, Particle &p) {
+		utils::Vector <double ,3> positionInHalo;
+		utils::Vector <double, 3> zeroVelocity;
+		double realDomainSize = std::ceil(Settings::domainSize[0] / Settings::rCutoff) * Settings::rCutoff;
+		if(p.x[0] >= 0){
+		zeroVelocity [0] = 0;
+		zeroVelocity [1] = 0;
+		zeroVelocity [2] = 0;
+		positionInHalo[0] = realDomainSize + p.x[0];
+		positionInHalo[1] = p.x[1];
+		positionInHalo[2] = p.x[2];
+		Particle pNew (positionInHalo, zeroVelocity, p.m, p.type);
+		container.add(pNew);
+		}
 		if(p.x[0] < 0) { //wrap particle around if we are outside the domain
-			p.x[0] += Settings::domainSize[0];
+			p.x[0] = realDomainSize + p.x[0];
 		}
 		return false;
+
 	},
 	//x0 = domain[0] boundary
 	[] (ParticleContainer &container, Particle &p) {
-
+		utils::Vector <double ,3> positionInHalo;
+		utils::Vector <double, 3> zeroVelocity;
+		double realDomainSize = std::ceil(Settings::domainSize[0] / Settings::rCutoff) * Settings::rCutoff;
+		if(p.x[0] <= realDomainSize){
+		zeroVelocity [0] = 0;
+		zeroVelocity [1] = 0;
+		zeroVelocity [2] = 0;
+		positionInHalo[0] = p.x[0] - realDomainSize;
+		positionInHalo[1] = p.x[1];
+		positionInHalo[2] = p.x[2];
+		Particle pNew (positionInHalo, zeroVelocity, p.m, p.type);
+		container.add(pNew);
+		}
+		if(p.x[0] > realDomainSize) { //wrap particle around if we are outside the domain
+			p.x[0] = p.x[0] - realDomainSize;
+		}
 		return false;
 	},
 	//x1 = 0 boundary
 	[] (ParticleContainer &container, Particle &p) {
+		utils::Vector <double ,3> positionInHalo;
+		utils::Vector <double, 3> zeroVelocity;
+		double realDomainSize = std::ceil(Settings::domainSize[1] / Settings::rCutoff) * Settings::rCutoff;
+		if(p.x[1] >= 0){
+		zeroVelocity [0] = 0;
+		zeroVelocity [1] = 0;
+		zeroVelocity [2] = 0;
+		positionInHalo[0] = p.x[0];
+		positionInHalo[1] = p.x[1] + realDomainSize;
+		positionInHalo[2] = p.x[2];
+		Particle pNew (positionInHalo, zeroVelocity, p.m, p.type);
+		container.add(pNew);
+		}
+		if(p.x[1] < 0) { //wrap particle around if we are outside the domain
+			p.x[1] = realDomainSize + p.x[1];
+		}
 		return false;
 	},
 	//x1 = domain[1] boundary
 	[] (ParticleContainer &container, Particle &p) {
+		utils::Vector <double ,3> positionInHalo;
+		utils::Vector <double, 3> zeroVelocity;
+		double realDomainSize = std::ceil(Settings::domainSize[1] / Settings::rCutoff) * Settings::rCutoff;
+		if(p.x[1] <= realDomainSize){
+		zeroVelocity [0] = 0;
+		zeroVelocity [1] = 0;
+		zeroVelocity [2] = 0;
+		positionInHalo[0] = p.x[0];
+		positionInHalo[1] = p.x[1] - realDomainSize;
+		positionInHalo[2] = p.x[2];
+		Particle pNew (positionInHalo, zeroVelocity, p.m, p.type);
+		container.add(pNew);
+		}
+		if(p.x[1] > realDomainSize) { //wrap particle around if we are outside the domain
+			p.x[1] = p.x[1] - realDomainSize;
+		}
+
 		return false;
 	},
 	//x2 = 0 boundary
 	[] (ParticleContainer &container, Particle &p) {
+		utils::Vector <double ,3> positionInHalo;
+		utils::Vector <double, 3> zeroVelocity;
+		double realDomainSize = std::ceil(Settings::domainSize[2] / Settings::rCutoff) * Settings::rCutoff;
+		if(p.x[2]>= 0 ){
+		zeroVelocity [0] = 0;
+		zeroVelocity [1] = 0;
+		zeroVelocity [2] = 0;
+		positionInHalo[0] = p.x[0];
+		positionInHalo[1] = p.x[1];
+		positionInHalo[2] = realDomainSize + p.x[2];
+		Particle pNew (positionInHalo, zeroVelocity, p.m, p.type);
+		container.add(pNew);
+		}
+		if(p.x[2] < 0) { //wrap particle around if we are outside the domain
+			p.x[2] = realDomainSize + p.x[2];
+		}
 		return false;
 	},
 	//x2 = domain[2] boundary
 	[] (ParticleContainer &container, Particle &p) {
+		utils::Vector <double ,3> positionInHalo;
+		utils::Vector <double, 3> zeroVelocity;
+		double realDomainSize = std::ceil(Settings::domainSize[2] / Settings::rCutoff) * Settings::rCutoff;
+		if(p.x[2]<= realDomainSize ){
+		zeroVelocity [0] = 0;
+		zeroVelocity [1] = 0;
+		zeroVelocity [2] = 0;
+		positionInHalo[0] = p.x[0];
+		positionInHalo[1] = p.x[1];
+		positionInHalo[2] = p.x[2] - realDomainSize;
+		Particle pNew (positionInHalo, zeroVelocity, p.m, p.type);
+		container.add(pNew);
+		}
+		if(p.x[2] > realDomainSize) { //we have a litte problem around here: particles with x[i] > Settings::domainSize[i] are deleted accoding to the HaloHandler
+			p.x[2] = p.x[2] - realDomainSize ;							//
+		}
 		return false;
+
 	}
 };
 
@@ -179,9 +280,13 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 	}
 
 	//For now, the halo handler always deletes the particles
+	//TODO: make HaloHandling chooseable by Halo position equally to boundaryHandling
+	//Needed for a periodic Boundary Handling
+	//
 	scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
 		return true; //delete all halo particles
 	};
+
 
 	//these are the boundary handlers for the reflect condition
 	//this is ugly but they have to be defined here so we can capture
@@ -203,8 +308,9 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		},
 		//x0 = domain[0] boundary, "right"
 		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
-			if(p.x[0] > (Settings::domainSize[0] - TWORAISED1_6 * Settings::sigma)) {
-				phantom.x[0] = Settings::domainSize[0];
+			double realDomainSize = std::ceil(Settings::domainSize[0] / Settings::rCutoff) * Settings::rCutoff;
+			if(p.x[0] > (realDomainSize - TWORAISED1_6 * Settings::sigma)) {
+				phantom.x[0] = realDomainSize;
 				phantom.x[1] = p.x[1];
 				phantom.x[2] = p.x[2];
 				calcForce(p, phantom);
@@ -223,9 +329,10 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		},
 		//x1 = domain[1] boundary, "top"
 		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
-			if(p.x[1] > (Settings::domainSize[1] - TWORAISED1_6 * Settings::sigma)) {
+			double realDomainSize = std::ceil(Settings::domainSize[1] / Settings::rCutoff) * Settings::rCutoff;
+			if(p.x[1] > (realDomainSize - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = p.x[0];
-				phantom.x[1] = Settings::domainSize[1];
+				phantom.x[1] = realDomainSize;
 				phantom.x[2] = p.x[2];
 				calcForce(p, phantom);
 			}
@@ -243,15 +350,17 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		},
 		//x2 = domain[2] boundary, "front"
 		[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
-			if(p.x[2] > (Settings::domainSize[2] - TWORAISED1_6 * Settings::sigma)) {
+			double realDomainSize = std::ceil(Settings::domainSize[2] / Settings::rCutoff) * Settings::rCutoff;
+			if(p.x[2] > (realDomainSize - TWORAISED1_6 * Settings::sigma)) {
 				phantom.x[0] = p.x[0];
 				phantom.x[1] = p.x[1];
-				phantom.x[2] = Settings::domainSize[2];
+				phantom.x[2] = realDomainSize;
 				calcForce(p, phantom);
 			}
 			return false;
 		}
 	};
+
 
 	LOG4CXX_TRACE(logger, "Determining boundary conditions..");
 
@@ -274,10 +383,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		case BoundaryConditionType::Periodic:
 			//TODO!!!
 			LOG4CXX_DEBUG(logger, "Condition " << i << " is Periodic");
-			scenario->boundaryHandlers[i] = [] (ParticleContainer &container, Particle &p) {
-				LOG4CXX_WARN(logger, "Periodic condition is not yet implemented!");
-				return false; //dont delete anything
-			};
+			scenario->boundaryHandlers[i] = periodicHandlers[i];
 
 			break;
 		}
