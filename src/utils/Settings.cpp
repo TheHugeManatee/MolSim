@@ -143,7 +143,7 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::rCutoff = xmlCfg->cutoffRadius();
 
 	    Settings::generator = xmlCfg->generator();
-
+	    Settings::thermostat = xmlCfg->thermostat();
 	    Settings::epsilon = xmlCfg->epsilon();
 	    Settings::sigma = xmlCfg->sigma();
 	  }

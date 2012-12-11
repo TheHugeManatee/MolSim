@@ -83,6 +83,14 @@
   		<xsd:element name="sphere" type="sphere" maxOccurs="unbounded"/>
   	</xsd:sequence>
   </xsd:complexType>
+  
+  <xsd:complexType name="Thermostat">
+  	<xsd:element name="initTemperature" type="xsd:double"/>
+  	<xsd:element name="targetTemperature" type="xsd:double"/>
+  	<xsd:element name="TemperatureStep" type="xsd:double"/>
+  	<xsd:element name="stepSize" type="xsd:int"/>
+  	<xsd:element name="maxSteps" type="xsd:int"/>
+  </csd:complexType>
             
   <xsd:complexType name="simulationConfig">
     <xsd:sequence>
@@ -101,7 +109,7 @@
       <xsd:element name="outputFilePrefix" type="xsd:string"/>
       <xsd:element name="outputFileType" type="OutputFileType"/>
       <xsd:element name="inputFile" type="xsd:string"/>
-            
+      <csd:element name="thermostat" type="Thermostat" />      
       <xsd:element name="generator" type="generator"/>
     </xsd:sequence>
   </xsd:complexType>
