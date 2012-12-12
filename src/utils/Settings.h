@@ -120,6 +120,12 @@ public:
 	 */
 	static SimulationConfig::GeneratorType generator;
 
+	static SimulationConfig::ThermostatSwitchType thermostatSwitch;
+	/**
+	 * thermostat configuration
+	 */
+	static SimulationConfig::ThermostatSettingsType thermostatSettings;
+
 	/**
 	 * the cutoff radius for the simulation
 	 */

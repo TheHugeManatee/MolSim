@@ -24,6 +24,9 @@ Simulator::Simulator() {
 	else {
 		particleContainer = new CellListContainer();
 	}
+	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+		initTargetEnergy();
+	}
 	scenario = ScenarioFactory::build(Settings::scenarioType);
 
 	scenario->setup(*particleContainer);
@@ -33,7 +36,7 @@ Simulator::Simulator() {
 	LOG4CXX_TRACE(logger, "Scenario set up.");
 	//pre-calculate the forces for the first update
 	calculateF();
-
+	Simulator::iterations = 0 ;
 	LOG4CXX_INFO(logger, "Simulator set up.");
 	LOG4CXX_INFO(logger, "Will run scenario " << Settings::scenarioType);
 	LOG4CXX_INFO(logger, "World has " << particleContainer->getSize() << " particles");
@@ -101,6 +104,33 @@ void Simulator::plotParticles(int iteration) {
 	LOG4CXX_TRACE(logger,"Plotted \t"<< iteration << "\t Particles" );
 }
 
+void Simulator::initTargetEnergy(){
+	double te = Settings::thermostatSettings.targetTemperature().get();
+
+	Simulator::targetEnergy =  3.0/2.0 * particleContainer->getSize() * te; //TODO: bolzmann konstante
+
+}
+
+void Simulator::calculateCurrentEnergy(){
+	currentEnergy = 0;
+	particleContainer->each([&] (Particle& p) {
+		currentEnergy += p.m * p.v.LengthOptimizedR3Squared() ;
+	});
+
+	beta = sqrt(Simulator::targetEnergy/currentEnergy);
+}
+
+void Simulator::thermostate(){
+	particleContainer->each([&] (Particle& p) {
+
+		if(iterations % Settings::thermostatSettings.stepSize().get()){
+			calculateCurrentEnergy();
+		}
+		p.v = p.v * beta;
+	});
+}
+
+
 
 void Simulator::nextTimeStep() {
 
@@ -129,4 +159,14 @@ void Simulator::nextTimeStep() {
 
 	// calculate new velocities
 	calculateV();
+
+	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+		thermostate();
+	}
+
+
+	iterations++;
 }
+
+
+

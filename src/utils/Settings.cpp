@@ -48,8 +48,9 @@ BoundaryConditionType Settings::boundaryCondition[6] = {
 bool Settings::show3DVisual = false;
 bool Settings::encodeCellsInType = false;
 
-SimulationConfig::Thermostat Settings::thermostat;
+SimulationConfig::ThermostatSwitchType Settings::thermostatSwitch = SimulationConfig::ThermostatSwitchType::OFF;
 SimulationConfig::GeneratorType Settings::generator;
+SimulationConfig::ThermostatSettingsType Settings::thermostatSettings;
 
 log4cxx::LoggerPtr Settings::logger = log4cxx::Logger::getLogger("Settings");
 
@@ -144,7 +145,10 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::rCutoff = xmlCfg->cutoffRadius();
 
 	    Settings::generator = xmlCfg->generator();
-	    Settings::thermostat = xmlCfg->thermostat();
+	    Settings::thermostatSwitch = xmlCfg->thermostatSwitch();
+	    if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON)
+	    	Settings::thermostatSettings = xmlCfg->thermostatSettings();
+
 	    Settings::epsilon = xmlCfg->epsilon();
 	    Settings::sigma = xmlCfg->sigma();
 	  }

@@ -23,8 +23,16 @@
   <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType>
   <inputFile></inputFile>
+  <thermostatSwitch>OFF</thermostatSwitch>
+  <!--<thermostat>
+  	<initTemperature>40.0</initTemperature>
+  	<targetTemperature>100.0</targetTemperature>
+  	<TemperatureSte>5.0</TemperatureStep>
+  	<stepSize>1000</stepSize>
+  	<maxSteps>30000</maxSteps>
+  </thermostat>-->
 
-  <generator>
+ <!-- <generator>
    <cuboid>
       <bottomLeft x0="10.0" x1="15.0" x2="10.0" />
       <nX x0="1" x1="1" x2="1" />
@@ -44,7 +52,7 @@
       <brownianMeanVelocity>0</brownianMeanVelocity>
     </cuboid>
     
-  </generator>
+  </generator> -->
   
 
 </simulationConfig>

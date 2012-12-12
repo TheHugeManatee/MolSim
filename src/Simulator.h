@@ -28,6 +28,13 @@ public:
 	virtual ~Simulator();
 	static log4cxx::LoggerPtr logger;
 
+	/* processed iterations*/
+	int iterations;
+
+	double targetEnergy;
+	double currentEnergy;
+	double beta;
+
 	/**
 	 * calculate the force for all particles
 	 */
@@ -44,6 +51,11 @@ public:
 	void calculateV();
 
 	/**
+	 * calculates and applies the temperature
+	 */
+	void thermostat();
+
+	/**
 	 * plot the particles to a xyz-file
 	 * @param iteration the number of the iteration, for naming purposes
 	 */
@@ -53,6 +65,12 @@ public:
 	 * advances the simulation by a time step of Settings::deltaT
 	 */
 	void nextTimeStep();
+
+
+
+	void initTargetEnergy();
+	void calculateCurrentEnergy();
+	void thermostate();
 
 };
 
