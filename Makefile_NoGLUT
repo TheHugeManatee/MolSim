@@ -8,7 +8,9 @@
 
 # Compiler
 # --------
+
 CC=g++
+#CC=clang
 #CC=icpc
 
 SOURCES=\
@@ -25,8 +27,9 @@ SOURCES=\
 	src/ScenarioFactory.cpp\
 	src/utils/MaxwellBoltzmannDistribution.cpp\
 	src/utils/ParticleGenerator.cpp\
-	src/utils/SimulationConfig.cpp
-	
+	src/utils/SimulationConfig.cpp\
+	src/utils/Thermostat.cpp	
+
 # Compiler flags
 # -------------------------------------------------------------------------
 CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER 
