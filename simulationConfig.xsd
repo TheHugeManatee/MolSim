@@ -91,13 +91,15 @@
   	</xsd:sequence>
   </xsd:complexType>
   
-  <xsd:complexType name="thermostatSettings">
-  	  <xsd:attribute name="initTemperature" type="xsd:double"/>
-  	  <xsd:attribute name="targetTemperature" type="xsd:double"/>
-  	  <xsd:attribute name="TemperatureStep" type="xsd:double"/>
-  	  <xsd:attribute name="stepSize" type="xsd:int"/>
-  	  <xsd:attribute name="maxSteps" type="xsd:int"/>
-  </xsd:complexType>
+  <xsd:complexType name="ThermostatSettings">
+    	<xsd:sequence>
+  	  <xsd:element name="initTemperature" type="xsd:double" maxOccurs="1" minOccurs="0" />
+  	  <xsd:element name="targetTemperature" type="xsd:double"/>
+  	  <xsd:element name="controlInterval" type="xsd:int"/>
+  	  <xsd:element name="estimatedSteps" type="xsd:int"/>
+  	  <xsd:element name="maxSteps" type="xsd:int"/>
+	</xsd:sequence> 
+ </xsd:complexType>
             
   <xsd:complexType name="simulationConfig">
     <xsd:sequence>
@@ -110,6 +112,7 @@
       <xsd:element name="containerType" type="ContainerType" />
       <xsd:element name="epsilon" type="xsd:double" />
       <xsd:element name="sigma" type="xsd:double" />
+      <xsd:element name="gravitationConstant" type="xsd:double" />
       <xsd:element name="outputFrequency" type="xsd:int"/>
       <xsd:element name="disableOutput" type="xsd:boolean"/>
       <xsd:element name="loggerConfigFile" type="xsd:string"/>
@@ -117,7 +120,7 @@
       <xsd:element name="outputFileType" type="OutputFileType"/>
       <xsd:element name="inputFile" type="xsd:string"/>
       <xsd:element name="thermostatSwitch" type="ThermostatSwitch"/>
-      <xsd:element name="thermostatSettings" type="thermostatSettings"/>      
+      <xsd:element name="thermostatSettings" type="ThermostatSettings"/>      
       <xsd:element name="generator" type="generator"/>
     </xsd:sequence>
   </xsd:complexType>

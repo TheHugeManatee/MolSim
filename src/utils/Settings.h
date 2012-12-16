@@ -100,6 +100,11 @@ public:
 	static double epsilon;
 
 	/**
+	 * gravitation constant for the gravitational force
+	 */
+	static double gravitationConstant;
+
+	/**
 	 * the test case to be executed
 	 */
 	static std::string testCase;
@@ -120,11 +125,15 @@ public:
 	 */
 	static SimulationConfig::GeneratorType generator;
 
+	/*
+	 * thermostat switch (implies whether the thermostat is on or not)
+	 */
 	static SimulationConfig::ThermostatSwitchType thermostatSwitch;
+
 	/**
 	 * thermostat configuration
 	 */
-	static SimulationConfig::ThermostatSettingsType thermostatSettings;
+	static SimulationConfig::ThermostatSettingsType *thermostatSettings;
 
 	/**
 	 * the cutoff radius for the simulation

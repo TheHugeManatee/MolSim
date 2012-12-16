@@ -16,12 +16,14 @@
 #include "CellListContainer.h"
 #include "ParticleContainer.h"
 #include "ScenarioFactory.h"
+#include "utils/Thermostat.h"
 #include <log4cxx/logger.h>
 
 class Simulator {
 private:
 	ParticleContainer *particleContainer;
 	SimulationScenario *scenario;
+	Thermostat *thermostat;
 
 public:
 	Simulator();
@@ -29,11 +31,7 @@ public:
 	static log4cxx::LoggerPtr logger;
 
 	/* processed iterations*/
-	int iterations;
-
-	double targetEnergy;
-	double currentEnergy;
-	double beta;
+	static int iterations;
 
 	/**
 	 * calculate the force for all particles
@@ -51,11 +49,6 @@ public:
 	void calculateV();
 
 	/**
-	 * calculates and applies the temperature
-	 */
-	void thermostat();
-
-	/**
 	 * plot the particles to a xyz-file
 	 * @param iteration the number of the iteration, for naming purposes
 	 */
@@ -66,11 +59,6 @@ public:
 	 */
 	void nextTimeStep();
 
-
-
-	void initTargetEnergy();
-	void calculateCurrentEnergy();
-	void thermostate();
 
 };
 
