@@ -23,7 +23,7 @@ private:
 
 
 	double targetEnergy;
-	const double boltzmann = 0.13806503;  //we're always scaling with 10^(22) (heuristically determined ;-))
+	const double boltzmann = 1.3806503 ;  //we're always scaling with 10^(28) (heuristically determined ;-))
 	double energyPerStep;
 	double beta;
 	int dimensions;

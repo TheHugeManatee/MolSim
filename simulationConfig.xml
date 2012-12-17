@@ -4,20 +4,21 @@
        xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
        
   <deltaT>0.0003</deltaT>
-  <endTime>6</endTime>
-  <scenarioType>Lennard-Jones</scenarioType>
-  <domainSize x0="30.0" x1="30.0" x2="30.0" />
+  <endTime>10</endTime>
+  <scenarioType>Lennard-Jones-Gravitational</scenarioType>
+  <domainSize x0="60.0" x1="60.0" x2="60.0" />
   <cutoffRadius>3.0</cutoffRadius>
 
   <boundaryHandling
-  	top="Periodic" bottom="Periodic"
+  	top="Reflect" bottom="Reflect"
   	left="Periodic" right="Periodic"
   	front="Periodic" back="Periodic"
   />
+  
   <containerType>CelllistContainer</containerType>
   <epsilon>5</epsilon>
   <sigma>1</sigma>
-  <gravitationConstant>9.89</gravitationConstant>
+  <gravitationConstant>-9.89</gravitationConstant>
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
   <loggerConfigFile>Logger.properties</loggerConfigFile>
@@ -28,33 +29,37 @@
   <thermostatSwitch>ON</thermostatSwitch>
 
   <thermostatSettings>
-  	<initTemperature>40.0</initTemperature>
-  	<targetTemperature>100.0</targetTemperature>
-  	<controlInterval>100</controlInterval>
+	<initTemperature>40.0</initTemperature>
+  	<targetTemperature>40.0</targetTemperature>
+  	<controlInterval>1000</controlInterval>
   	<estimatedSteps>20000</estimatedSteps>
   	<maxSteps>30000</maxSteps>
   </thermostatSettings>
-
+  
+ <typeList>
+ <type Nr = "1" sigma = "1.0" epsilon = "1.0" />
+ <type Nr = "2" sigma = "0.9412" epsilon = "1.0" />
+ </typeList>  
+ 
  <generator>
    <cuboid>
-      <bottomLeft x0="10.0" x1="15.0" x2="10.0" />
-      <nX x0="5" x1="5" x2="5" />
-      <stepWidth>1.1225</stepWidth>
-      <mass>1</mass>
-      <type>1</type>
-      <initialVelocity x0="0" x1="0" x2="0"/>
-      <brownianMeanVelocity>0</brownianMeanVelocity>
-    </cuboid>
-    <cuboid>
       <bottomLeft x0="10.0" x1="5.0" x2="10.0" />
-      <nX x0="5" x1="5" x2="5" />
+      <nX x0="10" x1="10" x2="1" />
       <stepWidth>1.1225</stepWidth>
       <mass>1</mass>
       <type>1</type>
       <initialVelocity x0="0" x1="0" x2="0"/>
       <brownianMeanVelocity>0</brownianMeanVelocity>
     </cuboid>
-    
+<!--    <cuboid>
+      <bottomLeft x0="10.0" x1="15.0" x2="10.0" />
+      <nX x0="10" x1="3" x2="1" />
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>2</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0</brownianMeanVelocity>     
+    </cuboid> -->
   </generator>
   
 

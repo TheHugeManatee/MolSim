@@ -38,6 +38,12 @@ public:
 	int type;
 
 	/**
+	 * type specific lennard jones parameter
+	 */
+	double sigma;
+	double epsilon;
+
+	/**
 	 * counter variable for created instances
 	 */
 	static int createdInstances;
@@ -61,6 +67,17 @@ public:
 	        utils::Vector<double, 3> v_arg,
 	        double m_arg,
 	        int type = 0
+	);
+
+	Particle(
+			// for visualization, we need always 3 coordinates
+			// -> in case of 2d, we use only the first and the second
+			utils::Vector<double, 3> x_arg,
+	        utils::Vector<double, 3> v_arg,
+	        double m_arg,
+	        int type,
+	        double sigma,
+	        double epsilon
 	);
 
 	virtual ~Particle();

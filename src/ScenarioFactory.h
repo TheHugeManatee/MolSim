@@ -116,6 +116,11 @@ public:
 	static std::function<void (Particle&, Particle&)> calculateLennardJonesPotentialForce;
 
 	/**
+	 * force calculation based on the Lennard-Jones potential
+	 * plus additional gravitation force along the y-axe
+	 */
+	static std::function<void (Particle&, Particle&)> calculateLennardJonesPotentialForceGravitational;
+	/**
 	 * force calculation using simple gravitational forces
 	 */
 	static std::function<void (Particle&, Particle&)> calculateGravityForce;

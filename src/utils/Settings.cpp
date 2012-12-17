@@ -27,7 +27,7 @@ int Settings::outputFrequency = 10;
 bool Settings::disableOutput = false;
 double Settings::sigma = 1;
 double Settings::epsilon = 5;
-double Settings::gravitationConstant = 9.89;
+double Settings::gravitationConstant = -9.89;
 ScenarioType Settings::scenarioType = ScenarioType::Gravity;
 std::string Settings::configFile = "simulationConfig.xml";
 std::string Settings::inputFile = "eingabe-sonne.txt";
@@ -49,8 +49,11 @@ BoundaryConditionType Settings::boundaryCondition[6] = {
 bool Settings::show3DVisual = false;
 bool Settings::encodeCellsInType = false;
 
-SimulationConfig::ThermostatSwitchType Settings::thermostatSwitch = SimulationConfig::ThermostatSwitchType::OFF;
+
+SimulationConfig::TypeListType Settings::particleTypes;
 SimulationConfig::GeneratorType Settings::generator;
+
+SimulationConfig::ThermostatSwitchType Settings::thermostatSwitch = SimulationConfig::ThermostatSwitchType::OFF;
 SimulationConfig::ThermostatSettingsType *Settings::thermostatSettings =  new ThermostatSettings(0,0,0,0);
 
 log4cxx::LoggerPtr Settings::logger = log4cxx::Logger::getLogger("Settings");
@@ -147,21 +150,19 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::outputFileType = xmlCfg->outputFileType();
 	    Settings::rCutoff = xmlCfg->cutoffRadius();
 
+	    Settings:particleTypes = xmlCfg->typeList();
 	    Settings::generator = xmlCfg->generator();
 	    Settings::thermostatSwitch = xmlCfg->thermostatSwitch();
 	    if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
 	    	LOG4CXX_DEBUG(logger,"Thermostat is ON , loading Thermostat Settings ...");
 	    	*Settings::thermostatSettings = xmlCfg->thermostatSettings();
 	    	LOG4CXX_DEBUG(logger,"Loaded Thermostat Settings ...");
-//	    std::cout << Settings::thermostatSettings.initTemperature() << std::endl;
-//	    std::cout << Settings::thermostatSettings.targetTemperature() << std::endl;
-//	    std::cout << Settings::thermostatSettings.TemperatureStep()<< std::endl;
-//	    std::cout << Settings::thermostatSettings.stepSize()<< std::endl;
-//	    std::cout << Settings::thermostatSettings.maxSteps()<< std::endl;
+
 	    }
 
 	    Settings::epsilon = xmlCfg->epsilon();
 	    Settings::sigma = xmlCfg->sigma();
+	    Settings::gravitationConstant = xmlCfg->gravitationConstant();
 	  }
 	  catch (const xml_schema::Exception &e)
 	  {

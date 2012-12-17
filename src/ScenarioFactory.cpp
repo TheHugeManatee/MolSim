@@ -38,15 +38,40 @@ std::function<void (Particle&)> ScenarioFactory::verletUpdateVelocity = [] (Part
 
 std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
 	utils::Vector<double, 3> xDif = p2.x - p1.x;
+	double epsilon = sqrt(p1.epsilon *p2.epsilon);
+	double sigma = (p1.sigma + p2.sigma) / 2;
 	//double norm = xDif.L2Norm();
 	double normSquared = xDif.LengthOptimizedR3Squared();
-	double sigmaNormalizedSquared = Settings::sigma*Settings::sigma/normSquared;
+	double sigmaNormalizedSquared = sigma*sigma/normSquared;
 	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
-	utils::Vector<double, 3> resultForce = (24*Settings::epsilon / normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+	utils::Vector<double, 3> resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
 	p1.f = p1.f + resultForce;
 
 	//resultForce = resultForce * -1;
 	p2.f = p2.f - resultForce;
+};
+
+std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForceGravitational = [] (Particle& p1, Particle& p2) {
+	utils::Vector<double, 3> xDif = p2.x - p1.x;
+	double epsilon = sqrt(p1.epsilon *p2.epsilon);
+	double sigma = (p1.sigma + p2.sigma) / 2;
+	//double norm = xDif.L2Norm();
+	double normSquared = xDif.LengthOptimizedR3Squared();
+	double sigmaNormalizedSquared = sigma*sigma/normSquared;
+	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
+	utils::Vector<double, 3> resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+	utils::Vector<double, 3> gravitationalForce1;
+	utils::Vector<double, 3> gravitationalForce2;
+	gravitationalForce1[0]=0;
+	gravitationalForce1[1]= p1.m * Settings::gravitationConstant; //* 0.000000000000000001;
+	gravitationalForce1[2]=0;
+	gravitationalForce2[0]=0;
+	gravitationalForce2[1]= p2.m * Settings::gravitationConstant; //* 0.000000000000000001;
+	gravitationalForce2[2]=0;
+	p1.f = p1.f + resultForce + gravitationalForce1;
+
+	//resultForce = resultForce * -1;
+	p2.f = p2.f - resultForce + gravitationalForce2;
 };
 
 /*std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
@@ -123,6 +148,8 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 	assert(Settings::sigma > 0);
 
 };
+
+
 
 /*These are the handlers for a periodic boundaryHandling
  * Particles in boundary cells have to be copied to the opposite halo cell for forceCalculations on relying cells  */
@@ -274,7 +301,16 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
 
 		LOG4CXX_DEBUG(logger,"Built Lennard-Jones Scenario");
-	} else {
+	}
+	else if (type == ScenarioType::Lennard_Jones_Gravitational){
+		scenario->calculateForce = ScenarioFactory::calculateLennardJonesPotentialForceGravitational;
+
+		scenario->setup = ScenarioFactory::LennardJonesSetup;
+
+		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
+		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
+	}
+	else {
 		LOG4CXX_FATAL(logger, "Unknown Simulation type!");
 		exit(-1);
 	}

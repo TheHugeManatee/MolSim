@@ -22,6 +22,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="Gravity"/>
       <xsd:enumeration value="Lennard-Jones"/>
+      <xsd:enumeration value="Lennard-Jones-Gravitational"/>
     </xsd:restriction>
   </xsd:simpleType>    
   
@@ -59,8 +60,20 @@
 		<xsd:attribute name="x1" type="xsd:int" use="required"/>
 		<xsd:attribute name="x2" type="xsd:int" use="required"/>
 	</xsd:complexType>   
-	             
-  <xsd:complexType name="cuboid">
+
+	<xsd:complexType name="particleType">
+	  <xsd:attribute name="Nr" type="xsd:int" use ="required"/>
+	  <xsd:attribute name="sigma" type="xsd:double" use ="required"/>
+	  <xsd:attribute name="epsilon" type="xsd:double" use ="required"/>
+	</xsd:complexType>
+  
+	<xsd:complexType name ="TypesList">
+	  <xsd:sequence>
+	  <xsd:element name = "particleType" type ="particleType" maxOccurs ="unbounded"/>
+	  </xsd:sequence>  
+	</xsd:complexType> 
+
+<xsd:complexType name="cuboid">
 	  <xsd:sequence>
 	  	<xsd:element name="bottomLeft" type="floatVector"/>
 	  	<xsd:element name="nX" type="intVector" />
@@ -71,6 +84,7 @@
 	  	<xsd:element name="brownianMeanVelocity" type="xsd:double"/>
 	 </xsd:sequence>
   </xsd:complexType>
+
   
   <xsd:complexType name="sphere">
 	  <xsd:sequence>
@@ -81,6 +95,7 @@
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
 	  	<xsd:element name="brownianMeanVelocity" type="xsd:double"/>
+
 	 </xsd:sequence>
   </xsd:complexType>
             
@@ -121,6 +136,7 @@
       <xsd:element name="inputFile" type="xsd:string"/>
       <xsd:element name="thermostatSwitch" type="ThermostatSwitch"/>
       <xsd:element name="thermostatSettings" type="ThermostatSettings"/>      
+      <xsd:element name="typeList" type="TypesList" />
       <xsd:element name="generator" type="generator"/>
     </xsd:sequence>
   </xsd:complexType>

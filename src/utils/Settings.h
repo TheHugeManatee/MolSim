@@ -120,6 +120,13 @@ public:
 	 */
 	static std::string outputFilePrefix;
 
+
+	/**
+	 * all available particle types
+	 */
+
+	static SimulationConfig::TypeListType particleTypes;
+
 	/**
 	 * generator configuration
 	 */

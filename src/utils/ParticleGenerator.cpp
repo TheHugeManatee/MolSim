@@ -8,7 +8,7 @@
 #include "ParticleGenerator.h"
 
 #include "MaxwellBoltzmannDistribution.h"
-
+#include <utils/Settings.h>
 #include <log4cxx/logger.h>
 
 
@@ -30,6 +30,16 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 	LOG4CXX_DEBUG(ParticleGenerator::logger, "\tinitialVelocity:" << initialVelocity.toString());
 	LOG4CXX_DEBUG(ParticleGenerator::logger, "\tbrownMeanVel:\t" << brownianMean);
 
+	double sigma = Settings::sigma;
+	double epsilon = Settings::epsilon;
+
+	for(auto it = Settings::particleTypes.particleType().begin() ; it != Settings::particleTypes.particleType().end() ; ++it){
+		auto c = (*it);
+		if(c.Nr() == type){
+			sigma = c.sigma();
+			epsilon = c.epsilon();
+		}
+	}
 
 	for(int x1=0; x1 < nX1; x1++)
 		for(int x2=0; x2 < nX2; x2++)
@@ -39,7 +49,8 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 				x[1] = bottomLeft[1] + x2 * h;
 				x[2] = bottomLeft[2] + x3 * h;
 
-				Particle p(x, initialVelocity, m, type);
+				Particle p(x, initialVelocity, m, type,1 ,1);
+				//TODO: Make optional !
 				MaxwellBoltzmannDistribution(p, brownianMean, 2);
 
 				container.add(p);
@@ -48,6 +59,17 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 
 void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vector<double, 3> center, int radiusSphere,
 										double h, double m , int type, utils::Vector<double, 3> initialVelocity, double brownianMean){
+
+	double sigma = Settings::sigma;
+	double epsilon = Settings::epsilon;
+
+	for(auto it = Settings::particleTypes.particleType().begin() ; it != Settings::particleTypes.particleType().end() ; ++it){
+		auto c = (*it);
+		if(c.Nr() == type){
+			sigma = c.sigma();
+			epsilon = c.epsilon();
+		}
+	}
 
 	LOG4CXX_INFO(ParticleGenerator::logger, "Generating " << (4 * radiusSphere*radiusSphere) << " Particles on a sphere");
 	std::vector<int> diffs;
@@ -77,7 +99,7 @@ void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vect
 							xParticle[1] = center[1] + (h * x1) * *diffY ;
 							xParticle[2] = center[2] + (h * x2) * *diffZ ;
 
-							Particle p(xParticle , initialVelocity, m ,type);
+							Particle p(xParticle , initialVelocity, m ,type ,1 ,1);
 
 							MaxwellBoltzmannDistribution(p, brownianMean, 2);
 
