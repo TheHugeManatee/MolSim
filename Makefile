@@ -26,7 +26,8 @@ SOURCES=\
 	src/utils/MaxwellBoltzmannDistribution.cpp\
 	src/utils/ParticleGenerator.cpp\
 	src/utils/SimulationConfig.cpp\
-	src/outputWriter/RenderOutputWriter.cpp
+	src/outputWriter/RenderOutputWriter.cpp\
+	src/utils/Thermostat.cpp
 
 
 # Compiler flags
