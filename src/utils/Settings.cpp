@@ -54,7 +54,7 @@ SimulationConfig::TypeListType Settings::particleTypes;
 SimulationConfig::GeneratorType Settings::generator;
 
 SimulationConfig::ThermostatSwitchType Settings::thermostatSwitch = SimulationConfig::ThermostatSwitchType::OFF;
-SimulationConfig::ThermostatSettingsType *Settings::thermostatSettings =  new ThermostatSettings(0,0,0,0);
+SimulationConfig::ThermostatSettingsType *Settings::thermostatSettings = new ThermostatSettings(0);
 
 log4cxx::LoggerPtr Settings::logger = log4cxx::Logger::getLogger("Settings");
 
@@ -136,7 +136,9 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::loggerConfigFile = xmlCfg->loggerConfigFile();
 	    Settings::outputFilePrefix = xmlCfg->outputFilePrefix();
 	    Settings::scenarioType = xmlCfg->scenarioType();
-	    Settings::inputFile = xmlCfg->inputFile();
+	    auto inputFile_opt = xmlCfg->inputFile();
+	    if(inputFile_opt.present())
+	    	Settings::inputFile = inputFile_opt.get();
 	    Settings::domainSize[0] = xmlCfg->domainSize().x0();
 	    Settings::domainSize[1] = xmlCfg->domainSize().x1();
 	    Settings::domainSize[2] = xmlCfg->domainSize().x2();
@@ -149,20 +151,28 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
 	    Settings::rCutoff = xmlCfg->cutoffRadius();
+	    auto particleTypes_opt = xmlCfg->typeList();
 
-	    Settings:particleTypes = xmlCfg->typeList();
+	    if (particleTypes_opt.present())
+	    	Settings:particleTypes = particleTypes_opt.get();
+
 	    Settings::generator = xmlCfg->generator();
-	    Settings::thermostatSwitch = xmlCfg->thermostatSwitch();
+	    auto thermostatSwitch_opt = xmlCfg->thermostatSwitch();
+	    if (thermostatSwitch_opt.present())
+	    	Settings::thermostatSwitch = thermostatSwitch_opt.get();
 	    if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+	    	auto thermostatSetting_opt = xmlCfg->thermostatSettings();
+	    	if(thermostatSetting_opt.present()){
 	    	LOG4CXX_DEBUG(logger,"Thermostat is ON , loading Thermostat Settings ...");
-	    	*Settings::thermostatSettings = xmlCfg->thermostatSettings();
+	    	*Settings::thermostatSettings = thermostatSetting_opt.get();
 	    	LOG4CXX_DEBUG(logger,"Loaded Thermostat Settings ...");
-
+	    	}
 	    }
-
 	    Settings::epsilon = xmlCfg->epsilon();
 	    Settings::sigma = xmlCfg->sigma();
-	    Settings::gravitationConstant = xmlCfg->gravitationConstant();
+	    auto gravationalConstant_opt = xmlCfg->gravitationConstant();
+	    if(gravationalConstant_opt.present())
+	    	Settings::gravitationConstant = gravationalConstant_opt.get();
 	  }
 	  catch (const xml_schema::Exception &e)
 	  {
