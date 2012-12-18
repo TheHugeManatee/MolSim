@@ -3,13 +3,13 @@
 <simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
        
-  <deltaT>0.0003</deltaT>
-  <endTime>10</endTime>
+  <deltaT>0.0005</deltaT>
+  <endTime>25</endTime>
   <scenarioType>Lennard-Jones</scenarioType>
-  <domainSize x0="80.0" x1="80.0" x2="80" />
+  <domainSize x0="10" x1="10" x2="10" />
   <boundaryHandling
   	top="Reflect" bottom="Reflect"
-  	left="Reflect" right="Reflect"
+  	left="Periodic" right="Periodic"
   	front="Reflect" back="Reflect"
   />
   <containerType>CelllistContainer</containerType>
@@ -20,30 +20,48 @@
   <loggerConfigFile>Logger.properties</loggerConfigFile>
   <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType>
-  <cutoffRadius>1.0</cutoffRadius>
+  <cutoffRadius>3</cutoffRadius>
   <inputFile></inputFile>
 
   <generator>
-  <sphere>
-      <center x0="30" x1="40.0" x2="20.0" />
-      <radius>10</radius>
+ 	<cuboid>
+      <bottomLeft x0="5" x1="6" x2="5" />
+      <nX x0="1" x1="1" x2="1" />
       <stepWidth>1.1225</stepWidth>
       <mass>1</mass>
       <type>1</type>
-      <initialVelocity x0="0" x1="-20" x2="0"/>
-      <brownianMeanVelocity>0.0</brownianMeanVelocity>
-    </sphere>  
-	 <cuboid>
-      <bottomLeft x0="5" x1="10" x2="15" />
-      <nX x0="50" x1="4" x2="10" />
+      <initialVelocity x0="1" x1="0" x2="0"/>
+      <brownianMeanVelocity>0</brownianMeanVelocity>
+   </cuboid>
+    	<cuboid>
+      <bottomLeft x0="5" x1="4" x2="5" />
+      <nX x0="1" x1="1" x2="1" />
       <stepWidth>1.1225</stepWidth>
       <mass>1</mass>
       <type>2</type>
-      <initialVelocity x0="0" x1="0" x2="0"/>
-      <brownianMeanVelocity>0.1</brownianMeanVelocity>
+      <initialVelocity x0="-1" x1="0" x2="0"/>
+      <brownianMeanVelocity>0</brownianMeanVelocity>
    </cuboid>
-    
+   
+ <!-- <cuboid>
+      <bottomLeft x0="0.6" x1="2.0" x2="1" />
+      <nX x0="50" x1="14" x2="1" />
+      <stepWidth>1.1225</stepWidth>
+      <mass>2</mass>
+      <type>2</type>
+      <initialVelocity x0="0" x1="-10" x2="0"/>
+      <brownianMeanVelocity>0</brownianMeanVelocity>
+   </cuboid>      
+     <sphere>
+      <center x0="10" x1="5.0" x2="10.0" />
+      <radius>1</radius>
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="-10" x2="0"/>
+      <brownianMeanVelocity>0.0</brownianMeanVelocity>
+   </sphere> -->     
+      
   </generator>
   
-
 </simulationConfig>
