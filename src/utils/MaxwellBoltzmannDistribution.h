@@ -8,7 +8,7 @@
 #ifndef MAXWELLBOLTZMANNDISTRIBUTION_H_
 #define MAXWELLBOLTZMANNDISTRIBUTION_H_
 
-#include "Particle.h"
+#include "../Particle.h"
 
 /**
  * add a random velocity according to the Maxwell-Boltzmann distribution to the

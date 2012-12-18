@@ -92,6 +92,9 @@
 #include <cstdlib>
 #include <sys/timeb.h>
 
+#include <iostream>
+#include <fstream>
+
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
@@ -123,6 +126,8 @@ void initializeLogger();
  * @param elapsed time it took to compute the current progress, measured in milliseconds
  */
 void printProgressBar(int percentage, int elapsed);
+
+void exportPhaseSpace(void);
 
 
 //globals
@@ -195,6 +200,9 @@ int main(int argc, char* argsv[]) {
 
 		sim->nextTimeStep();
 
+
+
+
 		iteration++;
 		
 		if(iteration == nextProgressBarDraw) {
@@ -213,6 +221,8 @@ int main(int argc, char* argsv[]) {
 	std::cout << std::endl;
 
 	int benchmarkEndTime = getMilliCount();
+
+	sim->exportPhaseSpace();
 
 	LOG4CXX_INFO(rootLogger, "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds");
 
@@ -320,4 +330,12 @@ void printProgressBar(int percentage, int elapsed){
 		std::cout << " " << percentage << "%  Est. Remaining: TBD\r";
 	}
 	std::cout.flush();
+}
+
+void exportPhaseSpace(){
+	std::ofstream myfile;
+	myfile.open ("example.txt");
+
+	myfile << "Writing this to a file.\n";
+	myfile.close();
 }
