@@ -417,7 +417,6 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 
 			break;
 		case BoundaryConditionType::Periodic:
-			//TODO!!!
 			LOG4CXX_DEBUG(logger, "Condition " << i << " is Periodic");
 			scenario->boundaryHandlers[i] = periodicHandlers[i];
 
