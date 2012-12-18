@@ -179,6 +179,7 @@ int main(int argc, char* argsv[]) {
 	int iteration = 0;
 
 	int benchmarkStartTime = getMilliCount();
+	double timeForOneIteration = 0;
 
 	 // for this loop, we assume: current x, current f and current v are known
 	int maxIterations = (Settings::endTime - Settings::startTime) / Settings::deltaT;
@@ -204,6 +205,10 @@ int main(int argc, char* argsv[]) {
 		LOG4CXX_TRACE(rootLogger, "Iteration " << iteration << " finished.");
 
 		current_time += Settings::deltaT;
+
+		timeForOneIteration = ((double)(benchmarkStartTime - getMilliCount()))/iteration;
+		//if(iteration % 100 == 0)
+		//std::cout << "timeforoneiteration: " << timeForOneIteration<<std::endl;
 	}
 	std::cout << std::endl;
 

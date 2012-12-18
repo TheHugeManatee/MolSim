@@ -32,11 +32,11 @@ SOURCES=\
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated 
+CFLAGS=-pg -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -pg
 
 INCLUDES= -I./src -I./libxsd
 
