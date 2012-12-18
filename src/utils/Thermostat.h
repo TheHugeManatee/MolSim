@@ -11,6 +11,9 @@
 #include "ParticleContainer.h"
 #include <utils/Settings.h>
 
+//we're always scaling with 10^(21) (heuristically determined ;-))
+#define BOLTZMANN 1.3806503
+
 class Thermostat{
 
 private:
@@ -23,7 +26,6 @@ private:
 
 
 	double targetEnergy;
-	const double boltzmann = 1.3806503 ;  //we're always scaling with 10^(28) (heuristically determined ;-))
 	double energyPerStep;
 	double beta;
 	int dimensions;

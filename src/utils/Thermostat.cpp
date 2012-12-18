@@ -5,9 +5,9 @@
  *      Author: Leo
  */
 
-#include <utils/Thermostat.h>
-#include <Simulator.h>
-#include <utils/MaxwellBoltzmannDistribution.h>
+#include "utils/Thermostat.h"
+#include "Simulator.h"
+#include "utils/MaxwellBoltzmannDistribution.h"
 
 
 log4cxx::LoggerPtr Thermostat::logger = log4cxx::Logger::getLogger("Thermostat");
@@ -45,13 +45,12 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 	double initialTemperature = initialTemperature_arg.get() + 273.2;
 	particles->each([&] (Particle& p) {
 		utils::Vector <double, 3> oldVelocity = p.v;
-		double scale = sqrt( boltzmann * initialTemperature / (p.m * 2));
+		double scale = sqrt( BOLTZMANN * initialTemperature / (p.m));
 		MaxwellBoltzmannDistribution(p , scale , 3);
-//		p.v= p.v *0.183;  //rescaling by sqrt(0.1/3)
 	});
 
 	LOG4CXX_DEBUG(logger,"Applied initial Temperature " << initialTemperature_arg.get());
-	LOG4CXX_TRACE(logger,"Initial energy should be \t"<< initialTemperature * boltzmann * numberOfParticles * 3/2 );
+	LOG4CXX_DEBUG(logger,"Initial energy should be \t"<< initialTemperature * BOLTZMANN * numberOfParticles * 2/2 );
 
 	}else{
 	LOG4CXX_DEBUG(logger,"Initial Temperature not given, continuing without further velocity scaling");
@@ -62,7 +61,7 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 	});
 	Thermostat::currentEnergy = Thermostat::currentEnergy / 2;
 
-	LOG4CXX_TRACE(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
+	LOG4CXX_DEBUG(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
 }
 
 /**
@@ -75,13 +74,14 @@ void Thermostat::initTargetEnergy(){
 	if(targetTemperature_opt.present()){
 		double targetTemperature = targetTemperature_opt.get();
 //	std::cout << dimensions <<"\t" << numberOfParticles << "\t" << targetTemperature << "\t" << boltzmann << std::endl;
-	double arg_targetEnergy = dimensions / 2.0 * numberOfParticles * (targetTemperature + 273.2) * boltzmann;   //transfer from celsius to kelvin !
-	LOG4CXX_TRACE(logger,"Target Energy is :\t"<<arg_targetEnergy);
+	double arg_targetEnergy = dimensions / 2.0 * numberOfParticles * (targetTemperature + 273.2) * BOLTZMANN;   //transfer from celsius to kelvin !
+	LOG4CXX_DEBUG(logger,"Target Energy is :\t"<<arg_targetEnergy);
 	Thermostat::targetEnergy = arg_targetEnergy;
 	}else if(initialTemperature_opt.present()){
 		double initTemperature = initialTemperature_opt.get();
-		double arg_initialEnergy = 	dimensions / 2.0 * numberOfParticles * (initTemperature + 273.2) * boltzmann;
+		double arg_initialEnergy = 	dimensions / 2.0 * numberOfParticles * (initTemperature + 273.2) * BOLTZMANN;
 		Thermostat::targetEnergy = arg_initialEnergy ;
+		LOG4CXX_DEBUG(logger,"Target Energy is :\t"<<arg_initialEnergy);
 	}else{
 		Thermostat::targetEnergy = Thermostat::currentEnergy;
 	}
@@ -110,9 +110,9 @@ void Thermostat::getStepEnergy(){
 
 	energyPerStep = deltaEnergy / stepsLeft ;
 	if(energyPerStep <= 0){
-		LOG4CXX_TRACE(logger,"Cooling down. "<<deltaEnergy);
+		LOG4CXX_DEBUG(logger,"Cooling down. "<<deltaEnergy);
 	}else{
-		LOG4CXX_TRACE(logger,"Heating up."<<deltaEnergy);
+		LOG4CXX_DEBUG(logger,"Heating up."<<deltaEnergy);
 	}
 }
 
@@ -135,13 +135,13 @@ void Thermostat::calculateCurrentEnergy(ParticleContainer* particles){
 
 	setCurrentTemperature(particles);
 
-	LOG4CXX_TRACE(logger,"Actual Energy is :\t"<<Thermostat::currentEnergy <<"\t after: " << Simulator::iterations << "\t iterations");
+	LOG4CXX_DEBUG(logger,"Actual Energy is :\t"<<Thermostat::currentEnergy <<"\t after: " << Simulator::iterations << "\t iterations");
 
 	numberOfParticles = particles->getSize();
 
 //	initTargetEnergy();  //has to be initialized again if number of particles changes !!
 	getStepEnergy();
-	beta = sqrt(1+energyPerStep/Thermostat::currentEnergy);
+	beta = sqrt(1+(energyPerStep)/Thermostat::currentEnergy);
 	LOG4CXX_TRACE(logger,"ScalingVelocity by :\t" << beta);
 
 }
@@ -161,32 +161,33 @@ void Thermostat::thermostate(ParticleContainer* particles) {
 	if (maxSteps_opt.present()) {
 		double maxSteps = maxSteps_opt.get();
 		if (Simulator::iterations <= maxSteps) {
-			iterateBeta();
 			int iterations = Simulator::iterations;
 			int stepSize = Settings::thermostatSettings->controlInterval();
-			if ((iterations % stepSize) == 1) {
+			if ((iterations % stepSize) == 0) {
 				calculateCurrentEnergy(particles);
 			}
 			particles->each([&] (Particle& p) {
 					p.v = p.v * beta;
 				});
+			iterateBeta();
 	}
 } else {
-	iterateBeta();
 	int iterations = Simulator::iterations;
 	int stepSize = Settings::thermostatSettings->controlInterval();
-	if((iterations % stepSize) == 1 ) {
+	if((iterations % stepSize) == 0 ) {
 		calculateCurrentEnergy(particles);
 	}
 	particles->each([&] (Particle& p) {
-				p.v = p.v * beta;
-			});
+		p.v= p.v * beta;
+		});
+
+	iterateBeta();
 }
 
 }
 
 void Thermostat::setCurrentTemperature(ParticleContainer* particles){
-	double currentTemperature_arg = 2 * currentEnergy / (3 * particles->getSize() * boltzmann) - 273.2;
+	double currentTemperature_arg = 2 * currentEnergy / (3 * particles->getSize() * BOLTZMANN) - 273.2;
 	currentTemperature = currentTemperature_arg;
 	LOG4CXX_TRACE(logger,"Temperature : " << Thermostat::currentTemperature << " degrees");
 }
