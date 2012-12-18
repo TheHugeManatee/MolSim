@@ -274,6 +274,12 @@ void initializeLogger() {
 }
 
 void printProgressBar(int percentage, int elapsed){
+	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+	std::cout <<"[";
+	std::cout << floor(Thermostat::currentTemperature);
+	std::cout << " C";
+	std::cout <<"]";
+	}
 	std::cout << "[";
 	int i = 0;
 	for(; i<percentage; i=i+3){
