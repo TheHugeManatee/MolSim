@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+<!--(m): mandatory (o): optional-->     
+  
+  <deltaT></deltaT>
+  <endTime></endTime>
+  <dimensions></dimensions> <!-- (o) Standrat is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
+  <scenarioType></scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Lennard-Jones-Gravitational -->
+  <domainSize x0="" x1="" x2="" /><!-- (m) -->
+  <cutoffRadius scaled="" radius="" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
+
+  <boundaryHandling						<!-- (m) Possible: Outflow, Reflect ,Periodic -->
+  	top="" bottom=""					<!-- Periodic and Reflect on opposite boundaries doen't work due implementation -->
+  	left="" right=""		
+  	front="" back=""
+  />
+  
+  <containerType></containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
+  <epsilon></epsilon> <!-- (m) Default epsilon value (overwritten by type specific values)  -->
+  <sigma></sigma>	<!-- (m) Default epsilon value (overwritten by type specific values)  -->
+  <gravitationConstant></gravitationConstant> <!-- (o) used in Lennard-Jones-Gravitational, is set to -9.89 if left out -->
+  
+ 
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <outputFileType>vtk</outputFileType> 
+  <saveLastState></saveLastState> <!--(o) for a given filePath the last state of the particles is saved (can be used as inputFile afterwards) -->
+  <inputFile></inputFile> <!-- (o)  -->
+  
+  <thermostatSwitch>ON</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
+
+  <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
+	<initTemperature></initTemperature> <!-- (o) -->
+  	<targetTemperature></targetTemperature> <!-- (o) if not used the thermostat tries to keep the starting temperature  -->
+  	<controlInterval></controlInterval><!-- (r) the interval the thermostat is applied, it tries to reach the target temperature until the next step -->
+  	<estimatedSteps></estimatedSteps> <!-- (o) if used the thermostat tries to reach the temperature until the estimated Time, instead of the next step -->
+  	<maxSteps></maxSteps> <!-- (o) time the thermostat stops if not used it runs until end -->
+  </thermostatSettings>
+  
+ <typeList> <!-- (o) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
+ <particleType Nr="" sigma="" epsilon =""/><!-- (o)  -->
+ </typeList>  
+ 
+ <generator>
+   <cuboid><!-- (o)  -->
+      <bottomLeft x0="" x1="" x2="" />
+      <nX x0="" x1="" x2="" />
+      <stepWidth></stepWidth>
+      <mass></mass>
+      <type></type>
+      <initialVelocity x0="" x1="" x2=""/>
+      <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
+    </cuboid>
+  <sphere><!-- (o)  -->
+      <center x0="" x1="" x2="" />
+      <radius></radius>
+      <stepWidth></stepWidth>
+      <mass></mass>
+      <type></type>
+      <initialVelocity x0="" x1="" x2=""/>
+      <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
+    </sphere>  
+  </generator>
+  
+
+</simulationConfig>
