@@ -64,6 +64,12 @@ public:
 	static double deltaT;
 
 	/**
+	 * indicates how many dimensions are use
+	 */
+
+	static int dimensions;
+
+	/**
 	 * path to the config file
 	 */
 	static std::string configFile;
@@ -88,6 +94,13 @@ public:
 	 * the input file describing the startup scenario
 	 */
 	static std::string inputFile;
+
+	/**
+	 * implies whether the last state is saved or not (.present())
+	 * if it is, a file path is given (.get())
+	 */
+	static bool saveLastState;
+	static std::string lastStateFile;
 
 	/*
 	 * sigma parameter for the Lennard-Jones potential
@@ -146,6 +159,12 @@ public:
 	 * the cutoff radius for the simulation
 	 */
 	static double rCutoff;
+
+	/**
+	 * scales the cut off radius by the greatest given sigma value, if the according flag is set
+	 * @return the greatest given sigma
+	 */
+	static double scaleRCutOff();
 
 	/**
 	 * the size of the simulation domain

@@ -66,10 +66,15 @@
 	  <xsd:attribute name="sigma" type="xsd:double" use ="required"/>
 	  <xsd:attribute name="epsilon" type="xsd:double" use ="required"/>
 	</xsd:complexType>
-  
+
+	<xsd:complexType name="cutOffRadius">
+	  <xsd:attribute name="scaled" type="xsd:boolean" use="required"/>
+	  <xsd:attribute name="radius" type="xsd:double" use="required"/>
+	</xsd:complexType> 
+
 	<xsd:complexType name ="TypesList">
 	  <xsd:sequence>
-	  <xsd:element name = "particleType" type ="particleType" maxOccurs ="unbounded"/>
+	    <xsd:element name = "particleType" type ="particleType" maxOccurs ="unbounded" minOccurs = "1"/>
 	  </xsd:sequence>  
 	</xsd:complexType> 
 
@@ -81,7 +86,7 @@
 	  	<xsd:element name="mass" type="xsd:double"/>
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
-	  	<xsd:element name="brownianMeanVelocity" type="xsd:double"/>
+	  	<xsd:element name="brownianMeanVelocity" type="xsd:double" minOccurs="0" maxOccurs="1"/>
 	 </xsd:sequence>
   </xsd:complexType>
 
@@ -94,7 +99,7 @@
 	  	<xsd:element name="mass" type="xsd:double"/>
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
-	  	<xsd:element name="brownianMeanVelocity" type="xsd:double"/>
+	  	<xsd:element name="brownianMeanVelocity" type="xsd:double" minOccurs="0" maxOccurs="1"/>
 
 	 </xsd:sequence>
   </xsd:complexType>
@@ -126,9 +131,10 @@
     <xsd:sequence>
       <xsd:element name="deltaT" type="xsd:double"/>
       <xsd:element name="endTime" type="xsd:double"/>
+      <xsd:element name="dimensions" type="xsd:int" minOccurs="0" maxOccurs="1"/> 
       <xsd:element name="scenarioType" type="ScenarioType"/>
       <xsd:element name="domainSize" type="floatVector" />
-      <xsd:element name="cutoffRadius" type="xsd:double" />
+      <xsd:element name="cutoffRadius" type="cutOffRadius" />
       <xsd:element name="boundaryHandling" type="BoundaryHandlingType" />
       <xsd:element name="containerType" type="ContainerType" />
       <xsd:element name="epsilon" type="xsd:double" />
@@ -139,6 +145,7 @@
       <xsd:element name="loggerConfigFile" type="xsd:string"/>
       <xsd:element name="outputFilePrefix" type="xsd:string"/>
       <xsd:element name="outputFileType" type="OutputFileType"/>
+      <xsd:element name="saveLastState" type="xsd:string" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="inputFile" type="xsd:string" minOccurs ="0" maxOccurs="1"/>
       <xsd:element name="thermostatSwitch" type="ThermostatSwitch" minOccurs ="0" maxOccurs="1"/>
       <xsd:element name="thermostatSettings" type="ThermostatSettings" minOccurs ="0" maxOccurs="1"/>      

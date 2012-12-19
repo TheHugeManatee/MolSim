@@ -31,6 +31,9 @@ private:
 	int dimensions;
 	int numberOfParticles;
 
+	int maxSteps;
+	int stepSize;
+
 public:
 
 	Thermostat(int arg_dimensions , int arg_numberOfParticles);

@@ -23,6 +23,7 @@ extern void initializeLogger();//This is implemented in MolSim.cpp
 double Settings::deltaT = 0.0014;
 double Settings::startTime = 0;
 double Settings::endTime = 100.0;
+int Settings::dimensions = 3;
 int Settings::outputFrequency = 10;
 bool Settings::disableOutput = false;
 double Settings::sigma = 1;
@@ -31,6 +32,8 @@ double Settings::gravitationConstant = -9.89;
 ScenarioType Settings::scenarioType = ScenarioType::Gravity;
 std::string Settings::configFile = "simulationConfig.xml";
 std::string Settings::inputFile = "eingabe-sonne.txt";
+bool Settings::saveLastState = "false";
+std::string Settings::lastStateFile = "ausgabe.txt";
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
@@ -131,6 +134,9 @@ void Settings::parseXmlFile(std::string cfgFile) {
 
 	    Settings::deltaT = xmlCfg->deltaT();
 	    Settings::endTime = xmlCfg->endTime();
+	    auto dimensions_opt = xmlCfg->dimensions();
+	    if(dimensions_opt.present())
+	    	Settings::dimensions = dimensions_opt.get();
 	    Settings::outputFrequency = xmlCfg->outputFrequency();
 	    Settings::disableOutput = xmlCfg->disableOutput();
 	    Settings::loggerConfigFile = xmlCfg->loggerConfigFile();
@@ -139,6 +145,14 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    auto inputFile_opt = xmlCfg->inputFile();
 	    if(inputFile_opt.present())
 	    	Settings::inputFile = inputFile_opt.get();
+	    auto lastState_opt = xmlCfg->saveLastState();
+	    Settings::saveLastState = lastState_opt.present();
+	    if(Settings::saveLastState){
+	    	Settings::lastStateFile = lastState_opt.get();
+	    	LOG4CXX_INFO(logger,"Will save last state to "<<Settings::lastStateFile);
+	    }else{
+	    	LOG4CXX_DEBUG(logger,"No file for last state given");
+	    }
 	    Settings::domainSize[0] = xmlCfg->domainSize().x0();
 	    Settings::domainSize[1] = xmlCfg->domainSize().x1();
 	    Settings::domainSize[2] = xmlCfg->domainSize().x2();
@@ -150,13 +164,26 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::boundaryCondition[5] = xmlCfg->boundaryHandling().front();
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
-	    Settings::rCutoff = xmlCfg->cutoffRadius();
+	    auto cutOffRadius_arg = xmlCfg->cutoffRadius();
+
+
+
 	    auto particleTypes_opt = xmlCfg->typeList();
 
-	    if (particleTypes_opt.present())
+	    if (particleTypes_opt.present()){
 	    	Settings:particleTypes = particleTypes_opt.get();
+	    	std::cout << "loaded Particle Types" <<std::endl;
+	    }
+
+	    Settings::rCutoff = cutOffRadius_arg.radius();
+	    if(cutOffRadius_arg.scaled()){
+	    	double scale = scaleRCutOff();
+	    	Settings::rCutoff = Settings::rCutoff * scale;
+	    	LOG4CXX_INFO(logger,"CutOff radius is scaled by "<<scale);
+	    }
 
 	    Settings::generator = xmlCfg->generator();
+
 	    auto thermostatSwitch_opt = xmlCfg->thermostatSwitch();
 	    if (thermostatSwitch_opt.present())
 	    	Settings::thermostatSwitch = thermostatSwitch_opt.get();
@@ -168,6 +195,7 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    	LOG4CXX_DEBUG(logger,"Loaded Thermostat Settings ...");
 	    	}
 	    }
+
 	    Settings::epsilon = xmlCfg->epsilon();
 	    Settings::sigma = xmlCfg->sigma();
 	    auto gravationalConstant_opt = xmlCfg->gravitationConstant();
@@ -179,6 +207,16 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    LOG4CXX_ERROR(logger, "Error when parsing xml input file: " << e);
 	    return;
 	  }
+}
+
+double Settings::scaleRCutOff(){
+	double sigma = Settings::sigma;
+	for (auto it = Settings::particleTypes.particleType().begin() ; it != Settings::particleTypes.particleType().end() ; ++it){
+		auto c = (*it);
+		if(sigma < c.sigma())
+			sigma = c.sigma();
+	}
+	return sigma;
 }
 
 void Settings::parseCfgFile(std::string cfgFile) {

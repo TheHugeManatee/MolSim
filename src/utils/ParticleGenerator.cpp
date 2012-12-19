@@ -50,8 +50,9 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 				x[2] = bottomLeft[2] + x3 * h;
 
 				Particle p(x, initialVelocity, m, type,1 ,1);
-				//TODO: Make optional !
-				MaxwellBoltzmannDistribution(p, brownianMean, 2);
+
+				if(brownianMean != 0)
+				MaxwellBoltzmannDistribution(p, brownianMean, Settings::dimensions);
 
 				container.add(p);
 			}
@@ -70,7 +71,6 @@ void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vect
 			epsilon = c.epsilon();
 		}
 	}
-
 	LOG4CXX_INFO(ParticleGenerator::logger, "Generating " << (4 * radiusSphere*radiusSphere) << " Particles on a sphere");
 	std::vector<int> diffs;
 	diffs.push_back(-1);
@@ -95,16 +95,20 @@ void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vect
 
 							utils::Vector<double,3> xParticle;
 
+
 							xParticle[0] = center[0] + (h * height) * *diffX ;
 							xParticle[1] = center[1] + (h * x1) * *diffY ;
-							xParticle[2] = center[2] + (h * x2) * *diffZ ;
+							xParticle[2] = center[2];
+							if(Settings::dimensions == 3)
+								xParticle[2] += (h * x2) * *diffZ ;
 
 							Particle p(xParticle , initialVelocity, m ,type ,1 ,1);
 
-							MaxwellBoltzmannDistribution(p, brownianMean, 2);
+							if(brownianMean != 0)
+							MaxwellBoltzmannDistribution(p, brownianMean, Settings::dimensions);
 
 							container.add(p);
-							if(x2 == 0)
+							if((Settings::dimensions == 2)||(x2 == 0))
 								break;
 						}
 						if(x1 == 0)
