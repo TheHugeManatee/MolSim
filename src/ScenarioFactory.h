@@ -13,7 +13,7 @@
 #include "FileReader.h"
 #include "ParticleContainer.h"
 
-#include "utils/SimulationConfig.h"
+#include "utils/simulationConfig.h"
 
 #include <log4cxx/logger.h>
 #include <functional>

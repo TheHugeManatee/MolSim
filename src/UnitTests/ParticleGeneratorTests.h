@@ -17,7 +17,7 @@
 #include "../utils/Vector.h"
 #include "../Particle.h"
 #include "../ParticleContainer.h"
-#include "../utils/particleGenerator.h"
+#include "../utils/ParticleGenerator.h"
 
 #define CIRCLECONSTANT 3.1415926535
 

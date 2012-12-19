@@ -21,14 +21,17 @@
 
 class Simulator {
 private:
-	ParticleContainer *particleContainer;
+
 	SimulationScenario *scenario;
 	Thermostat *thermostat;
-
+	ParticleContainer *particleContainer;
 public:
 	Simulator();
 	virtual ~Simulator();
 	static log4cxx::LoggerPtr logger;
+
+	void exportPhaseSpace(void);
+
 
 	/* processed iterations*/
 	static int iterations;
