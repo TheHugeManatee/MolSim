@@ -4,7 +4,7 @@
        xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
           
   
-  <deltaT>0.0005</deltaT>
+  <deltaT>0.0001</deltaT>
   <endTime>15</endTime>
   <dimensions>2</dimensions> 
   <scenarioType>Lennard-Jones-Gravitational</scenarioType> 
@@ -13,8 +13,8 @@
 
   <boundaryHandling						
   	top="Reflect" bottom="Reflect"
-  	left="Periodic" right="Periodic"		
-  	front="Periodic" back="Periodic"
+  	left="Reflect" right="Reflect"		
+  	front="Reflect" back="Reflect"
   />
   
   <containerType>CelllistContainer</containerType>

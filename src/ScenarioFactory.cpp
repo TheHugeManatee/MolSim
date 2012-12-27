@@ -123,7 +123,7 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 				c.nX().x0(), c.nX().x1(), c.nX().x2(),
 				c.stepWidth(), c.mass(), c.type(),
 				utils::Vector<double, 3> (v),
-				c.brownianMeanVelocity()
+				c.brownianMeanVelocity().get() //Leo, why do you always forget the trailing get()? Does this compile for you?
 		);
 	}
 	LOG4CXX_TRACE(logger, "Generation finished!");
@@ -140,7 +140,7 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 					c.radius(),
 					c.stepWidth(), c.mass(), c.type(),
 					utils::Vector<double, 3> (v),
-					c.brownianMeanVelocity()
+					c.brownianMeanVelocity().get()//Leo, why do you always forget the trailing get()? Does this compile for you?
 			);
 		}
 

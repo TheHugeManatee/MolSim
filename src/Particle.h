@@ -61,6 +61,18 @@ public:
 	Particle(const Particle& other);
 
 	Particle(
+			//to create a complete instance of a particle with all arguments set (including force and so on)
+			utils::Vector<double, 3> x_arg,
+			utils::Vector<double, 3> v_arg,
+			double m_arg,
+			int type_arg,
+			utils::Vector<double, 3> f_arg,
+			utils::Vector<double, 3> old_f_arg,
+			double sigma_arg,
+			double epsilon_arg
+	);
+
+	Particle(
 			// for visualization, we need always 3 coordinates
 			// -> in case of 2d, we use only the first and the second
 			utils::Vector<double, 3> x_arg,
@@ -84,6 +96,7 @@ public:
 
 	bool operator==(Particle& other);
 
+	std::string toStringForExport();
 	std::string toString();
 };
 

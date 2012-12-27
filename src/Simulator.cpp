@@ -87,20 +87,22 @@ void Simulator::calculateV() {
 
 void Simulator::exportPhaseSpace(void){
 	std::ofstream myfile;
-	myfile.open ("example.txt");
+	myfile.open (Settings::lastStateFile);
 	particleContainer->each([&] (Particle &p){
-		std::string str = p.x.toString().append(p.v.toString());
-		std::stringstream ss;
-		ss<<p.m;
-		str.append(ss.str());
-		for (size_t i=0; i < str.length(); i++)
-		  {
-		    if(str.at(i) == '[' ||str.at(i) == ']' ||str.at(i) == ';'){
-		    	str.at(i) = ' ';
-		    }
-		  }
-
-		myfile << str;
+//		std::string str = p.x.toString().append(p.v.toString());
+//		std::stringstream ss;
+//		ss<<p.m;
+//		str.append(ss.str());
+//		for (size_t i=0; i < str.length(); i++)
+//		  {
+//		    if(str.at(i) == '[' ||str.at(i) == ']' ||str.at(i) == ';'){
+//		    	str.at(i) = ' ';
+//		    }
+//		  }
+//
+//		myfile << str;
+//		myfile << std::endl;
+		myfile << p.toStringForExport();
 		myfile << std::endl;
 
 	});
@@ -112,13 +114,13 @@ void Simulator::plotParticles(int iteration) {
 	outputWriter::XYZWriter xyzWriter;
 
 
-//#ifndef NOGLVISUALIZER
-//	if(Settings::show3DVisual) {
-//		outputWriter::RenderOutputWriter openglView;
-//
-//		openglView.plotParticles(*particleContainer, Settings::outputFilePrefix, iteration);
-//	}
-//#endif
+#ifndef NOGLVISUALIZER
+	if(Settings::show3DVisual) {
+		outputWriter::RenderOutputWriter openglView;
+
+		openglView.plotParticles(*particleContainer, Settings::outputFilePrefix, iteration);
+	}
+#endif
 	switch (Settings::outputFileType) {
 	case OutputFileType::xyz:
 

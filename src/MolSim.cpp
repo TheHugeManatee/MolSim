@@ -179,6 +179,14 @@ int main(int argc, char* argsv[]) {
 	LOG4CXX_TRACE(rootLogger, "Creating Simulator instance...");
 	Simulator *sim = new Simulator();
 
+	//Check if we should initialize with old state file
+	if(Settings::inputFile.size() !=0){
+		std::cout << "state found"<<std::endl;
+	}
+
+
+
+
 	double current_time = Settings::startTime;
 
 	int iteration = 0;

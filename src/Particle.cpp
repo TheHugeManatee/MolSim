@@ -77,11 +77,48 @@ Particle::Particle(	utils::Vector<double, 3> x_arg,
 	Particle::createdInstances++;
 }
 
+Particle::Particle(	utils::Vector<double, 3> x_arg,
+		utils::Vector<double, 3> v_arg,
+		double m_arg,
+		int type_arg,
+		utils::Vector<double, 3> f_arg,
+		utils::Vector<double, 3> old_f_arg,
+		double sigma_arg,
+		double epsilon_arg
+) {
+	x = x_arg;
+	v = v_arg;
+	m = m_arg;
+	type = type_arg;
+	sigma = sigma_arg;
+	epsilon = epsilon_arg;
+	f = f_arg;
+	old_f = old_f_arg;
+
+	LOG4CXX_TRACE(logger,"Particle generated");
+	Particle::createdInstances++;
+}
+
 Particle::~Particle() {
 	LOG4CXX_TRACE(logger,"Particle destructed!");
 	Particle::destroyedInstances++;
 }
 
+
+
+
+std::string Particle::toStringForExport() {
+	std::stringstream stream;
+	std::string str;
+	stream << "   particle" << x << v << f << old_f << type<< " " << sigma<< " " << epsilon << " " << m;
+	str = stream.str();
+	for (size_t i=0; i < str.length(); i++){
+		if(str.at(i) == '[' ||str.at(i) == ']' ||str.at(i) == ';'){
+			str.at(i) = ' ';
+		}
+	}
+	return str;
+}
 
 std::string Particle::toString() {
 	std::stringstream stream;
