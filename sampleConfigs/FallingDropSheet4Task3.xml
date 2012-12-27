@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+          
+  
+  <deltaT>0.0005</deltaT>
+  <endTime>15</endTime>
+  <dimensions>2</dimensions> 
+  <scenarioType>Lennard-Jones-Gravitational</scenarioType> 
+  <domainSize x0="303" x1="180" x2="3" />
+  <cutoffRadius scaled="1" radius="2.5" />
+
+  <boundaryHandling						
+  	top="Reflect" bottom="Reflect"
+  	left="Periodic" right="Periodic"		
+  	front="Periodic" back="Periodic"
+  />
+  
+  <containerType>CelllistContainer</containerType>
+  <epsilon>1</epsilon> 
+  <sigma>1</sigma>	
+  <gravitationConstant>-12.44</gravitationConstant>
+  
+ 
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <outputFileType>vtk</outputFileType> 
+  <saveLastState>state.state</saveLastState> 
+  <inputFile></inputFile> 
+  
+  <thermostatSwitch>ON</thermostatSwitch>
+
+  <thermostatSettings> 
+	<initTemperature>0.5</initTemperature> 
+  	<targetTemperature>0.5</targetTemperature> 
+  	<controlInterval>1000</controlInterval>
+  	 
+  	<maxSteps>100000</maxSteps> 
+  </thermostatSettings>
+  
+ <typeList> 
+ <particleType Nr="1" sigma="1.2" epsilon ="1.0"/>
+ <particleType Nr="2" sigma="1.2" epsilon ="1.0"/>
+ </typeList>  
+ 
+ <generator>
+   <cuboid>
+      <bottomLeft x0="1.5" x1="2.0" x2="1.0" />
+      <nX x0="250" x1="50" x2="1" />
+      <stepWidth>1.2</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0.1</brownianMeanVelocity> 
+    </cuboid>
+  <!--<sphere>
+      <center x0="60" x1="25.0" x2="0.0" />
+      <radius>2</radius>
+      <stepWidth>1.1225</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="-20" x2="0"/>
+      <brownianMeanVelocity>0.0</brownianMeanVelocity>
+    </sphere>-->  
+  </generator>
+  
+
+</simulationConfig>
