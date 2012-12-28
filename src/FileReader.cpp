@@ -128,6 +128,7 @@ void FileReader::readFile(ParticleContainer& container, char* filename) {
 			}
 			getline(input_file, tmp_string);
 		}
+		LOG4CXX_DEBUG(logger, "Done reading file");
 	} else {
 		LOG4CXX_FATAL(logger, "Error: could not open file " << filename);
 		exit(-1);
