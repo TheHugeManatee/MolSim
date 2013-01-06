@@ -6,7 +6,7 @@
 #SBATCH --get-user-env
 #SBATCH --mail-type=end
 #SBATCH --mail-user=alexander.winkler@mytum.de
-#SBATCH --time=00:10:00
+#SBATCH --time=10:00:00
 
 cd MolSim
-./MolSim -configFile sampleConfigs/sheet4_bench_big.xml
+./MolSim -configFile sampleConfigs/sheet5_rayleigh_taylor.xml

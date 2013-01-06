@@ -5,7 +5,7 @@
           
   
   <deltaT>0.0005</deltaT>
-  <endTime>15</endTime>
+  <endTime>5</endTime>
   <dimensions>2</dimensions> 
   <scenarioType>Lennard-Jones-Gravitational</scenarioType> 
   <domainSize x0="303" x1="180" x2="3" />
@@ -34,7 +34,7 @@
   <thermostatSwitch>ON</thermostatSwitch>
 
   <thermostatSettings> 
-	<initTemperature>-272.7</initTemperature> 
+	<initTemperature>0.5</initTemperature> 
   	<controlInterval>1000</controlInterval>
   </thermostatSettings>
   
