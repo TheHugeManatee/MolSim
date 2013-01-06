@@ -8,8 +8,8 @@
 #ifndef CELLLISTCONTAINER_H_
 #define CELLLISTCONTAINER_H_
 
+#include "utils/Settings.h"
 #include "ParticleContainer.h"
-
 #include "utils/Vector.h"
 
 #include <log4cxx/logger.h>
@@ -83,7 +83,10 @@ private:
 	 * @param x2 cell index in x2 direction
 	 */
 	inline bool isHaloCell(int x0, int x1, int x2) {
+		if(Settings::dimensions == 3){
 		return (!x0 || !x1 || !x2 || (x0 == (nX0-1)) || (x1 == (nX1-1)) || (x2 == (nX2-1)));
+		}
+		return (!x0 || !x1 || (x0 == (nX0-1)) || (x1 == (nX1-1)));
 	}
 
 	/**

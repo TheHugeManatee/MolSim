@@ -28,10 +28,11 @@ int Settings::outputFrequency = 10;
 bool Settings::disableOutput = false;
 double Settings::sigma = 1;
 double Settings::epsilon = 5;
-double Settings::gravitationConstant = -9.89;
+bool Settings::useGravitation = false;
+double Settings::gravitationConstant = 0;
 ScenarioType Settings::scenarioType = ScenarioType::Gravity;
 std::string Settings::configFile = "simulationConfig.xml";
-std::string Settings::inputFile = "eingabe-sonne.txt";
+std::string Settings::inputFile = "";
 bool Settings::saveLastState = "false";
 std::string Settings::lastStateFile = "ausgabe.txt";
 std::string Settings::testCase = "";
@@ -199,6 +200,7 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::epsilon = xmlCfg->epsilon();
 	    Settings::sigma = xmlCfg->sigma();
 	    auto gravationalConstant_opt = xmlCfg->gravitationConstant();
+	    Settings::useGravitation = gravationalConstant_opt.present();
 	    if(gravationalConstant_opt.present())
 	    	Settings::gravitationConstant = gravationalConstant_opt.get();
 	  }

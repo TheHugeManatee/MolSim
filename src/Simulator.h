@@ -52,6 +52,11 @@ public:
 	void calculateV();
 
 	/**
+	 * adds the gravitational force to all particle
+	 */
+	void addGravitation();
+
+	/**
 	 * plot the particles to a xyz-file
 	 * @param iteration the number of the iteration, for naming purposes
 	 */

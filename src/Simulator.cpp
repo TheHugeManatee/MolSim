@@ -49,7 +49,7 @@ Simulator::Simulator() {
 	LOG4CXX_INFO(logger, "World has " << particleContainerSize << "particles");
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		thermostat = new Thermostat(3,particleContainerSize); //TODO: What about 2 Dimensions case ??
+		thermostat = new Thermostat(Settings::dimensions,particleContainerSize); //TODO: What about 2 Dimensions case ??
 		thermostat->scaleInitialVelocity(particleContainer);
 	}
 
@@ -58,7 +58,9 @@ Simulator::Simulator() {
 
 Simulator::~Simulator() {
 	delete particleContainer;
-	delete thermostat;
+	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+		delete thermostat;
+	}
 	delete scenario;
 }
 
@@ -82,6 +84,16 @@ void Simulator::calculateX() {
 void Simulator::calculateV() {
 	particleContainer->each(scenario->updateVelocity);
 	//LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
+}
+
+void Simulator::addGravitation(){
+	particleContainer->each([&](Particle &p){
+		utils::Vector<double, 3> gravitationalForce;
+		gravitationalForce[0]=0;
+		gravitationalForce[1]= p.m * Settings::gravitationConstant;
+		gravitationalForce[2]=0;
+		p.old_f = p.old_f + gravitationalForce;
+	});
 }
 
 
@@ -164,6 +176,9 @@ void Simulator::nextTimeStep() {
 																								*applying bounderyHandling an one to apply haloHandling and sort the cells
 	// calculate new forces																		*after force calculation*/
 	calculateF();
+
+	if(Settings::useGravitation)
+		addGravitation();
 
 	particleContainer->afterPositionChanges(boundaryHandlers, scenario->haloHandler );
 

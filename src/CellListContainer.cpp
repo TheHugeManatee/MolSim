@@ -21,7 +21,7 @@ long long CellListContainer::cellSwitches = 0;
 
 CellListContainer::CellListContainer() {
 	edgeLength = Settings::rCutoff;
-
+	std::cout <<"CutOff:" << edgeLength;
 	//calculate the cells in each direction
 	//add 2 for halo
 	nX0 = std::ceil(Settings::domainSize[0] / edgeLength) + 2;
@@ -57,37 +57,10 @@ inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 };
 
 ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
-	utils::Vector<double, 3> ROUNDINGERROR = p.v * Settings::deltaT; //I guess that's the maximum distance a particle can get into the halo layer in one time step
 
 	int x0 = (p.x[0]) / edgeLength + 1,
 		x1 = (p.x[1]) / edgeLength + 1,
 		x2 = (p.x[2]) / edgeLength + 1;
-
-	/*Particles sitting exactly on a boundary halo line should be put in the boundary cell (rounding mistake is recognized)*/
-/*
-	if(p.x[0] > Settings::domainSize[0] && p.x[0] - ROUNDINGERROR[0] < Settings::domainSize[0] )
-			x0 = nX0 - 2;
-	if(p.x[1] > Settings::domainSize[1] && p.x[1] - ROUNDINGERROR[1] < Settings::domainSize[1] ){
-			LOG4CXX_INFO(logger,"Particle lying on Y boundary halo line");
-			x1 = nX1 - 2;
-	}
-	if(p.x[2] > Settings::domainSize[2] && p.x[2] - ROUNDINGERROR[2] < Settings::domainSize[2] )
-			x2 = nX2 - 2;
-
-
-	if(p.x[0] < 0 && p.x[0] + ROUNDINGERROR[0] > 0 )
-			x0 = 1;
-
-	if(p.x[1] < 0 && p.x[1] + ROUNDINGERROR[1] > 0 ){
-			LOG4CXX_INFO(logger,"Particle lying on Y boundary halo line");
-			x1 = 1;
-	}
-	if(p.x[2] < 0 && p.x[2] + ROUNDINGERROR[2] > 0 )
-			x2 = 1;
-*/
-
-
-	//LOG4CXX_TRACE(logger, "Cell position for particle " << p.x.toString() <<": " << x0 << " " << x1 << " " << x2);
 
 	//crop the indices to the halo layer
 	x0 = std::min(nX0 - 1, std::max(0, x0));
@@ -184,14 +157,17 @@ void CellListContainer::afterPositionChanges(
 					if(isHaloCell(x0, x1, x2)) {
 						particleToBeRemoved = haloHandler(*this, p);
 					}
+
 					//Check for all boundaries
 					else {
 						if(x0 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[0](*this, p);
 						if(x0 == (nX0 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[1](*this, p);
 						if(x1 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[2](*this, p);
 						if(x1 == (nX1 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[3](*this, p);
+						if(Settings::dimensions == 3 ){
 						if(x2 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
 						if(x2 == (nX2 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
+						}
 					}
 
 					//if particle is not deleted, check if it should be in some different cell than it is now

@@ -113,6 +113,10 @@ public:
 	static double epsilon;
 
 	/**
+	 * indicates whether the gravitational force is used
+	 */
+	static bool useGravitation;
+	/**
 	 * gravitation constant for the gravitational force
 	 */
 	static double gravitationConstant;
