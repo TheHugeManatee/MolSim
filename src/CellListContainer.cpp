@@ -80,7 +80,7 @@ void CellListContainer::add(Particle & p) {
 	size_++;
 }
 
-void CellListContainer::each(std::function<void (Particle &)> fn) {
+inline void CellListContainer::each(std::function<void (Particle &)> fn) {
 	int s = cells.size();
 	for(int i = 0; i < s; i++) {
 		cells[i].each(fn);
@@ -230,7 +230,7 @@ void CellListContainer::eachPair(std::function<void (Particle&, Particle&)> fn, 
 	});*/
 }
 
-int CellListContainer::getSize() {
+inline int CellListContainer::getSize() {
 	int cellcount = cells.size();
 	int size = 0;
 	for(int ci = 0; ci < cellcount; ci++) {

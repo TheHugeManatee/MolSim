@@ -33,13 +33,13 @@ Simulator::Simulator() {
 
 	particleContainer->afterPositionChanges(scenario->boundaryHandlers, scenario->haloHandler);
 
-	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
+	/* std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
 	for(int i = 0 ; i<6 ; i++){
 	boundaryHandlers[i] = [] (ParticleContainer &container, Particle &p) {
 		return false;
 	};
 	}
-	particleContainer->afterPositionChanges(boundaryHandlers ,scenario->haloHandler);
+	particleContainer->afterPositionChanges(boundaryHandlers ,scenario->haloHandler); */
 	LOG4CXX_TRACE(logger, "Scenario set up.");
 	//pre-calculate the forces for the first update
 	calculateF();
@@ -70,29 +70,29 @@ Simulator::~Simulator() {
 * and sets the net force in the object's member f
 */
 
-void Simulator::calculateF() {
+inline void Simulator::calculateF() {
 	particleContainer->eachPair(scenario->calculateForce);
 	//LOG4CXX_TRACE(logger,"Finished Force Calculation" );
 }
 
 
-void Simulator::calculateX() {
+inline void Simulator::calculateX() {
     particleContainer->each(scenario->updatePosition);
     //LOG4CXX_TRACE(logger,"Finished Position Calculation" );
 }
 
-void Simulator::calculateV() {
+inline void Simulator::calculateV() {
 	particleContainer->each(scenario->updateVelocity);
 	//LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
 }
 
-void Simulator::addGravitation(){
+inline void Simulator::addGravitation(){
 	particleContainer->each([&](Particle &p){
 		utils::Vector<double, 3> gravitationalForce;
 		gravitationalForce[0]=0;
 		gravitationalForce[1]= p.m * Settings::gravitationConstant;
 		gravitationalForce[2]=0;
-		p.old_f = p.old_f + gravitationalForce;
+		p.f = p.f + gravitationalForce;
 	});
 }
 
@@ -177,8 +177,9 @@ void Simulator::nextTimeStep() {
 	// calculate new forces																		*after force calculation*/
 	calculateF();
 
-	if(Settings::useGravitation)
+	if(Settings::useGravitation){
 		addGravitation();
+	}
 
 	particleContainer->afterPositionChanges(boundaryHandlers, scenario->haloHandler );
 

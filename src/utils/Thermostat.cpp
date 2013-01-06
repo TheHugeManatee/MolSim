@@ -165,13 +165,13 @@ void Thermostat::calculateCurrentEnergy(ParticleContainer* particles){
 /**
  * calculates beta for the actual timestep from the previous beta
  */
-void Thermostat::iterateBeta(){
+inline void Thermostat::iterateBeta(){
 	beta = sqrt(2-1/(beta*beta)); /*Ask Leo if you want to know why that works he can give you a wonderful prove*/
 	LOG4CXX_TRACE(logger,"Scaling velocities by "<<beta);
 }
 
 /*all the thermostation work*/
-void Thermostat::thermostate(ParticleContainer* particles) {
+inline void Thermostat::thermostate(ParticleContainer* particles) {
 	if ((maxSteps == 0 )||(Simulator::iterations < maxSteps)) {
 		int iterations = Simulator::iterations;
 		if ((iterations % stepSize) == 0) {
