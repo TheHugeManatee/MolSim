@@ -4,7 +4,7 @@
        xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
           
   
-  <deltaT>0.0001</deltaT>
+  <deltaT>0.0005</deltaT>
   <endTime>15</endTime>
   <dimensions>2</dimensions> 
   <scenarioType>Lennard-Jones-Gravitational</scenarioType> 
@@ -29,21 +29,17 @@
   <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType> 
   <saveLastState>state.state</saveLastState> 
-  <inputFile></inputFile> 
+ 
   
   <thermostatSwitch>ON</thermostatSwitch>
 
   <thermostatSettings> 
-	<initTemperature>0.5</initTemperature> 
-  	<targetTemperature>0.5</targetTemperature> 
+	<initTemperature>-272.7</initTemperature> 
   	<controlInterval>1000</controlInterval>
-  	 
-  	<maxSteps>1000000</maxSteps> 
   </thermostatSettings>
   
  <typeList> 
  <particleType Nr="1" sigma="1.2" epsilon ="1.0"/>
- <particleType Nr="2" sigma="1.2" epsilon ="1.0"/>
  </typeList>  
  
  <generator>
@@ -54,7 +50,6 @@
       <mass>1</mass>
       <type>1</type>
       <initialVelocity x0="0" x1="0" x2="0"/>
-      <brownianMeanVelocity>0.1</brownianMeanVelocity> 
     </cuboid>
   <!--<sphere>
       <center x0="60" x1="25.0" x2="0.0" />
