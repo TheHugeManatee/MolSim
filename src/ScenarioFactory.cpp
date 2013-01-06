@@ -60,18 +60,11 @@ std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJone
 	double sigmaNormalizedSquared = sigma*sigma/normSquared;
 	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
 	utils::Vector<double, 3> resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
-	utils::Vector<double, 3> gravitationalForce1;
-	utils::Vector<double, 3> gravitationalForce2;
-	gravitationalForce1[0]=0;
-	gravitationalForce1[1]= p1.m * Settings::gravitationConstant; //* 0.000000000000000001;
-	gravitationalForce1[2]=0;
-	gravitationalForce2[0]=0;
-	gravitationalForce2[1]= p2.m * Settings::gravitationConstant; //* 0.000000000000000001;
-	gravitationalForce2[2]=0;
-	p1.f = p1.f + resultForce + gravitationalForce1;
+
+	p1.f = p1.f + resultForce;
 
 	//resultForce = resultForce * -1;
-	p2.f = p2.f - resultForce + gravitationalForce2;
+	p2.f = p2.f - resultForce;
 };
 
 /*std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
@@ -118,13 +111,23 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 		auto c = (*it);
 		double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
 		double bl[] = {c.bottomLeft().x0(), c.bottomLeft().x1(), c.bottomLeft().x2()};
+		auto brown_opt = c.brownianMeanVelocity();
+		if(brown_opt.present()){
 		ParticleGenerator::regularCuboid(container,
 				utils::Vector<double, 3> (bl),
 				c.nX().x0(), c.nX().x1(), c.nX().x2(),
 				c.stepWidth(), c.mass(), c.type(),
 				utils::Vector<double, 3> (v),
-				c.brownianMeanVelocity().get() //Leo, why do you always forget the trailing get()? Does this compile for you?
+				brown_opt.get() //Leo, why do you always forget the trailing get()? Does this compile for you?
 		);
+		}else{
+    	ParticleGenerator::regularCuboid(container,
+    			utils::Vector<double, 3> (bl),
+    			c.nX().x0(), c.nX().x1(), c.nX().x2(),
+    			c.stepWidth(), c.mass(), c.type(),
+    			utils::Vector<double, 3> (v),
+    			0);
+		}
 	}
 	LOG4CXX_TRACE(logger, "Generation finished!");
 
@@ -135,6 +138,8 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 			auto c = (*it);
 			double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
 			double center[] = {c.center().x0(), c.center().x1(), c.center().x2()};
+			auto brown_opt = c.brownianMeanVelocity();
+			if(brown_opt.present()){
 			ParticleGenerator::generateSphere(container,
 					utils::Vector<double, 3> (center),
 					c.radius(),
@@ -142,6 +147,14 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 					utils::Vector<double, 3> (v),
 					c.brownianMeanVelocity().get()//Leo, why do you always forget the trailing get()? Does this compile for you?
 			);
+			}else{
+			ParticleGenerator::generateSphere(container,
+					utils::Vector<double, 3> (center),
+					c.radius(),
+					c.stepWidth(), c.mass(), c.type(),
+					utils::Vector<double, 3> (v),
+					0);
+			}
 		}
 
 	assert(Settings::epsilon > 0);

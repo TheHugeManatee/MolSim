@@ -208,9 +208,6 @@ int main(int argc, char* argsv[]) {
 
 		sim->nextTimeStep();
 
-
-
-
 		iteration++;
 		
 		if(iteration == nextProgressBarDraw) {
@@ -230,12 +227,14 @@ int main(int argc, char* argsv[]) {
 
 	int benchmarkEndTime = getMilliCount();
 
-	sim->exportPhaseSpace();
+	if(Settings::saveLastState)
+		sim->exportPhaseSpace();
 
 	LOG4CXX_INFO(rootLogger, "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds");
 
 	delete sim;
-	
+
+
 	LOG4CXX_DEBUG(rootLogger, "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)");
 	LOG4CXX_DEBUG(rootLogger, "Destroyed " << Particle::destroyedInstances << " Particle instances");
 
