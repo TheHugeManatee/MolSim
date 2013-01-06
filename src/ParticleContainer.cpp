@@ -28,7 +28,7 @@ void ParticleContainer::add(Particle& p) {
 }
 
 
-int ParticleContainer::getSize()
+inline int ParticleContainer::getSize()
 {
 	return particles.size();
 }
