@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+  <deltaT>0.00005</deltaT>
+  <endTime>15</endTime>
+  <scenarioType>Lennard-Jones</scenarioType>
+  <domainSize x0="303" x1="180.0" x2="7.5" />
+  <boundaryHandling
+  	top="Reflect" bottom="Reflect"
+  	left="Reflect" right="Reflect"
+  	front="Reflect" back="Reflect"
+  />
+  <containerType>CelllistContainer</containerType>
+  <epsilon>5</epsilon>
+  <sigma>1</sigma>
+  <gravityConstant>-12.44</gravityConstant>
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <outputFileType>vtk</outputFileType>
+  <cutoffRadius>2.5</cutoffRadius>
+  <inputFile></inputFile>
+  
+ <thermostatSettings>
+  	<initTemperature>0.5</initTemperature>
+  	<targetTemperature>0.5</targetTemperature>
+  	<controlInterval>1000</controlInterval>
+  	<estimatedSteps>300000</estimatedSteps>
+  	<maxSteps>300000</maxSteps>
+ </thermostatSettings> 
+  
+<typeList>
+ <particleType Nr = "1" sigma = "1.2" epsilon = "1.0" />
+ <particleType Nr = "2" sigma = "1.1" epsilon = "1.0" />
+ </typeList> 
+ 
+  <generator>
+  <sphere>
+      <center x0="150" x1="150" x2="3.75" />
+      <radius>20</radius>
+      <stepWidth>1.2</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0.0</brownianMeanVelocity>
+    </sphere>  
+	 <cuboid>
+      <bottomLeft x0="1.5" x1="2" x2="3.75" />
+      <nX x0="50" x1="4" x2="10" />
+      <stepWidth>1.2</stepWidth>
+      <mass>1</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0.0</brownianMeanVelocity>
+   </cuboid>
+    
+  </generator>
+  
+
+</simulationConfig>

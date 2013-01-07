@@ -14,9 +14,11 @@
 #include <cstdlib>
 #include <cassert>
 #include <float.h>
+#include <math.h>
 
 
 #define TWORAISED1_6 1.12246204830937298143353304967917
+#define SQRTTWO 1.41421356237309504880168872420969
 
 log4cxx::LoggerPtr ScenarioFactory::logger = log4cxx::Logger::getLogger("ScenarioFactory");
 
@@ -51,7 +53,7 @@ std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJone
 	p2.f = p2.f - resultForce;
 };
 
-std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForceGravitational = [] (Particle& p1, Particle& p2) {
+std::function<void (Particle&, Particle&)> ScenarioFactory::calculateMembraneForce = [] (Particle& p1, Particle& p2) {
 	utils::Vector<double, 3> xDif = p2.x - p1.x;
 	double epsilon = sqrt(p1.epsilon *p2.epsilon);
 	double sigma = (p1.sigma + p2.sigma) / 2;
@@ -59,12 +61,44 @@ std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJone
 	double normSquared = xDif.LengthOptimizedR3Squared();
 	double sigmaNormalizedSquared = sigma*sigma/normSquared;
 	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
-	utils::Vector<double, 3> resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
 
+	utils::Vector<double, 3> resultForce;
+	resultForce[0] = 0;
+	resultForce[1] = 0;
+	resultForce[2] = 0;
+
+	if((p1.membraneId != -1)&&(p1.membraneId==p2.membraneId)){
+		Molecule mol1 = *((Molecule *)(&p1));
+		Molecule mol2 = *((Molecule *)(&p2));
+//		std::cout << "Id1:" << mol1.getId()<< "Id2:"<< mol2.getId()  << std::endl;
+		if(mol1.isNeighbour(mol2)){
+				double norm = xDif.L2Norm();
+				double F = mol1.stiffnessConstant * (norm - mol1.averageBondLength) * (norm - mol1.averageBondLength);
+				//std::cout << "1:" << F << std::endl;
+				double a = F / norm ;
+				resultForce = xDif * a;
+		}else if(mol1.isDiagonal(mol2)){
+				double norm = xDif.L2Norm();
+				double F = mol1.stiffnessConstant *(norm - mol1.averageBondLength*SQRTTWO)*(norm - mol1.averageBondLength*SQRTTWO);
+				//std::cout << "2:" << F << std::endl;
+				double a = F / norm ;
+				resultForce = xDif * a;
+		}
+		if(normSquared < pow(TWORAISED1_6 , sigma)){ //TODO: find more elegant way
+		 resultForce = resultForce + (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+
+		p1.f = p1.f + resultForce;
+
+		//resultForce = resultForce * -1;
+		p2.f = p2.f - resultForce;
+		}
+	}else{
+	resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
 	p1.f = p1.f + resultForce;
 
 	//resultForce = resultForce * -1;
 	p2.f = p2.f - resultForce;
+	}
 };
 
 /*std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
@@ -118,7 +152,7 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 				c.nX().x0(), c.nX().x1(), c.nX().x2(),
 				c.stepWidth(), c.mass(), c.type(),
 				utils::Vector<double, 3> (v),
-				brown_opt.get() //Leo, why do you always forget the trailing get()? Does this compile for you?
+				brown_opt.get()
 		);
 		}else{
     	ParticleGenerator::regularCuboid(container,
@@ -145,7 +179,7 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 					c.radius(),
 					c.stepWidth(), c.mass(), c.type(),
 					utils::Vector<double, 3> (v),
-					c.brownianMeanVelocity().get()//Leo, why do you always forget the trailing get()? Does this compile for you?
+					c.brownianMeanVelocity().get()
 			);
 			}else{
 			ParticleGenerator::generateSphere(container,
@@ -156,6 +190,38 @@ std::function<void (ParticleContainer &container)> ScenarioFactory::LennardJones
 					0);
 			}
 		}
+		int membraneId = 0;
+		for(auto it = Settings::generator.membrane().begin();
+				it!= Settings::generator.membrane().end();
+				++it){
+			membraneId++;
+			auto b = (*it);
+			auto c = it->cuboid();
+			double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
+			double bl[] = {c.bottomLeft().x0(), c.bottomLeft().x1(), c.bottomLeft().x2()};
+			auto brown_opt = c.brownianMeanVelocity();
+			if(brown_opt.present()){
+			ParticleGenerator::Membrane(container,
+					utils::Vector<double, 3> (bl),
+					c.nX().x0(), c.nX().x1(), c.nX().x2(),
+					c.stepWidth(), c.mass(), c.type(), membraneId,
+					b.stiffnessConstant(),
+					b.averageBondLength(),
+					utils::Vector<double, 3> (v),
+					brown_opt.get()
+			);
+			}else{
+			ParticleGenerator::Membrane(container,
+					utils::Vector<double, 3> (bl),
+					c.nX().x0(), c.nX().x1(), c.nX().x2(),
+					c.stepWidth(), c.mass(), c.type(), membraneId,
+					b.stiffnessConstant(),
+					b.averageBondLength(),
+					utils::Vector<double, 3> (v),
+					0);
+			}
+
+	}
 
 	assert(Settings::epsilon > 0);
 	assert(Settings::sigma > 0);
@@ -315,8 +381,8 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 
 		LOG4CXX_DEBUG(logger,"Built Lennard-Jones Scenario");
 	}
-	else if (type == ScenarioType::Lennard_Jones_Gravitational){
-		scenario->calculateForce = ScenarioFactory::calculateLennardJonesPotentialForceGravitational;
+	else if (type == ScenarioType::Membrane){
+		scenario->calculateForce = ScenarioFactory::calculateMembraneForce;
 
 		scenario->setup = ScenarioFactory::LennardJonesSetup;
 

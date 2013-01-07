@@ -11,6 +11,7 @@
 #define PARTICLEGENERATOR_H_
 
 #include "Particle.h"
+#include "Molecule.h"
 #include "utils/Vector.h"
 #include <vector>
 
@@ -57,6 +58,14 @@ namespace ParticleGenerator {
 											double h, double m , int type, utils::Vector<double, 3> initialVelocity,
 											double brownianMean);
 
+
+	void Membrane(ParticleContainer& container, utils::Vector<double, 3> bottomLeft,
+			int nX1, int nX2, int nX3,
+			double h, double m, int type,int membraneId,
+			int stiffnessConstant_arg,
+			int averageBondLength_arg,
+			utils::Vector<double, 3> initialVelocity,
+			double brownianMean);
 
 }
 #endif /* PARTICLEGENERATOR_H_ */

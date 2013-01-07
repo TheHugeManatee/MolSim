@@ -64,8 +64,28 @@
       <type></type>
       <initialVelocity x0="" x1="" x2=""/>
       <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
-    </sphere>  
+    </sphere> 
+    
+    <membrane> <!-- (o) -->
+  	<stiffnessConstant> </stiffnessConstant>
+  	<cuboid>
+      <bottomLeft x0="" x1="" x2="" />
+      <nX x0="" x1="" x2="" />
+      <stepWidth></stepWidth>
+      <mass></mass>
+      <type></type>
+      <initialVelocity x0="" x1="" x2=""/>
+      <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
+    </cuboid>
+ 	<forcedField>
+ 	<from x0="" x1="" x2=""/>
+ 	<to x0="" x1="" x2=""/>
+ 	<force x0="" x1="" x2=""/>
+ 	</forcedField> <!-- (o)  -->
+  </membrane> 
   </generator>
+  
+ 
   
 
 </simulationConfig>

@@ -27,8 +27,8 @@ SOURCES=\
 	src/utils/ParticleGenerator.cpp\
 	src/utils/SimulationConfig.cpp\
 	src/outputWriter/RenderOutputWriter.cpp\
-	src/utils/Thermostat.cpp
-
+	src/utils/Thermostat.cpp\
+	src/Molecule.cpp
 
 # Compiler flags
 # -------------------------------------------------------------------------

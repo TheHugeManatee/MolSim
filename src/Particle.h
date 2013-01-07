@@ -16,6 +16,10 @@ class Particle {
 private:
 	static log4cxx::LoggerPtr logger;
 
+protected:
+	int id;
+
+
 public:
 	/** the position of the particle */
 	utils::Vector<double, 3> x;
@@ -36,6 +40,11 @@ public:
 	 * molecules belonging to different bodies, matters, and so on)
 	 */
 	int type;
+
+	/**
+	 * is the particle used as a molecule or not
+	 */
+	int membraneId;
 
 	/**
 	 * type specific lennard jones parameter
@@ -91,6 +100,16 @@ public:
 	        double sigma,
 	        double epsilon
 	);
+
+	Particle(utils::Vector<double, 3> x_arg,
+			utils::Vector<double, 3> v_arg,
+			double m_arg,
+			int type_arg,
+			double sigma_arg,
+			double epsilon_arg,
+			int membraneId_arg
+	);
+
 
 	virtual ~Particle();
 

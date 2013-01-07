@@ -8,7 +8,6 @@
 #include "utils/Thermostat.h"
 #include "Simulator.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
-#include <limits>
 
 log4cxx::LoggerPtr Thermostat::logger = log4cxx::Logger::getLogger("Thermostat");
 
@@ -171,7 +170,7 @@ inline void Thermostat::iterateBeta(){
 }
 
 /*all the thermostation work*/
-inline void Thermostat::thermostate(ParticleContainer* particles) {
+void Thermostat::thermostate(ParticleContainer* particles) {
 	if ((maxSteps == 0 )||(Simulator::iterations < maxSteps)) {
 		int iterations = Simulator::iterations;
 		if ((iterations % stepSize) == 0) {

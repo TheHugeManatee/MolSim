@@ -167,8 +167,6 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::outputFileType = xmlCfg->outputFileType();
 	    auto cutOffRadius_arg = xmlCfg->cutoffRadius();
 
-
-
 	    auto particleTypes_opt = xmlCfg->typeList();
 
 	    if (particleTypes_opt.present()){

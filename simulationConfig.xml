@@ -3,30 +3,30 @@
 <simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
        
-  <deltaT>0.0003</deltaT>
-  <endTime>10</endTime>
-  <dimensions>2</dimensions>
-  <scenarioType>Lennard-Jones</scenarioType>
+  <deltaT>0.0005</deltaT>
+  <endTime>100</endTime>
+  <dimensions>3</dimensions>
+  <scenarioType>Membrane</scenarioType>
   <domainSize x0="60.0" x1="60.0" x2="30" />
   <cutoffRadius scaled="1" radius="3.0"/>
 
   <boundaryHandling
-  	top="Periodic" bottom="Periodic"
-  	left="Periodic" right="Periodic"
-  	front="Periodic" back="Periodic"
+  	top="Reflect" bottom="Reflect"
+  	left="Reflect" right="Reflect"
+  	front="Reflect" back="Reflect"
   />
   
   <containerType>CelllistContainer</containerType>
   <epsilon>5</epsilon>
   <sigma>1</sigma>
-<!--<gravitationConstant>-9.89</gravitationConstant> -->
+  <gravitationConstant>0</gravitationConstant>
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
   <loggerConfigFile>Logger.properties</loggerConfigFile>
   <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType>
   
-  <thermostatSwitch>ON</thermostatSwitch>
+  <thermostatSwitch>OFF</thermostatSwitch>
 
 <thermostatSettings>
 	<initTemperature>40.0</initTemperature>
@@ -51,17 +51,30 @@
       <initialVelocity x0="0" x1="0" x2="0"/>
     </cuboid> -->
     
-	<sphere>
+<sphere>
       <center x0="15" x1="15" x2="15" />
-      <radius>100</radius>
+      <radius>1</radius>
       <stepWidth>1.1225</stepWidth>
       <mass>1</mass>
       <type>2</type>
+      <initialVelocity x0="0" x1="0" x2="-0.5"/>
+	</sphere>
+	
+  <membrane>
+   	<stiffnessConstant>300</stiffnessConstant>
+   	<averageBondLength>2.2</averageBondLength>
+  	<cuboid>
+      <bottomLeft x0="10" x1="10" x2="4" />
+      <nX x0="10" x1="10" x2="1" />
+      <stepWidth>1.2</stepWidth>
+      <mass>2.0</mass>
+      <type>1</type>
       <initialVelocity x0="0" x1="0" x2="0"/>
-	</sphere> 
+    </cuboid>
+  </membrane>
 	
 <!--	 <cuboid>
-      <bottomLeft x0="10.0" x1="15.0" x2="10.0" />
+      <bottomLeft x0="10.0" x1="15.0" x2="6.0" />
       <nX x0="10" x1="3" x2="1" />
       <stepWidth>1.1225</stepWidth>
       <mass>1</mass>

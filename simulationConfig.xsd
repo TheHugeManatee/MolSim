@@ -22,7 +22,7 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="Gravity"/>
       <xsd:enumeration value="Lennard-Jones"/>
-      <xsd:enumeration value="Lennard-Jones-Gravitational"/>
+      <xsd:enumeration value="Membrane"/>
     </xsd:restriction>
   </xsd:simpleType>    
   
@@ -108,7 +108,8 @@
   	<xsd:sequence>
   		<xsd:element name="cuboid" type="cuboid" maxOccurs="unbounded"/>
   		<xsd:element name="sphere" type="sphere" maxOccurs="unbounded"/>
-  	</xsd:sequence>
+		<xsd:element name="membrane" type="Membrane" maxOccurs="unbounded"/>
+	</xsd:sequence>
   </xsd:complexType>
   
   <xsd:complexType name="ThermostatSettings">
@@ -120,6 +121,23 @@
   	  <xsd:element name="maxSteps" type="xsd:int" minOccurs ="0" maxOccurs="1"/>
 	</xsd:sequence> 
  </xsd:complexType>
+
+<xsd:complexType name="Membrane">
+<xsd:sequence>
+  <xsd:element name="stiffnessConstant" type="xsd:double" />
+  <xsd:element name="averageBondLength" type="xsd:double" />
+  <xsd:element name="cuboid" type="cuboid"/>
+  <xsd:element name="forcedField" type="forcedField" minOccurs="0" maxOccurs="1"/>
+</xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="forcedField">
+  <xsd:sequence>
+    <xsd:element name="from" type="intVector"/>  
+    <xsd:element name="to" type="intVector"/>
+    <xsd:element name="force" type="floatVector"/>
+  </xsd:sequence>
+</xsd:complexType>
 
 <xsd:complexType name="dummyForConstructors">
   <xsd:sequence>
@@ -151,7 +169,7 @@
       <xsd:element name="thermostatSettings" type="ThermostatSettings" minOccurs ="0" maxOccurs="1"/>      
       <xsd:element name="typeList" type="TypesList" minOccurs ="0" maxOccurs="1"/>
       <xsd:element name="generator" type="generator"/>
-    </xsd:sequence>
+  </xsd:sequence>
   </xsd:complexType>
 
   <xsd:element name="simulationConfig" type="simulationConfig" />

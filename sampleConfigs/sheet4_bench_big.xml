@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+  <deltaT>0.0005</deltaT>
+  <endTime>50</endTime>
+  <scenarioType>Lennard-Jones-Gravitational</scenarioType>
+  <domainSize x0="300.0" x1="54.0" x2="7.5" />
+  <cutoffRadius>2.5</cutoffRadius>
+
+  <boundaryHandling
+  	top="Reflect" bottom="Reflect"
+  	left="Reflect" right="Reflect"
+  	front="Reflect" back="Reflect"
+  />
+  
+  <containerType>CelllistContainer</containerType>
+  <epsilon>1</epsilon>
+  <sigma>1</sigma>
+  <gravitationConstant>-12.44</gravitationConstant>
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <outputFileType>vtk</outputFileType>
+  <inputFile></inputFile>
+  
+  <thermostatSwitch>ON</thermostatSwitch>
+
+  <thermostatSettings>
+  	<initTemperature>40.0</initTemperature>
+  	<targetTemperature>40.0</targetTemperature>
+  	<controlInterval>1000</controlInterval>
+  	<estimatedSteps>300000</estimatedSteps>
+  	<maxSteps>300000</maxSteps>
+  </thermostatSettings>
+  
+ <typeList>
+ <type Nr = "1" sigma = "1.2" epsilon = "1.0" />
+ <type Nr = "2" sigma = "1.1" epsilon = "1.0" />
+ </typeList>  
+ 
+ <generator>
+   <cuboid>
+      <bottomLeft x0="0.6" x1="2.0" x2="3.75" />
+      <nX x0="250" x1="20" x2="1" />
+      <stepWidth>1.2</stepWidth>
+      <mass>1.0</mass>
+      <type>1</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0</brownianMeanVelocity>
+      <sigma></sigma>
+      <delta></delta>
+    </cuboid>
+    <cuboid>
+      <bottomLeft x0="0.6" x1="27.0" x2="3.75" />
+      <nX x0="250" x1="20" x2="1" />
+      <stepWidth>1.2</stepWidth>
+      <mass>2.0</mass>
+      <type>2</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+      <brownianMeanVelocity>0</brownianMeanVelocity>
+	  <sigma></sigma>
+      <delta></delta>      
+    </cuboid>
+  </generator>
+  
+
+</simulationConfig>

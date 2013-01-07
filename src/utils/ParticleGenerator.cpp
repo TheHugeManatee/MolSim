@@ -147,3 +147,52 @@ void ParticleGenerator::generateSphere(ParticleContainer& container, utils::Vect
 	}
 
 }
+
+
+void ParticleGenerator::Membrane(ParticleContainer& container, utils::Vector<double, 3> bottomLeft,
+		int nX1, int nX2, int nX3,
+		double h, double m, int type, int membraneId,
+		int stiffnessConstant_arg,
+		int averageBondLength_arg,
+		utils::Vector<double, 3> initialVelocity,
+		double brownianMean) {
+
+	LOG4CXX_INFO(ParticleGenerator::logger, "Generating " << (nX1*nX2*nX3) << " Molecules on a regular cuboid");
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "Creating Membrane");
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "\tbottomLeft:\t" << bottomLeft.toString());
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "\tnX:\t\t[" << nX1 << ";" << nX2 << ";" << nX3 << "]");
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "\th:\t\t" << h);
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "\tm:\t\t" << m);
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "\ttype:\t\t" << type);
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "\tinitialVelocity:" << initialVelocity.toString());
+	LOG4CXX_DEBUG(ParticleGenerator::logger, "\tbrownMeanVel:\t" << brownianMean);
+
+	double sigma = Settings::sigma;
+	double epsilon = Settings::epsilon;
+
+	for(auto it = Settings::particleTypes.particleType().begin() ; it != Settings::particleTypes.particleType().end() ; ++it){
+		auto c = (*it);
+		if(c.Nr() == type){
+			sigma = c.sigma();
+			epsilon = c.epsilon();
+		}
+	}
+
+	for(int x3=0; x3 < nX3; x3++)
+		for(int x2=0; x2 < nX2; x2++)
+			for(int x1=0; x1 < nX1; x1++) {
+				utils::Vector<double, 3> x;
+				x[0] = bottomLeft[0] + x1 * h;
+				x[1] = bottomLeft[1] + x2 * h;
+				x[2] = bottomLeft[2] + x3 * h;
+
+				int id = x1+x2*nX1;
+				Molecule mol(x, initialVelocity, m, type,sigma ,epsilon, nX1, id , membraneId, stiffnessConstant_arg, averageBondLength_arg );
+
+				if(brownianMean != 0)
+					MaxwellBoltzmannDistribution(mol, brownianMean, Settings::dimensions);
+
+				container.add(mol);
+			}
+}
+
