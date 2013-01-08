@@ -26,10 +26,12 @@ double Settings::endTime = 100.0;
 int Settings::dimensions = 3;
 int Settings::outputFrequency = 10;
 bool Settings::disableOutput = false;
-double Settings::sigma = 1;
-double Settings::epsilon = 5;
-bool Settings::useGravitation = false;
-double Settings::gravitationConstant = 0;
+//double Settings::sigma = 1;
+//double Settings::epsilon = 5;
+
+utils::Vector<double,3> Settings::gravitation = 0.0;
+
+SimulationConfig::ForceFieldSequence Settings::forceFields;
 ScenarioType Settings::scenarioType = ScenarioType::Gravity;
 std::string Settings::configFile = "simulationConfig.xml";
 std::string Settings::inputFile = "";
@@ -54,7 +56,8 @@ bool Settings::show3DVisual = false;
 bool Settings::encodeCellsInType = false;
 
 
-SimulationConfig::TypeListType Settings::particleTypes;
+typeDescriptor *Settings::particleTypes = NULL;
+int Settings::numParticleTypes = 0;
 SimulationConfig::GeneratorType Settings::generator;
 
 SimulationConfig::ThermostatSwitchType Settings::thermostatSwitch = SimulationConfig::ThermostatSwitchType::OFF;
@@ -167,18 +170,26 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::outputFileType = xmlCfg->outputFileType();
 	    auto cutOffRadius_arg = xmlCfg->cutoffRadius();
 
-	    auto particleTypes_opt = xmlCfg->typeList();
+	    double max_sigma = 0;
 
-	    if (particleTypes_opt.present()){
-	    	Settings:particleTypes = particleTypes_opt.get();
-	    	std::cout << "loaded Particle Types" <<std::endl;
+	    Settings::numParticleTypes = xmlCfg->typeList().particleType().size();
+	    Settings::particleTypes = new typeDescriptor[Settings::numParticleTypes];
+	    for(int i=0; i < xmlCfg->typeList().particleType().size(); i++) {
+	    	Settings::particleTypes[i].sigma = xmlCfg->typeList().particleType()[i].sigma();
+	    	Settings::particleTypes[i].epsilon = xmlCfg->typeList().particleType()[i].epsilon();
+	    	Settings::particleTypes[i].mass = xmlCfg->typeList().particleType()[i].mass();
+	    	Settings::particleTypes[i].isMolecule = xmlCfg->typeList().particleType()[i].isMolecule();
+	    	Settings::particleTypes[i].membraneDescriptor.stiffness = xmlCfg->typeList().particleType()[i].stiffness();
+	    	Settings::particleTypes[i].membraneDescriptor.averageBondLength = xmlCfg->typeList().particleType()[i].averageBondLength();
+
+	    	if(Settings::particleTypes[i].sigma > max_sigma)
+	    		max_sigma = Settings::particleTypes[i].sigma;
 	    }
 
 	    Settings::rCutoff = cutOffRadius_arg.radius();
 	    if(cutOffRadius_arg.scaled()){
-	    	double scale = scaleRCutOff();
-	    	Settings::rCutoff = Settings::rCutoff * scale;
-	    	LOG4CXX_INFO(logger,"CutOff radius is scaled by "<<scale);
+	    	Settings::rCutoff = Settings::rCutoff * max_sigma;
+	    	LOG4CXX_INFO(logger,"CutOff radius is scaled by " << max_sigma);
 	    }
 
 	    Settings::generator = xmlCfg->generator();
@@ -195,12 +206,17 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    	}
 	    }
 
-	    Settings::epsilon = xmlCfg->epsilon();
-	    Settings::sigma = xmlCfg->sigma();
-	    auto gravationalConstant_opt = xmlCfg->gravitationConstant();
-	    Settings::useGravitation = gravationalConstant_opt.present();
-	    if(gravationalConstant_opt.present())
-	    	Settings::gravitationConstant = gravationalConstant_opt.get();
+	    //Settings::epsilon = xmlCfg->epsilon();
+	    //Settings::sigma = xmlCfg->sigma();
+	    auto gravationalConstant_opt = xmlCfg->gravitation();
+
+	    if(gravationalConstant_opt.present()){
+	    	Settings::gravitation[0] = gravationalConstant_opt.get().x0();
+	    	Settings::gravitation[1] = gravationalConstant_opt.get().x1();
+	    	Settings::gravitation[2] = gravationalConstant_opt.get().x2();
+	    }
+
+	    Settings::forceFields = xmlCfg->forceField();
 	  }
 	  catch (const xml_schema::Exception &e)
 	  {
@@ -209,20 +225,10 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	  }
 }
 
-double Settings::scaleRCutOff(){
-	double sigma = Settings::sigma;
-	for (auto it = Settings::particleTypes.particleType().begin() ; it != Settings::particleTypes.particleType().end() ; ++it){
-		auto c = (*it);
-		if(sigma < c.sigma())
-			sigma = c.sigma();
-	}
-	return sigma;
-}
-
 void Settings::parseCfgFile(std::string cfgFile) {
 	LOG4CXX_DEBUG(logger, "Loading Configuration from .cfg file " << cfgFile);
 	LOG4CXX_WARN(logger, "Loading from a .cfg file. Note that the preferred way to load configurations is through a .xml file." <<
-			"New features will likely be impelemented in the xml reader only!");
+			"New features will likely be implemented in the xml reader only!");
 
 	std::ifstream cfgFileStream;
 	cfgFileStream.open(cfgFile, std::ifstream::in);
@@ -241,8 +247,6 @@ void Settings::parseCfgFile(std::string cfgFile) {
 			if(!var.compare("scenarioType")) 	cfgFileStream >> Settings::scenarioType;
 			if(!var.compare("disableOutput")) 	cfgFileStream >> Settings::disableOutput;
 			if(!var.compare("inputFile")) 		cfgFileStream >> Settings::inputFile;
-			if(!var.compare("epsilon")) 		cfgFileStream >> Settings::epsilon;
-			if(!var.compare("sigma")) 			cfgFileStream >> Settings::sigma;
 			if(!var.compare("outputFrequency")) cfgFileStream >> Settings::outputFrequency;
 			if(!var.compare("loggerConfigFile"))
 												cfgFileStream >> Settings::loggerConfigFile;
@@ -266,8 +270,6 @@ std::string Settings::toString() {
 	s << "\n\tendTime = " << Settings::endTime;
 	s << "\n\tscenarioType = " << Settings::scenarioType;
 	s << "\n\tcontainerType = " << Settings::containerType;
-	s << "\n\tepsilon = " << Settings::epsilon;
-	s << "\n\tsigma = " << Settings::sigma;
 	s << "\n\tdisableOutput = " << Settings::disableOutput;
 	s << "\n\toutputFrequency = " << Settings::outputFrequency;
 	s << "\n\tinputFile = " << Settings::inputFile;

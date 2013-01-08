@@ -54,7 +54,7 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 	if(initialTemperature_arg.present()){
 		double initialTemperature = initialTemperature_arg.get() + 273.2;
 		particles->each([&] (Particle& p) {
-			double scale = sqrt( BOLTZMANN * initialTemperature / (p.m));
+			double scale = sqrt( BOLTZMANN * initialTemperature / (Settings::particleTypes[p.type].mass));
 			MaxwellBoltzmannDistribution(p , scale , dimensions);
 		});
 
@@ -66,7 +66,7 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 	}
 
 	particles->each([&] (Particle& p) {
-		Thermostat::currentEnergy += p.m * p.v.LengthOptimizedR3Squared() ;
+		Thermostat::currentEnergy += Settings::particleTypes[p.type].mass * p.v.LengthOptimizedR3Squared() ;
 	});
 	Thermostat::currentEnergy = Thermostat::currentEnergy / 2;
 
@@ -137,7 +137,7 @@ void Thermostat::getStepEnergy(){
 void Thermostat::calculateCurrentEnergy(ParticleContainer* particles){
 	Thermostat::currentEnergy = 0 ;
 	particles->each([&] (Particle& p) {
-		Thermostat::currentEnergy += p.m * p.v.LengthOptimizedR3Squared() ;
+		Thermostat::currentEnergy += Settings::particleTypes[p.type].mass * p.v.LengthOptimizedR3Squared() ;
 	});
 
 	Thermostat::currentEnergy = Thermostat::currentEnergy / 2;

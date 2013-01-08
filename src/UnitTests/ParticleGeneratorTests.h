@@ -50,7 +50,7 @@ public:
 		zero[1] = 0.0;
 		zero[2] = 0.0;
 
-		ParticleGenerator::regularCuboid(pcCuboid, zero, length, width, height,1.1225,1.0,1,zero,0.1);
+		ParticleGenerator::regularCuboid(pcCuboid, zero, length, width, height,1.1225,1,zero,0.1);
 		bool ok = true;
 		pcCuboid.each([&] (Particle &p){
 			//std::cout << "length: " <<p.x[0] << ", width: " << p.x[1] << ", height: " << p.x[2] <<std::endl;
@@ -70,7 +70,7 @@ public:
 		zero[1] = 0.0;
 		zero[2] = 0.0;
 
-		ParticleGenerator::generateSphere(pcSphereSize, zero, radius, 1.1225, 1.0, 1, zero, 0.0);
+		ParticleGenerator::generateSphere(pcSphereSize, zero, radius, 1.1225, 1, zero, 0.0);
 		//std::cout << "size:  " << pcSize.getSize() << "Particles" << std::endl;
 		int rmo = radius - 1; //radius minus one
 		int rpo = radius + 1; //radius plus one
@@ -90,7 +90,7 @@ public:
 		zero[2] = 0.0;
 		double distance = 1.1225;
 
-		ParticleGenerator::generateSphere(pcSphereDistance, zero, radius, distance, 1.0, 1, zero, 0.0);
+		ParticleGenerator::generateSphere(pcSphereDistance, zero, radius, distance, 1, zero, 0.0);
 		bool ok = true;
 		pcSphereDistance.each([&] (Particle &p){
 			ok = ok && (p.x.L2Norm()<radius*distance);

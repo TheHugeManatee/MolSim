@@ -66,7 +66,7 @@ void FileReader::readFile(ParticleContainer& container, char* filename) {
 				exit(-1);
 			}
 			datastream >> m;
-			Particle p(x, v, m);
+			Particle p(x, v, 0);
 			container.add(p);
 
 			getline(input_file, tmp_string);
@@ -99,12 +99,12 @@ void FileReader::readFile(ParticleContainer& container, char* filename) {
 				lstream >> nX3;
 				lstream >> h;
 
-				ParticleGenerator::regularCuboid(container, bottomLeft, nX1, nX2, nX3, h, m, type, initialVelocity, bMean);
+				ParticleGenerator::regularCuboid(container, bottomLeft, nX1, nX2, nX3, h, type, initialVelocity, bMean);
 			}
 			if(!keyword.compare("particle")){
 				LOG4CXX_TRACE(logger, "Generating Particle");
 				utils::Vector<double, 3> loc, vel, forc, oforc;
-				int ty, sig, ep, mass;
+				int ty, id, ep, mass;
 				lstream >> loc[0];
 				lstream >> loc[1];
 				lstream >> loc[2];
@@ -118,10 +118,8 @@ void FileReader::readFile(ParticleContainer& container, char* filename) {
 				lstream >> oforc[1];
 				lstream >> oforc[2];
 				lstream >> ty;
-				lstream >> sig;
-				lstream >> ep;
-				lstream >> mass;
-				Particle p(loc, vel, mass, ty, forc, oforc, sig, ep);
+				lstream >> id;
+				Particle p(loc, vel, ty, forc, oforc, id);
 				container.add(p);
 
 

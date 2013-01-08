@@ -52,9 +52,10 @@ public:
 	void calculateV();
 
 	/**
-	 * adds the gravitational force to all particle
+	 * applies given force fields and gravity
 	 */
-	void addGravitation();
+
+	void addAdditionalForces();
 
 	/**
 	 * plot the particles to a xyz-file

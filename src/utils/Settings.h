@@ -37,6 +37,18 @@
 
 #include <string>
 
+typedef struct {
+	double mass;
+	double sigma;
+	double epsilon;
+	bool isMolecule;
+	struct  {
+		double averageBondLength;
+		double stiffness;
+		int nX0, nX1, nX2;
+	} membraneDescriptor;
+} typeDescriptor;
+
 class Settings {
 public:
 
@@ -105,22 +117,19 @@ public:
 	/*
 	 * sigma parameter for the Lennard-Jones potential
 	 */
-	static double sigma;
+	//static double sigma;
 
 	/*
 	 * epsilon parameter for the Lennard-Jones potential
 	 */
-	static double epsilon;
+	//static double epsilon;
 
-	/**
-	 * indicates whether the gravitational force is used
-	 */
-	static bool useGravitation;
 	/**
 	 * gravitation constant for the gravitational force
 	 */
-	static double gravitationConstant;
+	static utils::Vector<double,3> gravitation;
 
+	static SimulationConfig::ForceFieldSequence forceFields;
 	/**
 	 * the test case to be executed
 	 */
@@ -139,10 +148,14 @@ public:
 
 
 	/**
+	 * number of defined particle types
+	 */
+	static int numParticleTypes;
+
+	/**
 	 * all available particle types
 	 */
-
-	static SimulationConfig::TypeListType particleTypes;
+	static typeDescriptor *particleTypes;
 
 	/**
 	 * generator configuration
@@ -164,11 +177,6 @@ public:
 	 */
 	static double rCutoff;
 
-	/**
-	 * scales the cut off radius by the greatest given sigma value, if the according flag is set
-	 * @return the greatest given sigma
-	 */
-	static double scaleRCutOff();
 
 	/**
 	 * the size of the simulation domain
@@ -209,6 +217,7 @@ public:
 	 * CellListContainer changes the type for each cell to visualize the particles belonging to same cells
 	 */
 	static bool encodeCellsInType;
+
 
 private:
 	/**

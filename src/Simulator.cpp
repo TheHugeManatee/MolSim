@@ -86,15 +86,35 @@ inline void Simulator::calculateV() {
 	//LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
 }
 
-inline void Simulator::addGravitation(){
+inline void Simulator::addAdditionalForces(){
+
 	particleContainer->each([&](Particle &p){
+		for(int i = 0 ; i< Settings::forceFields.size() ; i++){
+			if(p.type == Settings::forceFields[i].type()){
+				int nX2 = Settings::particleTypes[p.type].membraneDescriptor.nX2;
+				int nX1 = Settings::particleTypes[p.type].membraneDescriptor.nX1;
+				int x2 = p.id % nX2;
+				int x1 = (p.id/nX2) % (nX1) ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
+				int x0 = p.id / (nX2*nX1);
+				if(x2 >= Settings::forceFields[i].from().x2() && x1 >= Settings::forceFields[i].from().x1() &&
+					x0 >= Settings::forceFields[i].from().x0() && x2 <= Settings::forceFields[i].to().x2() &&
+					x1 <= Settings::forceFields[i].to().x1() && x0 <= Settings::forceFields[i].to().x0()){
+					p.f[0] = p.f[0] + Settings::forceFields[i].force().x0();
+					p.f[1] = p.f[1] + Settings::forceFields[i].force().x1();
+					p.f[2] = p.f[2] + Settings::forceFields[i].force().x2();
+
+				}
+			}
+		}
+
 		utils::Vector<double, 3> gravitationalForce;
-		gravitationalForce[0]=0;
-		gravitationalForce[1]= p.m * Settings::gravitationConstant;
-		gravitationalForce[2]=0;
+		gravitationalForce= Settings::particleTypes[p.type].mass * Settings::gravitation;
 		p.f = p.f + gravitationalForce;
+
 	});
 }
+
+
 
 
 void Simulator::exportPhaseSpace(void){
@@ -133,6 +153,7 @@ void Simulator::plotParticles(int iteration) {
 		openglView.plotParticles(*particleContainer, Settings::outputFilePrefix, iteration);
 	}
 #endif
+	if(Settings::disableOutput) return;
 	switch (Settings::outputFileType) {
 	case OutputFileType::xyz:
 
@@ -177,9 +198,7 @@ void Simulator::nextTimeStep() {
 	// calculate new forces																		*after force calculation*/
 	calculateF();
 
-	if(Settings::useGravitation){
-		addGravitation();
-	}
+	addAdditionalForces();
 
 	particleContainer->afterPositionChanges(boundaryHandlers, scenario->haloHandler );
 

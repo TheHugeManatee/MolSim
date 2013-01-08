@@ -38,8 +38,8 @@ namespace ParticleGenerator {
 	 */
 	void regularCuboid(ParticleContainer& container,
 			utils::Vector<double, 3> bottomLeft,
-			int nX1, int nX2, int nX3,
-		double h, double m, int type,
+			int nX0, int nX1, int nX2,
+			double h, int type,
 			utils::Vector<double, 3> initialVelocity,
 			double brownianMean);
 	/**
@@ -55,17 +55,10 @@ namespace ParticleGenerator {
 	 * @param brownianMean mean velocity for brownian motion specify (0,0,0) to disable brownian motion
 	 */
 	void generateSphere(ParticleContainer& container, utils::Vector<double, 3> center, int radiusSphere,
-											double h, double m , int type, utils::Vector<double, 3> initialVelocity,
+											double h, int type, utils::Vector<double, 3> initialVelocity,
 											double brownianMean);
 
 
-	void Membrane(ParticleContainer& container, utils::Vector<double, 3> bottomLeft,
-			int nX1, int nX2, int nX3,
-			double h, double m, int type,int membraneId,
-			int stiffnessConstant_arg,
-			int averageBondLength_arg,
-			utils::Vector<double, 3> initialVelocity,
-			double brownianMean);
 
 }
 #endif /* PARTICLEGENERATOR_H_ */

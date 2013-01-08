@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+<!--(m): mandatory (o): optional-->     
+  
+  <deltaT>0.01</deltaT>
+  <endTime>150</endTime>
+  <dimensions>3</dimensions> <!-- (o) Standard is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
+  <scenarioType>Membrane</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Membrane  -->
+  <domainSize x0="148" x1="148" x2="148" /><!-- (m) -->
+  <cutoffRadius scaled="1" radius="4.0" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
+
+  <boundaryHandling
+  	top="Periodic" bottom="Periodic"					
+  	left="Periodic" right="Periodic"		
+  	front="Reflect" back="Reflect"
+  />
+  
+  <containerType>CelllistContainer</containerType> <!-- (m) Possible: ParticleContainer , CelllistContainer -->
+  <gravitation x0="0" x1="0" x2="-0.001" /> <!-- (o) -->
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <outputFileType>vtk</outputFileType> 
+  <saveLastState>state.state</saveLastState> <!--(o) for a given filePath the last state of the particles is saved (can be used as inputFile afterwards) -->
+  <inputFile></inputFile> <!-- (o)  -->
+  
+  <thermostatSwitch>OFF</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
+
+
+  
+ <typeList> <!-- (m) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
+ <particleType 
+ 		sigma="1" 
+ 		epsilon="1"
+ 		mass="1"  
+ 		isMolecule="true" 
+ 		stiffness="300" 
+ 		averageBondLength="2.2" />
+ </typeList>  
+ <forceField>
+ <type>0</type> 
+ <from x0="17" x1="24" x2="0" />
+ <to x0="18" x1="25" x2="0" />
+ <force x0="0" x1="0" x2="0.8" />
+ </forceField>
+ 
+ <generator>
+   <cuboid><!-- (o)  -->
+      <bottomLeft x0="15" x1="15" x2="1.5" />
+      <nX x0="50" x1="50" x2="1" />
+      <stepWidth>2.2</stepWidth>
+      <type>0</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+    </cuboid>
+
+  </generator>
+
+</simulationConfig>

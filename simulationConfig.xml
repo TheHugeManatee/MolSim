@@ -3,7 +3,7 @@
 <simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
        
-  <deltaT>0.0005</deltaT>
+  <deltaT>0.001</deltaT>
   <endTime>100</endTime>
   <dimensions>3</dimensions>
   <scenarioType>Membrane</scenarioType>
@@ -17,8 +17,6 @@
   />
   
   <containerType>CelllistContainer</containerType>
-  <epsilon>5</epsilon>
-  <sigma>1</sigma>
   <gravitationConstant>0</gravitationConstant>
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
@@ -37,8 +35,8 @@
   </thermostatSettings>
 
  <typeList>
- 	<particleType Nr="1" sigma="1.5" epsilon="1.0"/>
- 	<particleType Nr="2" sigma="0.9412" epsilon="1.0"/>
+ 	<!-- 0--> <particleType sigma="1" epsilon="1.0" mass="1" isMolecule="true" averageBondLength="1.1225" stiffness="300" />
+ 	<!-- 1--> <particleType sigma="1" epsilon="1.0" mass="1.0" isMembrane="false" isMolecule="true" averageBondLength="1.1225" stiffness="1000" />
  </typeList>  
  
  <generator>
@@ -51,27 +49,30 @@
       <initialVelocity x0="0" x1="0" x2="0"/>
     </cuboid> -->
     
-<sphere>
+	<sphere>
       <center x0="15" x1="15" x2="15" />
-      <radius>1</radius>
+      <radius>6</radius>
       <stepWidth>1.1225</stepWidth>
-      <mass>1</mass>
-      <type>2</type>
-      <initialVelocity x0="0" x1="0" x2="-0.5"/>
+      <type>1</type>
+      <initialVelocity x0="0" x1="0" x2="-4.5"/>
 	</sphere>
 	
-  <membrane>
-   	<stiffnessConstant>300</stiffnessConstant>
-   	<averageBondLength>2.2</averageBondLength>
-  	<cuboid>
-      <bottomLeft x0="10" x1="10" x2="4" />
+
+  	<!--<cuboid>
+      <bottomLeft x0="10" x1="10" x2="2" />
       <nX x0="10" x1="10" x2="1" />
-      <stepWidth>1.2</stepWidth>
-      <mass>2.0</mass>
+      <stepWidth>1.1225</stepWidth>
+      <type>0</type>
+      <initialVelocity x0="0" x1="0" x2="10"/>
+    </cuboid>-->
+
+  <!--<cuboid>
+      <bottomLeft x0="16" x1="10" x2="10" />
+      <nX x0="10" x1="10" x2="1" />
+      <stepWidth>1.1225</stepWidth>
       <type>1</type>
-      <initialVelocity x0="0" x1="0" x2="0"/>
-    </cuboid>
-  </membrane>
+      <initialVelocity x0="0" x1="0" x2="-10"/>
+    </cuboid>-->
 	
 <!--	 <cuboid>
       <bottomLeft x0="10.0" x1="15.0" x2="6.0" />

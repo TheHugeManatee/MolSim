@@ -16,10 +16,6 @@ class Particle {
 private:
 	static log4cxx::LoggerPtr logger;
 
-protected:
-	int id;
-
-
 public:
 	/** the position of the particle */
 	utils::Vector<double, 3> x;
@@ -33,24 +29,15 @@ public:
 	/** the force which was effective on this particle */
 	utils::Vector<double, 3> old_f;
 
-	/** the mass of this particle */
-	double m;
-
 	/** type of the particle. Use it for whatever you want (e.g. to seperate
 	 * molecules belonging to different bodies, matters, and so on)
 	 */
 	int type;
 
 	/**
-	 * is the particle used as a molecule or not
+	 * some id of the particle
 	 */
-	int membraneId;
-
-	/**
-	 * type specific lennard jones parameter
-	 */
-	double sigma;
-	double epsilon;
+	int id;
 
 	/**
 	 * counter variable for created instances
@@ -73,12 +60,19 @@ public:
 			//to create a complete instance of a particle with all arguments set (including force and so on)
 			utils::Vector<double, 3> x_arg,
 			utils::Vector<double, 3> v_arg,
-			double m_arg,
 			int type_arg,
 			utils::Vector<double, 3> f_arg,
 			utils::Vector<double, 3> old_f_arg,
-			double sigma_arg,
-			double epsilon_arg
+			int id_arg  = -1
+	);
+
+
+	Particle(
+			// for visualization, we need always 3 coordinates
+			// -> in case of 2d, we use only the first and the second
+			utils::Vector<double, 3> x_arg,
+	        utils::Vector<double, 3> v_arg,
+	        int type
 	);
 
 	Particle(
@@ -86,37 +80,21 @@ public:
 			// -> in case of 2d, we use only the first and the second
 			utils::Vector<double, 3> x_arg,
 	        utils::Vector<double, 3> v_arg,
-	        double m_arg,
-	        int type = 0
+	        int type_arg,
+	        int id_arg
 	);
 
-	Particle(
-			// for visualization, we need always 3 coordinates
-			// -> in case of 2d, we use only the first and the second
-			utils::Vector<double, 3> x_arg,
-	        utils::Vector<double, 3> v_arg,
-	        double m_arg,
-	        int type,
-	        double sigma,
-	        double epsilon
-	);
-
-	Particle(utils::Vector<double, 3> x_arg,
-			utils::Vector<double, 3> v_arg,
-			double m_arg,
-			int type_arg,
-			double sigma_arg,
-			double epsilon_arg,
-			int membraneId_arg
-	);
-
-
-	virtual ~Particle();
+	~Particle();
 
 	bool operator==(Particle& other);
 
 	std::string toStringForExport();
 	std::string toString();
+
+
+	bool isNeighbour(Particle &mol);
+	bool isFaceDiagonal(Particle &mol);
+	bool isSpaceDiagonal(Particle &mol);
 };
 
 std::ostream& operator<<(std::ostream& stream, Particle& p);

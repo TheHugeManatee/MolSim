@@ -13,7 +13,6 @@
 
 class Molecule: public Particle {
 public:
-	Molecule();
 	Molecule(utils::Vector<double, 3> x_arg,
 			utils::Vector<double, 3> v_arg,
 			double m_arg,
@@ -21,13 +20,15 @@ public:
 			double sigma_arg,
 			double epsilon_arg,
 			int breadth_arg,
+			int length_arg,
 			int id_arg,
 			int membraneId_arg,
 			int stiffnessConstant_arg,
 			int averageBondLength_arg);
 
-	bool isNeighbour(Molecule mol);
-	bool isDiagonal(Molecule mol);
+	bool isNeighbour(Molecule &mol);
+	bool isFaceDiagonal(Molecule &mol);
+	bool isSpaceDiagonal(Molecule &mol);
 
 	double stiffnessConstant;
 	double averageBondLength;
@@ -35,6 +36,8 @@ public:
 
 private:
 	int breadth;
+	int length;
+	int id;
 };
 
 #endif /* MOLECULE_H_ */

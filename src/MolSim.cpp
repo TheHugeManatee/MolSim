@@ -202,7 +202,7 @@ int main(int argc, char* argsv[]) {
 	LOG4CXX_INFO(rootLogger, "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::outputFrequency << " frames ");
 
 	while (current_time < Settings::endTime) {
-		if (!Settings::disableOutput && (iteration % Settings::outputFrequency == 0)) {
+		if (iteration % Settings::outputFrequency == 0) {
 			sim->plotParticles(iteration);
 		}
 

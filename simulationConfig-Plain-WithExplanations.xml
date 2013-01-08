@@ -7,8 +7,8 @@
   
   <deltaT></deltaT>
   <endTime></endTime>
-  <dimensions></dimensions> <!-- (o) Standrat is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
-  <scenarioType></scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Lennard-Jones-Gravitational -->
+  <dimensions></dimensions> <!-- (o) Standard is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
+  <scenarioType></scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Membrane  -->
   <domainSize x0="" x1="" x2="" /><!-- (m) -->
   <cutoffRadius scaled="" radius="" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
 
@@ -19,9 +19,7 @@
   />
   
   <containerType></containerType> <!-- (m) Possible: ParticleContainer , CelllistContainer -->
-  <epsilon></epsilon> <!-- (m) Default epsilon value (overwritten by type specific values)  -->
-  <sigma></sigma>	<!-- (m) Default epsilon value (overwritten by type specific values)  -->
-  <gravitationConstant></gravitationConstant> <!-- (o) used in Lennard-Jones-Gravitational, is set to -9.89 if left out -->
+  <gravitationConstant></gravitationConstant> <!-- (o) -->
   
  
   <outputFrequency>100</outputFrequency>
@@ -42,9 +40,22 @@
   	<maxSteps></maxSteps> <!-- (o) time the thermostat stops if not used it runs until end -->
   </thermostatSettings>
   
- <typeList> <!-- (o) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
- <particleType Nr="" sigma="" epsilon =""/><!-- (o)  -->
+ <typeList> <!-- (m) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
+ <particleType 
+ 		sigma="" <!-- (m)  -->
+ 		epsilon="" <!-- (m)  -->
+ 		mass=""  <!-- (m)  -->
+ 		isMolecule="" <!-- (o)  -->
+ 		stiffness="" <!-- (o)  -->
+ 		averageBondLength="" /><!-- (o)  -->
  </typeList>  
+ 
+ <forceField>
+ <type>0</type> 
+ <from x0="17" x1="24" x2="0" />
+ <to x0="18" x1="25" x2="0" />
+ <force x0="0" x1="0" x2="0.8" />
+ </forceField>
  
  <generator>
    <cuboid><!-- (o)  -->
@@ -56,7 +67,7 @@
       <initialVelocity x0="" x1="" x2=""/>
       <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
     </cuboid>
-  <sphere><!-- (o)  -->
+  	<sphere><!-- (o)  -->
       <center x0="" x1="" x2="" />
       <radius></radius>
       <stepWidth></stepWidth>
@@ -64,28 +75,7 @@
       <type></type>
       <initialVelocity x0="" x1="" x2=""/>
       <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
-    </sphere> 
-    
-    <membrane> <!-- (o) -->
-  	<stiffnessConstant> </stiffnessConstant>
-  	<cuboid>
-      <bottomLeft x0="" x1="" x2="" />
-      <nX x0="" x1="" x2="" />
-      <stepWidth></stepWidth>
-      <mass></mass>
-      <type></type>
-      <initialVelocity x0="" x1="" x2=""/>
-      <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
-    </cuboid>
- 	<forcedField>
- 	<from x0="" x1="" x2=""/>
- 	<to x0="" x1="" x2=""/>
- 	<force x0="" x1="" x2=""/>
- 	</forcedField> <!-- (o)  -->
-  </membrane> 
+    </sphere>
   </generator>
-  
- 
-  
 
 </simulationConfig>

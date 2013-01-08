@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "utils/Settings.h"
 
 using namespace std;
 
@@ -76,7 +77,7 @@ void VTKWriter::plotParticle(Particle& p) {
 	PointData::DataArray_sequence& pointDataSequence = vtkFile->UnstructuredGrid()->Piece().PointData().DataArray();
 	PointData::DataArray_iterator dataIterator = pointDataSequence.begin();
 
-	dataIterator->push_back(p.m);
+	dataIterator->push_back(Settings::particleTypes[p.type].mass);
 	//cout << "Appended mass data in: " << dataIterator->Name();
 
 	dataIterator++;

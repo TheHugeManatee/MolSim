@@ -61,10 +61,13 @@
 		<xsd:attribute name="x2" type="xsd:int" use="required"/>
 	</xsd:complexType>   
 
-	<xsd:complexType name="particleType">
-	  <xsd:attribute name="Nr" type="xsd:int" use ="required"/>
+	<xsd:complexType name="ParticleType">
+	  <xsd:attribute name="mass" type="xsd:double" use="required" />
 	  <xsd:attribute name="sigma" type="xsd:double" use ="required"/>
 	  <xsd:attribute name="epsilon" type="xsd:double" use ="required"/>
+	  <xsd:attribute name="isMolecule" type="xsd:boolean" use="optional" default="false" />
+	  <xsd:attribute name="averageBondLength" type="xsd:double" use="optional" default="2.2" />
+	  <xsd:attribute name="stiffness" type="xsd:double" use="optional" default="300" />
 	</xsd:complexType>
 
 	<xsd:complexType name="cutOffRadius">
@@ -74,7 +77,7 @@
 
 	<xsd:complexType name ="TypesList">
 	  <xsd:sequence>
-	    <xsd:element name = "particleType" type ="particleType" maxOccurs ="unbounded" minOccurs = "1"/>
+	    <xsd:element name="particleType" type ="ParticleType" maxOccurs ="unbounded" minOccurs = "1"/>
 	  </xsd:sequence>  
 	</xsd:complexType> 
 
@@ -83,7 +86,6 @@
 	  	<xsd:element name="bottomLeft" type="floatVector"/>
 	  	<xsd:element name="nX" type="intVector" />
 	  	<xsd:element name="stepWidth" type="xsd:double"/>
-	  	<xsd:element name="mass" type="xsd:double"/>
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
 	  	<xsd:element name="brownianMeanVelocity" type="xsd:double" minOccurs="0" maxOccurs="1"/>
@@ -96,7 +98,6 @@
 	  	<xsd:element name="center" type="floatVector"/>
 	  	<xsd:element name="radius" type="xsd:int" />
 	  	<xsd:element name="stepWidth" type="xsd:double"/>
-	  	<xsd:element name="mass" type="xsd:double"/>
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
 	  	<xsd:element name="brownianMeanVelocity" type="xsd:double" minOccurs="0" maxOccurs="1"/>
@@ -108,7 +109,6 @@
   	<xsd:sequence>
   		<xsd:element name="cuboid" type="cuboid" maxOccurs="unbounded"/>
   		<xsd:element name="sphere" type="sphere" maxOccurs="unbounded"/>
-		<xsd:element name="membrane" type="Membrane" maxOccurs="unbounded"/>
 	</xsd:sequence>
   </xsd:complexType>
   
@@ -122,17 +122,9 @@
 	</xsd:sequence> 
  </xsd:complexType>
 
-<xsd:complexType name="Membrane">
-<xsd:sequence>
-  <xsd:element name="stiffnessConstant" type="xsd:double" />
-  <xsd:element name="averageBondLength" type="xsd:double" />
-  <xsd:element name="cuboid" type="cuboid"/>
-  <xsd:element name="forcedField" type="forcedField" minOccurs="0" maxOccurs="1"/>
-</xsd:sequence>
-</xsd:complexType>
-
-<xsd:complexType name="forcedField">
+<xsd:complexType name="forceField">
   <xsd:sequence>
+    <xsd:element name="type" type = "xsd:int"/>
     <xsd:element name="from" type="intVector"/>  
     <xsd:element name="to" type="intVector"/>
     <xsd:element name="force" type="floatVector"/>
@@ -155,9 +147,7 @@
       <xsd:element name="cutoffRadius" type="cutOffRadius" />
       <xsd:element name="boundaryHandling" type="BoundaryHandlingType" />
       <xsd:element name="containerType" type="ContainerType" />
-      <xsd:element name="epsilon" type="xsd:double" />
-      <xsd:element name="sigma" type="xsd:double" />
-      <xsd:element name="gravitationConstant" type="xsd:double" minOccurs ="0" maxOccurs="1"/>
+      <xsd:element name="gravitation" type="floatVector" minOccurs ="0" maxOccurs="1"/>
       <xsd:element name="outputFrequency" type="xsd:int"/>
       <xsd:element name="disableOutput" type="xsd:boolean"/>
       <xsd:element name="loggerConfigFile" type="xsd:string"/>
@@ -167,7 +157,8 @@
       <xsd:element name="inputFile" type="xsd:string" minOccurs ="0" maxOccurs="1"/>
       <xsd:element name="thermostatSwitch" type="ThermostatSwitch" minOccurs ="0" maxOccurs="1"/>
       <xsd:element name="thermostatSettings" type="ThermostatSettings" minOccurs ="0" maxOccurs="1"/>      
-      <xsd:element name="typeList" type="TypesList" minOccurs ="0" maxOccurs="1"/>
+      <xsd:element name="typeList" type="TypesList" />
+      <xsd:element name="forceField" type="forceField" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="generator" type="generator"/>
   </xsd:sequence>
   </xsd:complexType>

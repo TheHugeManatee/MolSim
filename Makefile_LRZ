@@ -28,8 +28,8 @@ SOURCES=\
 	src/utils/MaxwellBoltzmannDistribution.cpp\
 	src/utils/ParticleGenerator.cpp\
 	src/utils/SimulationConfig.cpp\
-	src/utils/Thermostat.cpp\
-	src/Molecule.cpp
+	src/utils/Thermostat.cpp
+	
 # Compiler flags
 # -------------------------------------------------------------------------
 CFLAGS=-pg -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER 
