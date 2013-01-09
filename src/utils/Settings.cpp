@@ -57,6 +57,7 @@ bool Settings::encodeCellsInType = false;
 
 
 typeDescriptor *Settings::particleTypes = NULL;
+double *Settings::geometricMeanEpsilon = NULL;
 int Settings::numParticleTypes = 0;
 SimulationConfig::GeneratorType Settings::generator;
 
@@ -185,6 +186,14 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    	if(Settings::particleTypes[i].sigma > max_sigma)
 	    		max_sigma = Settings::particleTypes[i].sigma;
 	    }
+
+	    Settings::geometricMeanEpsilon = new double[Settings::numParticleTypes * Settings::numParticleTypes];
+
+	    for(int i = 0; i<Settings::numParticleTypes ; i++)
+	    	for(int j = i; j < Settings::numParticleTypes ; j++){
+	    		Settings::geometricMeanEpsilon[i+Settings::numParticleTypes*j] = sqrt(Settings::particleTypes[i].epsilon * Settings::particleTypes[j].epsilon);
+	    		Settings::geometricMeanEpsilon[j+Settings::numParticleTypes*i] = sqrt(Settings::particleTypes[i].epsilon * Settings::particleTypes[j].epsilon);
+	    	}
 
 	    Settings::rCutoff = cutOffRadius_arg.radius();
 	    if(cutOffRadius_arg.scaled()){

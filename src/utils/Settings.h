@@ -158,6 +158,11 @@ public:
 	static typeDescriptor *particleTypes;
 
 	/**
+	 * pre calculated epsilon geometric mean values
+	 */
+	static double *geometricMeanEpsilon;
+
+	/**
 	 * generator configuration
 	 */
 	static SimulationConfig::GeneratorType generator;
