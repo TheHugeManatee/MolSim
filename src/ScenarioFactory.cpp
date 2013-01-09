@@ -42,7 +42,7 @@ std::function<void(Particle&)> ScenarioFactory::verletUpdateVelocity =
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce =
 		[] (Particle& p1, Particle& p2) {
 			utils::Vector<double, 3> xDif = p2.x - p1.x;
-			double epsilon = sqrt(Settings::particleTypes[p1.type].epsilon *Settings::particleTypes[p2.type].epsilon);
+			double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
 			double sigma = (Settings::particleTypes[p1.type].sigma + Settings::particleTypes[p2.type].sigma) / 2;
 			//double norm = xDif.L2Norm();
 			double normSquared = xDif.LengthOptimizedR3Squared();
@@ -58,7 +58,8 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJones
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForce =
 		[] (Particle& p1, Particle& p2) {
 			utils::Vector<double, 3> xDif = p2.x - p1.x;
-			double epsilon = sqrt(Settings::particleTypes[p1.type].epsilon *Settings::particleTypes[p2.type].epsilon);
+
+			double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
 
 			double sigma = (Settings::particleTypes[p1.type].sigma + Settings::particleTypes[p2.type].sigma) / 2;
 
@@ -70,7 +71,7 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 			utils::Vector<double, 3> resultForce;
 			resultForce = 0;
 
-			if(Settings::particleTypes[p1.type].isMolecule && (p1.type == p2.type)) {
+			if(Settings::particleTypes[p1.type].isMolecule && (p1.type == p2.type) && (p1.type != -1)) {
 				//std::cout << "Particles in the same membrane" << std::endl;
 				double F = 0, norm = 1;
 				//std::cout << "Id1:" << p1.id << "Id2:"<< p2.id << std::endl;
@@ -106,7 +107,12 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 				//resultForce = resultForce * -1;
 				p2.f = p2.f - resultForce;
 			}
-		};
+
+			assert(p1.f[0] < 1000);
+			assert(p1.f[1] < 1000);
+			assert(p1.f[2] < 1000);
+
+	};
 
 /*std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
  utils::Vector<double, 3> xDif = p2.x - p1.x;
@@ -387,8 +393,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = 0;
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = p.x[2];
-							phantom.type = p.type;
-							calcForce(p, phantom);
+							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
 						}
 						return false;
 					},
@@ -399,8 +404,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = realDomainSize;
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = p.x[2];
-							phantom.type = p.type;
-							calcForce(p, phantom);
+							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
 						}
 						return false;
 					},
@@ -410,8 +414,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = 0;
 							phantom.x[2] = p.x[2];
-							phantom.type = p.type;
-							calcForce(p, phantom);
+							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
 						}
 						return false;
 					},
@@ -422,8 +425,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = realDomainSize;
 							phantom.x[2] = p.x[2];
-							phantom.type = p.type;
-							calcForce(p, phantom);
+							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
 						}
 						return false;
 					},
@@ -433,8 +435,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = 0;
-							phantom.type = p.type;
-							calcForce(p, phantom);
+							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
 						}
 						return false;
 					},
@@ -445,8 +446,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = realDomainSize;
-							phantom.type = p.type;
-							calcForce(p, phantom);
+							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
 						}
 						return false;
 					} };
