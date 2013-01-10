@@ -11,6 +11,8 @@
 #include "utils/Vector.h"
 #include <log4cxx/logger.h>
 
+#include <string>
+
 class Particle {
 
 private:
@@ -55,6 +57,8 @@ public:
 	Particle(int type = 0);
 
 	Particle(const Particle& other);
+
+	Particle(const std::string importString);
 
 	Particle(
 			//to create a complete instance of a particle with all arguments set (including force and so on)

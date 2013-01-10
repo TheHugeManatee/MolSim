@@ -8,7 +8,7 @@
   <deltaT>0.0005</deltaT>
   <endTime>100</endTime>
   <dimensions>3</dimensions> <!-- (o) Standrat is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
-  <scenarioType>Lennard-Jones-Gravitational</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Lennard-Jones-Gravitational -->
+  <scenarioType>Lennard-Jones</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Lennard-Jones-Gravitational -->
   <domainSize x0="60" x1="24" x2="51" /><!-- (m) -->
   <cutoffRadius scaled="1" radius="2.5" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
 
@@ -21,15 +21,11 @@
   />
   
   <containerType>CelllistContainer</containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
-  <epsilon>1</epsilon> <!-- (m) Default epsilon value (overwritten by type specific values)  -->
-  <sigma>1</sigma>	<!-- (m) Default epsilon value (overwritten by type specific values)  -->
-  <gravitationConstant>-12.44</gravitationConstant> <!-- (o) used in Lennard-Jones-Gravitational, is set to -9.89 if left out -->
-  
- 
+  <gravitation x0="0" x1="-12.44" x2="0" /> <!-- (o) used in Lennard-Jones-Gravitational, is set to -9.89 if left out -->
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
   <loggerConfigFile>Logger.properties</loggerConfigFile>
-  <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
+  <outputFilePrefix>OutputFiles/Rayleigh_Taylor</outputFilePrefix>
   <outputFileType>vtk</outputFileType> 
   <saveLastState></saveLastState> <!--(o) for a given filePath the last state of the particles is saved (can be used as inputFile afterwards) -->
   <inputFile></inputFile> <!-- (o)  -->
@@ -42,8 +38,8 @@
   </thermostatSettings>
   
  <typeList> <!-- (o) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
- <particleType Nr="1" sigma="1.15" epsilon ="2.0"/><!-- (o)  -->
- <particleType Nr="2" sigma="1.15" epsilon ="2.0"/><!-- (o)  -->
+ <particleType mass="40.0" sigma="1.15" epsilon ="2.0"/><!-- (o)  -->
+ <particleType mass="80.0" sigma="1.15" epsilon ="2.0"/><!-- (o)  -->
  
  </typeList>  
  
@@ -52,16 +48,14 @@
       <bottomLeft x0="0.6" x1="0.6" x2="0.6" />
       <nX x0="48" x1="9" x2="42" />
       <stepWidth>1.2</stepWidth>
-      <mass>40.0</mass>
-      <type>1</type>
+      <type>0</type>
       <initialVelocity x0="0" x1="0" x2="0"/>
     </cuboid>
    <cuboid>
       <bottomLeft x0="0.6" x1="11.4" x2="0.6" />
       <nX x0="48" x1="9" x2="42" />
       <stepWidth>1.2</stepWidth>
-      <mass>80.0</mass>
-      <type>2</type>
+      <type>1</type>
       <initialVelocity x0="0" x1="0" x2="0"/>
     </cuboid> 
   </generator>

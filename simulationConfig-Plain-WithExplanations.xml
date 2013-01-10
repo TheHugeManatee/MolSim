@@ -19,7 +19,7 @@
   />
   
   <containerType></containerType> <!-- (m) Possible: ParticleContainer , CelllistContainer -->
-  <gravitationConstant></gravitationConstant> <!-- (o) -->
+  <gravitation></gravitation> <!-- (o) -->
   
  
   <outputFrequency>100</outputFrequency>

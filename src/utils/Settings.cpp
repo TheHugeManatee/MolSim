@@ -115,6 +115,8 @@ void Settings::initSettings(int argc, char* argv[]) {
 			Settings::testCase = argv[i+1];
 		if(strcmp(argv[i], "-outputFilePrefix") == 0 && argc > i + 1)
 			Settings::outputFilePrefix = argv[i+1];
+		if(strcmp(argv[i], "-outputFrequency") == 0 && argc > i + 1)
+			Settings::outputFrequency = atof(argv[i+1]);
 		if(strcmp(argv[i], "-visualize") == 0)
 			Settings::show3DVisual = true;
 		if(strcmp(argv[i], "-colorByCell") == 0)
@@ -182,6 +184,11 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    	Settings::particleTypes[i].isMolecule = xmlCfg->typeList().particleType()[i].isMolecule();
 	    	Settings::particleTypes[i].membraneDescriptor.stiffness = xmlCfg->typeList().particleType()[i].stiffness();
 	    	Settings::particleTypes[i].membraneDescriptor.averageBondLength = xmlCfg->typeList().particleType()[i].averageBondLength();
+
+	    	Settings::particleTypes[i].membraneDescriptor.nX0 = xmlCfg->typeList().particleType()[i].nX0();
+	    	Settings::particleTypes[i].membraneDescriptor.nX1 = xmlCfg->typeList().particleType()[i].nX1();
+	    	Settings::particleTypes[i].membraneDescriptor.nX2 = xmlCfg->typeList().particleType()[i].nX2();
+
 
 	    	if(Settings::particleTypes[i].sigma > max_sigma)
 	    		max_sigma = Settings::particleTypes[i].sigma;

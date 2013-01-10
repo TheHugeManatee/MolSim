@@ -68,6 +68,9 @@
 	  <xsd:attribute name="isMolecule" type="xsd:boolean" use="optional" default="false" />
 	  <xsd:attribute name="averageBondLength" type="xsd:double" use="optional" default="2.2" />
 	  <xsd:attribute name="stiffness" type="xsd:double" use="optional" default="300" />
+	  <xsd:attribute name="nX0" type="xsd:double" use="optional" default="1" />
+	  <xsd:attribute name="nX1" type="xsd:double" use="optional" default="1" />
+	  <xsd:attribute name="nX2" type="xsd:double" use="optional" default="1" />
 	</xsd:complexType>
 
 	<xsd:complexType name="cutOffRadius">

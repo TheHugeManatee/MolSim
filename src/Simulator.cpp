@@ -120,20 +120,9 @@ inline void Simulator::addAdditionalForces(){
 void Simulator::exportPhaseSpace(void){
 	std::ofstream myfile;
 	myfile.open (Settings::lastStateFile);
+	myfile << "# automatically generated file" << std::endl << "0" << std::endl;
 	particleContainer->each([&] (Particle &p){
-//		std::string str = p.x.toString().append(p.v.toString());
-//		std::stringstream ss;
-//		ss<<p.m;
-//		str.append(ss.str());
-//		for (size_t i=0; i < str.length(); i++)
-//		  {
-//		    if(str.at(i) == '[' ||str.at(i) == ']' ||str.at(i) == ';'){
-//		    	str.at(i) = ' ';
-//		    }
-//		  }
-//
-//		myfile << str;
-//		myfile << std::endl;
+
 		myfile << p.toStringForExport();
 		myfile << std::endl;
 

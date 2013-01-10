@@ -236,6 +236,9 @@ static void display(void)
 			glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
 			glTranslated(render3dParticles[i].x[0], render3dParticles[i].x[1], render3dParticles[i].x[2]);
 			//glutSolidSphere(0.5, 16, 16);
+			glScaled(Settings::particleTypes[render3dParticles[i].type].sigma,
+					Settings::particleTypes[render3dParticles[i].type].sigma,
+					Settings::particleTypes[render3dParticles[i].type].sigma);
 			glCallList(particleGeoList);
 			glPopMatrix();
 		}

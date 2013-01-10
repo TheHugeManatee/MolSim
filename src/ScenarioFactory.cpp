@@ -108,9 +108,9 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 				p2.f = p2.f - resultForce;
 			}
 
-			assert(p1.f[0] < 1000);
-			assert(p1.f[1] < 1000);
-			assert(p1.f[2] < 1000);
+			//assert(p1.f[0] < 1000);
+			//assert(p1.f[1] < 1000);
+			//assert(p1.f[2] < 1000);
 
 	};
 

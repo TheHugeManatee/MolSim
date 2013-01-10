@@ -35,10 +35,10 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 	}
 
 
-
 	Settings::particleTypes[type].membraneDescriptor.nX0 = nX0;
 	Settings::particleTypes[type].membraneDescriptor.nX1 = nX1;
 	Settings::particleTypes[type].membraneDescriptor.nX2 = nX2;
+
 
 	for(int x0=0; x0 < nX0; x0++)
 		for(int x1=0; x1 < nX1; x1++)

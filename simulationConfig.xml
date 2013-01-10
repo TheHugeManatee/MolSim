@@ -16,8 +16,8 @@
   	front="Reflect" back="Reflect"
   />
   
-  <containerType>CelllistContainer</containerType>
-  <gravitationConstant>0</gravitationConstant>
+  <containerType>ParticleContainer</containerType>
+  <gravitation x0="0" x1="0" x2="0" />
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
   <loggerConfigFile>Logger.properties</loggerConfigFile>
@@ -58,13 +58,13 @@
 	</sphere>
 	
 
-  	<!--<cuboid>
+  	<cuboid>
       <bottomLeft x0="10" x1="10" x2="2" />
       <nX x0="10" x1="10" x2="1" />
       <stepWidth>1.1225</stepWidth>
       <type>0</type>
       <initialVelocity x0="0" x1="0" x2="10"/>
-    </cuboid>-->
+    </cuboid>
 
   <!--<cuboid>
       <bottomLeft x0="16" x1="10" x2="10" />

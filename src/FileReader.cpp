@@ -38,11 +38,12 @@ void FileReader::readFile(ParticleContainer& container, char* filename) {
 	if (input_file.is_open()) {
 
 		getline(input_file, tmp_string);
-		LOG4CXX_TRACE(logger, "Read line: " << tmp_string);
+		LOG4CXX_DEBUG(logger, "Read line: " << tmp_string);
 
 		while (tmp_string.size() == 0 || tmp_string[0] == '#') {
+			LOG4CXX_DEBUG(logger,  "Skipped line: " << tmp_string);
 			getline(input_file, tmp_string);
-			LOG4CXX_TRACE(logger,  "Read line: " << tmp_string);
+			LOG4CXX_DEBUG(logger,  "Read line: " << tmp_string);
 		}
 
 		istringstream numstream(tmp_string);
@@ -103,25 +104,9 @@ void FileReader::readFile(ParticleContainer& container, char* filename) {
 			}
 			if(!keyword.compare("particle")){
 				LOG4CXX_TRACE(logger, "Generating Particle");
-				utils::Vector<double, 3> loc, vel, forc, oforc;
-				int ty, id, ep, mass;
-				lstream >> loc[0];
-				lstream >> loc[1];
-				lstream >> loc[2];
-				lstream >> vel[0];
-				lstream >> vel[1];
-				lstream >> vel[2];
-				lstream >> forc[0];
-				lstream >> forc[1];
-				lstream >> forc[2];
-				lstream >> oforc[0];
-				lstream >> oforc[1];
-				lstream >> oforc[2];
-				lstream >> ty;
-				lstream >> id;
-				Particle p(loc, vel, ty, forc, oforc, id);
-				container.add(p);
 
+				Particle p(tmp_string);
+				container.add(p);
 
 			}
 			getline(input_file, tmp_string);
