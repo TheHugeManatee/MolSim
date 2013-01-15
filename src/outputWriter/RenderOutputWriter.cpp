@@ -250,9 +250,9 @@ static void display(void)
 			for(int j = i + 1; j < s; j++) {
 				if(	Settings::particleTypes[render3dParticles[i].type].isMolecule &&
 					render3dParticles[i].type == render3dParticles[j].type && (
-						render3dParticles[i].isNeighbour(render3dParticles[j]) ||
-						render3dParticles[i].isFaceDiagonal(render3dParticles[j]) ||
-						render3dParticles[i].isSpaceDiagonal(render3dParticles[j])
+						render3dParticles[i].isNeighbour(render3dParticles[j])
+						|| render3dParticles[i].isFaceDiagonal(render3dParticles[j])
+						|| render3dParticles[i].isSpaceDiagonal(render3dParticles[j])
 					)) {
 
 					glVertex3dv(&render3dParticles[i].x[0]);

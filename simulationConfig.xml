@@ -23,12 +23,12 @@
   <loggerConfigFile>Logger.properties</loggerConfigFile>
   <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType>
+  <saveLastState>state.txt</saveLastState>
   
-  <thermostatSwitch>OFF</thermostatSwitch>
+  <thermostatSwitch>ON</thermostatSwitch>
 
 <thermostatSettings>
-	<initTemperature>40.0</initTemperature>
-	<targetTemperature>40.0</targetTemperature>
+	<targetTemperature>-273.2</targetTemperature>
   	<controlInterval>1000</controlInterval>
 <!--<estimatedSteps>20000</estimatedSteps> -->
 <!--<maxSteps>30000</maxSteps> -->
@@ -49,19 +49,19 @@
       <initialVelocity x0="0" x1="0" x2="0"/>
     </cuboid> -->
     
-	<sphere>
+	<!--<sphere>
       <center x0="15" x1="15" x2="15" />
       <radius>8</radius>
       <stepWidth>1.1225</stepWidth>
       <type>1</type>
       <initialVelocity x0="0" x1="0" x2="-4.5"/>
-	</sphere>
+	</sphere>-->
 	
 
   	<cuboid>
       <bottomLeft x0="10" x1="10" x2="2" />
       <nX x0="20" x1="20" x2="1" />
-      <stepWidth>1.1225</stepWidth>
+      <stepWidth>1.6225</stepWidth>
       <type>0</type>
       <initialVelocity x0="0" x1="0" x2="10"/>
     </cuboid>

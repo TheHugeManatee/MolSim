@@ -38,7 +38,6 @@ Thermostat::Thermostat(int arg_dimensions , int arg_numberOfParticles){
 		maxSteps=0;
 	}
 
-
 	initTargetEnergy();
 
 }
@@ -65,11 +64,12 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 		LOG4CXX_DEBUG(logger,"Initial Temperature not given, continuing without further velocity scaling");
 	}
 
-	particles->each([&] (Particle& p) {
+	calculateCurrentEnergy(particles);
+/**	particles->each([&] (Particle& p) {
 		Thermostat::currentEnergy += Settings::particleTypes[p.type].mass * p.v.LengthOptimizedR3Squared() ;
 	});
 	Thermostat::currentEnergy = Thermostat::currentEnergy / 2;
-
+**/
 	LOG4CXX_DEBUG(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
 }
 
@@ -117,7 +117,8 @@ void Thermostat::getStepEnergy(){
 
 	double deltaEnergy = targetEnergy-currentEnergy;
 
-	energyPerStep = deltaEnergy / stepsLeft ;
+	energyPerStep = deltaEnergy / (stepsLeft + 1);
+
 	if(energyPerStep <= 0){
 		LOG4CXX_TRACE(logger,"Cooling down. "<<deltaEnergy);
 	}else{
@@ -150,9 +151,10 @@ void Thermostat::calculateCurrentEnergy(ParticleContainer* particles){
 
 	//	initTargetEnergy();  //has to be initialized again if number of particles changes !!
 	getStepEnergy();
+	LOG4CXX_TRACE(logger, "Currently there are " << numberOfParticles << " particles.");
 	if(currentEnergy != 0){
 		beta = sqrt(1+(energyPerStep)/Thermostat::currentEnergy);
-		LOG4CXX_TRACE(logger,"ScalingVelocity by :\t" << beta);
+		LOG4CXX_TRACE(logger,"ScalingVelocity by :\t" << beta << "; current energy is " << currentEnergy << " at step " << Simulator::iterations);
 	}else{
 		beta = 1;
 		LOG4CXX_FATAL(logger,"NO ENERGY something must have gone wrong !");
@@ -166,13 +168,13 @@ void Thermostat::calculateCurrentEnergy(ParticleContainer* particles){
  */
 inline void Thermostat::iterateBeta(){
 	beta = sqrt(2-1/(beta*beta)); /*Ask Leo if you want to know why that works he can give you a wonderful prove*/
-	LOG4CXX_TRACE(logger,"Scaling velocities by "<<beta);
+	LOG4CXX_TRACE(logger,"Scaling velocities by "<<beta<< "; current energy is " << currentEnergy << " at step " << Simulator::iterations);
 }
 
 /*all the thermostation work*/
 void Thermostat::thermostate(ParticleContainer* particles) {
 	if ((maxSteps == 0 )||(Simulator::iterations < maxSteps)) {
-		int iterations = Simulator::iterations;
+		int iterations = Simulator::iterations + 1;
 		if ((iterations % stepSize) == 0) {
 			calculateCurrentEnergy(particles);
 		}

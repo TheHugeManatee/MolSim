@@ -148,7 +148,7 @@ std::ostream& operator<<(std::ostream& stream, Particle& p) {
 
 bool Particle::isNeighbour(Particle &mol) {
 	int otherId = mol.id;
-	int breadth = Settings::particleTypes[type].membraneDescriptor.nX0 + 2;
+	int breadth = Settings::particleTypes[type].membraneDescriptor.nX2 + 2;
 	int length = Settings::particleTypes[type].membraneDescriptor.nX1 + 2;
 
 	return (otherId - 1 == id) || (otherId + 1 == id) || //x1 direction
@@ -161,7 +161,7 @@ bool Particle::isNeighbour(Particle &mol) {
 
 bool Particle::isFaceDiagonal(Particle &mol) {
 	int otherId = mol.id;
-	int breadth = Settings::particleTypes[type].membraneDescriptor.nX0 +2;
+	int breadth = Settings::particleTypes[type].membraneDescriptor.nX2 +2;
 	int length = Settings::particleTypes[type].membraneDescriptor.nX1 +2;
 
 	return (otherId - 1 - breadth == id) || (otherId + 1 + breadth == id)
@@ -177,7 +177,7 @@ bool Particle::isFaceDiagonal(Particle &mol) {
 
 bool Particle::isSpaceDiagonal(Particle &mol) {
 	int otherId = mol.id;
-	int breadth = Settings::particleTypes[type].membraneDescriptor.nX0 +2;
+	int breadth = Settings::particleTypes[type].membraneDescriptor.nX2 +2;
 	int length = Settings::particleTypes[type].membraneDescriptor.nX1 +2;
 
 	return otherId - 1 - breadth - breadth * length == id || otherId - 1
