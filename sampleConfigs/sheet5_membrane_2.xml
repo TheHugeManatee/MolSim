@@ -18,7 +18,7 @@
   	front="Reflect" back="Reflect"
   />
   
-  <containerType>ParticleContainer</containerType> <!-- (m) Possible: ParticleContainer , CelllistContainer -->
+  <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CelllistContainer -->
   <gravitation x0="0" x1="0" x2="-0.001" /> <!-- (o) -->
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>

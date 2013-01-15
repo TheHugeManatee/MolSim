@@ -231,7 +231,8 @@ static void display(void)
 	if(recompileRequested) {
 		LOG4CXX_TRACE(RenderOutputWriter::logger, "Redrawing display lists...");
 		glNewList(particlesTotalList, GL_COMPILE_AND_EXECUTE);
-		for(int i=0; i < render3dParticles.size(); i++) {
+		int s = render3dParticles.size();
+		for(int i=0; i < s; i++) {
 			glPushMatrix();
 			glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
 			glTranslated(render3dParticles[i].x[0], render3dParticles[i].x[1], render3dParticles[i].x[2]);
@@ -242,6 +243,24 @@ static void display(void)
 			glCallList(particleGeoList);
 			glPopMatrix();
 		}
+		//draw springs
+		glBegin(GL_LINES);
+		for(int i=0; i < render3dParticles.size(); i++) {
+			glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
+			for(int j = i + 1; j < s; j++) {
+				if(	Settings::particleTypes[render3dParticles[i].type].isMolecule &&
+					render3dParticles[i].type == render3dParticles[j].type && (
+						render3dParticles[i].isNeighbour(render3dParticles[j]) ||
+						render3dParticles[i].isFaceDiagonal(render3dParticles[j]) ||
+						render3dParticles[i].isSpaceDiagonal(render3dParticles[j])
+					)) {
+
+					glVertex3dv(&render3dParticles[i].x[0]);
+					glVertex3dv(&render3dParticles[j].x[0]);
+				}
+		}
+		}
+		glEnd();
 
 		glEndList();
 		recompileRequested = false;

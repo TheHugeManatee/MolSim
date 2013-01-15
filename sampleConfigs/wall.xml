@@ -12,7 +12,7 @@
   	left="Reflect" right="Reflect"
   	front="Outflow" back="Outflow"
   />
-  <containerType>CelllistContainer</containerType>
+  <containerType>CellListContainer</containerType>
   <epsilon>5</epsilon>
   <sigma>1</sigma>
   <outputFrequency>100</outputFrequency>

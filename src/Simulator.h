@@ -13,7 +13,6 @@
 #include <list>
 
 #include "Particle.h"
-#include "CellListContainer.h"
 #include "ParticleContainer.h"
 #include "ScenarioFactory.h"
 #include "utils/Thermostat.h"

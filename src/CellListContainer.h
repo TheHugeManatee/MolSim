@@ -38,6 +38,7 @@ class CellListContainer: public ParticleContainer {
 private:
 	static log4cxx::LoggerPtr logger;
 
+protected:
 	/**
 	 * internal size counter. gets incremented on every add()
 	 */

@@ -15,6 +15,9 @@
 #include "outputWriter/RenderOutputWriter.h"
 #endif
 
+#include "CellListContainer.h"
+#include "ParallelCellListContainer.h"
+
 log4cxx::LoggerPtr Simulator::logger = log4cxx::Logger::getLogger("Simulator");
 
 int Simulator::iterations = 0 ;
@@ -22,6 +25,9 @@ int Simulator::iterations = 0 ;
 Simulator::Simulator() {
 	if(Settings::containerType == ContainerType::ParticleContainer) {
 		particleContainer = new ParticleContainer();
+	}
+	else if(Settings::containerType == ContainerType::ParallelCellListContainer) {
+		particleContainer = new ParallelCellListContainer();
 	}
 	else {
 		particleContainer = new CellListContainer();

@@ -20,7 +20,7 @@
   	front="Reflect" back="Reflect"
   />
   
-  <containerType>CelllistContainer</containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
+  <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
   <gravitation x0="0" x1="-12.44" x2="0" /> <!-- (o) used in Lennard-Jones-Gravitational, is set to -9.89 if left out -->
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>

@@ -37,7 +37,7 @@ public:
 		            && Settings::domainSize[1] == Settings::domainSize[2]
 		            && Settings::domainSize[2] == 10.0);
 		CPPUNIT_ASSERT(Settings::rCutoff == 1.0);
-		CPPUNIT_ASSERT(Settings::containerType == ContainerType::CelllistContainer);
+		CPPUNIT_ASSERT(Settings::containerType == ContainerType::CellListContainer);
 		CPPUNIT_ASSERT(Settings::outputFrequency == 1000);
 		CPPUNIT_ASSERT(!Settings::loggerConfigFile.compare("Logger.properties"));
 		CPPUNIT_ASSERT(!Settings::outputFilePrefix.compare("testprefix"));

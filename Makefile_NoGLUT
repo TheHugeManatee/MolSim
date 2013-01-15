@@ -32,11 +32,11 @@ SOURCES=\
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-pg -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER 
+CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER 
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit -pg
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit
 
 INCLUDES= -I./src -I./libxsd
 

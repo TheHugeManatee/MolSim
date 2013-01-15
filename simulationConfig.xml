@@ -16,7 +16,7 @@
   	front="Reflect" back="Reflect"
   />
   
-  <containerType>ParticleContainer</containerType>
+  <containerType>CellListContainer</containerType>
   <gravitation x0="0" x1="0" x2="0" />
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
@@ -51,7 +51,7 @@
     
 	<sphere>
       <center x0="15" x1="15" x2="15" />
-      <radius>6</radius>
+      <radius>8</radius>
       <stepWidth>1.1225</stepWidth>
       <type>1</type>
       <initialVelocity x0="0" x1="0" x2="-4.5"/>
@@ -60,7 +60,7 @@
 
   	<cuboid>
       <bottomLeft x0="10" x1="10" x2="2" />
-      <nX x0="10" x1="10" x2="1" />
+      <nX x0="20" x1="20" x2="1" />
       <stepWidth>1.1225</stepWidth>
       <type>0</type>
       <initialVelocity x0="0" x1="0" x2="10"/>
