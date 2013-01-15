@@ -143,76 +143,50 @@ std::ostream& operator<<(std::ostream& stream, Particle& p) {
 	return stream;
 }
 
-/*0: links 1: rechts 2: vor 3: zurŸck das macht spa§ das bringt glŸck*/
-bool Particle::isNeighbour(Particle &mol){
 
+/*0: links 1: rechts 2: vor 3: zurÙck das macht spa¤ das bringt glÙck*/
+
+bool Particle::isNeighbour(Particle &mol) {
 	int otherId = mol.id;
-	int nX0 = Settings::particleTypes[type].membraneDescriptor.nX0;
-	int nX1 = Settings::particleTypes[type].membraneDescriptor.nX1;
-	int nX2 = Settings::particleTypes[type].membraneDescriptor.nX2;
+	int breadth = Settings::particleTypes[type].membraneDescriptor.nX0 + 2;
+	int length = Settings::particleTypes[type].membraneDescriptor.nX1 + 2;
 
-	int x2 = id % nX2;
-	int x1 = (id/nX2) % (nX1) ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
-	int x0 = id / (nX2*nX1);
-
-
-	return  (x0 > 0       &&	(x2   +   (x1)*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && 	(x2   +   (x1)*nX2 + (x0+1)*nX2*nX1 == otherId)) ||
-			(x1 > 0       &&	(x2   + (x1-1)*nX2 +   (x0)*nX2*nX1 == otherId)) ||
-			(x1 < nX1 - 1 && 	(x2   + (x1+1)*nX2 +   (x0)*nX2*nX1 == otherId)) ||
-			(x2 > 0       &&	(x2-1 +   (x1)*nX2 +   (x0)*nX2*nX1 == otherId)) ||
-			(x2 < nX2 - 1 && 	(x2+1 +   (x1)*nX2 +   (x0)*nX2*nX1 == otherId));
+	return (otherId - 1 == id) || (otherId + 1 == id) || //x1 direction
+			(otherId - breadth == id) || (otherId + breadth == id) || //x2 direction
+			(otherId - breadth * length == id) || (otherId + breadth * length
+			== id); //x3 direction
 }
 
 /*0: leftup  1:rightdown 2:rightup 3:leftdown*/
 
 bool Particle::isFaceDiagonal(Particle &mol) {
 	int otherId = mol.id;
-	int nX0 = Settings::particleTypes[type].membraneDescriptor.nX0;
-	int nX1 = Settings::particleTypes[type].membraneDescriptor.nX1;
-	int nX2 = Settings::particleTypes[type].membraneDescriptor.nX2;
+	int breadth = Settings::particleTypes[type].membraneDescriptor.nX0 +2;
+	int length = Settings::particleTypes[type].membraneDescriptor.nX1 +2;
 
-	int x2 = id % nX2;
-	int x1 = (id/nX2) % (nX1) ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
-	int x0 = id / (nX2*nX1);
-
-
-
-	return  (x1 > 0       && x2 > 0       && (x2-1 + (x1-1)*nX2 + (x0  )*nX2*nX1 == otherId)) ||
-			(x1 < nX1 - 1 && x2 > 0       && (x2-1 + (x1+1)*nX2 + (x0  )*nX2*nX1 == otherId)) ||
-			(x1 > 0       && x2 < nX2 - 1 && (x2+1 + (x1-1)*nX2 + (x0  )*nX2*nX1 == otherId)) ||
-			(x1 < nX1 - 1 && x2 < nX2 - 1 && (x2+1 + (x1+1)*nX2 + (x0  )*nX2*nX1 == otherId)) ||
-
-			(x0 > 0       && x2 > 0       && (x2-1 + (x1  )*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x2 > 0       && (x2-1 + (x1  )*nX2 + (x0+1)*nX2*nX1 == otherId)) ||
-			(x0 > 0       && x2 < nX2 - 1 && (x2+1 + (x1  )*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x2 < nX2 - 1 && (x2+1 + (x1  )*nX2 + (x0+1)*nX2*nX1 == otherId)) ||
-
-			(x0 > 0       && x1 > 0       && (x2   + (x1-1)*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x1 > 0       && (x2   + (x1-1)*nX2 + (x0+1)*nX2*nX1 == otherId)) ||
-			(x0 > 0       && x1 < nX1 - 1 && (x2   + (x1+1)*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x1 < nX1 - 1 && (x2   + (x1+1)*nX2 + (x0+1)*nX2*nX1 == otherId));
-
-
+	return (otherId - 1 - breadth == id) || (otherId + 1 + breadth == id)
+			|| (otherId - breadth + 1 == id) || (otherId + breadth - 1 == id)
+			|| (otherId - breadth * length + 1 == id) || (otherId + breadth
+			* length - 1 == id) || (otherId - breadth * length - 1 == id)
+			|| (otherId + breadth * length + 1 == id) || (otherId - breadth
+			* (length + 1) == id) || (otherId + breadth * (length - 1) == id)
+			|| (otherId - breadth * (length - 1) == id) || (otherId + breadth
+			* (length + 1) == id);
 }
+
 
 bool Particle::isSpaceDiagonal(Particle &mol) {
 	int otherId = mol.id;
-	int nX0 = Settings::particleTypes[type].membraneDescriptor.nX0;
-	int nX1 = Settings::particleTypes[type].membraneDescriptor.nX1;
-	int nX2 = Settings::particleTypes[type].membraneDescriptor.nX2;
+	int breadth = Settings::particleTypes[type].membraneDescriptor.nX0 +2;
+	int length = Settings::particleTypes[type].membraneDescriptor.nX1 +2;
 
-	int x2 = id % nX2;
-	int x1 = (id/nX2) % (nX1) ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
-	int x0 = id / (nX2*nX1);
-
-	return  (x0 > 0       && x1 > 0       && x2 > 0       && (x2-1 + (x1-1)*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x1 > 0       && x2 > 0       && (x2-1 + (x1-1)*nX2 + (x0+1)*nX2*nX1 == otherId)) ||
-			(x0 > 0       && x1 < nX1 - 1 && x2 > 0       && (x2-1 + (x1+1)*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x1 < nX1 - 1 && x2 > 0       && (x2-1 + (x1+1)*nX2 + (x0+1)*nX2*nX1 == otherId)) ||
-			(x0 > 0       && x1 > 0       && x2 < nX2 - 1 && (x2+1 + (x1-1)*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x1 > 0       && x2 < nX2 - 1 && (x2+1 + (x1-1)*nX2 + (x0+1)*nX2*nX1 == otherId)) ||
-			(x0 > 0       && x1 < nX1 - 1 && x2 < nX2 - 1 && (x2+1 + (x1+1)*nX2 + (x0-1)*nX2*nX1 == otherId)) ||
-			(x0 < nX0 - 1 && x1 < nX1 - 1 && x2 < nX2 - 1 && (x2+1 + (x1+1)*nX2 + (x0+1)*nX2*nX1 == otherId));
+	return otherId - 1 - breadth - breadth * length == id || otherId - 1
+			- breadth + breadth * length == id || otherId - 1 + breadth
+			- breadth * length == id || otherId - 1 + breadth + breadth
+			* length == id || otherId + 1 - breadth - breadth * length == id
+			|| otherId + 1 - breadth + breadth * length == id || otherId + 1
+			+ breadth - breadth * length == id || otherId + 1 + breadth
+			+ breadth * length == id;
 }
+
 

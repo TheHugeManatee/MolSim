@@ -48,7 +48,7 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 				x[1] = bottomLeft[1] + x1 * h;
 				x[2] = bottomLeft[2] + x2 * h;
 
-				int pid = x2 + x1*nX2 + x0*nX2*nX1;
+				int pid = (x2+1) + (x1+1)* (nX2+2) + (x0+1)*(nX2+2)*(nX1+2);
 
 				Particle p(x, initialVelocity, type, pid);
 
@@ -109,10 +109,10 @@ void ParticleGenerator::generateSphere(ParticleContainer& container,
 										+ (h * height) * *diffX;
 								xParticle[1] = center[1] + (h * x1) * *diffY;
 								xParticle[2] = center[2] + (h * x2) * *diffZ;
-
-								int pid = radiusSphere + (*diffZ) * x2 +
-										2*radiusSphere * (radiusSphere + (*diffY) * x1) +
-										4*radiusSphere*radiusSphere * (radiusSphere + (*diffX) *height);
+								int tempRadius = radiusSphere + 1;
+								int pid = tempRadius + (*diffZ) * (x2+1) +
+										2*tempRadius * (tempRadius + (*diffY) * (x1+1)) +
+										4*tempRadius*tempRadius * (tempRadius + (*diffX) * (height+1));
 
 								Particle p(xParticle, initialVelocity, type, pid);
 
