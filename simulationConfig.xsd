@@ -36,7 +36,7 @@
   <xsd:simpleType name="ContainerType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="ParticleContainer"/>
-      <xsd:enumeration value="CelllistContainer"/>
+      <xsd:enumeration value="CellListContainer"/>
     </xsd:restriction>
   </xsd:simpleType>     
                        

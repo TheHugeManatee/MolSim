@@ -14,7 +14,7 @@ void ParticleContainer::each(std::function<void (Particle&)> fn) {
 }
 
 void ParticleContainer::eachPair(std::function<void (Particle&, Particle&)> fn) {
-	std::vector<Particle>::iterator iterator;
+
 	int s = particles.size();
 	for(int i = 0; i < s; i++) {
 		for(int j = i + 1; j < s; j++) {

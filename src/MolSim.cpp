@@ -104,6 +104,7 @@
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
 
+#include <omp.h>
 
 #include "UnitTests/ParticleContainerTests.h"
 #include "UnitTests/ParticleGeneratorTests.h"
@@ -186,7 +187,6 @@ int main(int argc, char* argsv[]) {
 
 
 
-
 	double current_time = Settings::startTime;
 
 	int iteration = 0;
@@ -200,6 +200,7 @@ int main(int argc, char* argsv[]) {
 	int iterationsPerPercent = (maxIterations/100) + 1;
 
 	LOG4CXX_INFO(rootLogger, "Will calculate " <<  maxIterations << " iterations and output " << maxIterations/Settings::outputFrequency << " frames ");
+
 
 	while (current_time < Settings::endTime) {
 		if (iteration % Settings::outputFrequency == 0) {
@@ -223,6 +224,7 @@ int main(int argc, char* argsv[]) {
 		//if(iteration % 100 == 0)
 		//std::cout << "timeforoneiteration: " << timeForOneIteration<<std::endl;
 	}
+
 	std::cout << std::endl;
 
 	int benchmarkEndTime = getMilliCount();

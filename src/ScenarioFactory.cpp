@@ -30,6 +30,10 @@ std::function<void(Particle&)> ScenarioFactory::verletUpdatePosition =
 			utils::Vector<double, 3> resultX;
 			resultX= p.x + dt * p.v + dt * dt / (2 * Settings::particleTypes[p.type].mass) * p.f;
 			p.x = resultX;
+
+			//reset force accumulator
+			p.old_f = p.f;
+			p.f = 0;
 		};
 
 std::function<void(Particle&)> ScenarioFactory::verletUpdateVelocity =

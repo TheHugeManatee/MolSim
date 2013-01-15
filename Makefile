@@ -31,11 +31,11 @@ SOURCES=\
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-pg -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated
+CFLAGS= -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -pg
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp
 
 INCLUDES= -I./src -I./libxsd
 
@@ -68,4 +68,7 @@ test: all
 	
 gltest: gltest.o src/Particle.cpp src/outputWriter/RenderOutputWriter.o src/ParticleContainer.o
 	g++ gltest.o src/outputWriter/RenderOutputWriter.o src/ParticleContainer.o src/Particle.o -llog4cxx -lopengl32 -lglut -o gltest
+
+mptest: mptest.cpp
+	g++ mptest.cpp -fopenmp -o mptest
 

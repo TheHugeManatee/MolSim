@@ -13,8 +13,7 @@
 #include <algorithm>
 #include<float.h>
 
-
-
+#include <thread>
 
 log4cxx::LoggerPtr CellListContainer::logger = log4cxx::Logger::getLogger("CellListContainer");
 long long CellListContainer::cellSwitches = 0;
@@ -48,10 +47,6 @@ inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 	assert(x2 >= 0);
 	assert(x2 < nX2);
 
-/*	if(	x0 < 0 || x0 > nX0 ||
-		x1 < 0 || x1 > nX1 ||
-		x2 < 0 || x2 > nX2)
-		return NULL;*/
 
 	return &cells[x2 + x1*nX2 + x0*nX2*nX1];
 };
@@ -82,13 +77,18 @@ void CellListContainer::add(Particle & p) {
 
 inline void CellListContainer::each(std::function<void (Particle &)> fn) {
 	int s = cells.size();
+
+
 	for(int i = 0; i < s; i++) {
 		cells[i].each(fn);
 	}
 }
 
 void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn) {
+
 	for(int x0=0; x0 < nX0; x0++) {
+
+
 		for(int x1=0; x1 < nX1; x1++) {
 			for(int x2=0; x2 < nX2; x2++) {
 				ParticleContainer &c = cells[x2 + x1*nX2 + x0*nX2*nX1];
@@ -146,9 +146,6 @@ void CellListContainer::afterPositionChanges(
 				for(int i = 0; i < cellParticleCount; i++) {
 					Particle &p = c.particles[i];
 
-					//reset force accumulator
-					p.old_f = p.f;
-					p.f = 0;
 
 					bool particleToBeRemoved = false;
 
@@ -174,10 +171,10 @@ void CellListContainer::afterPositionChanges(
 					if(!particleToBeRemoved) {
 						ParticleContainer *cc = getContainingCell(p);
 						if(cc != &c) {
+#ifndef NDEBUG
 							cellSwitches++;
-
 							assert(cc != NULL);
-
+#endif
 							cc->add(p);
 							particleToBeRemoved = true;
 						}
