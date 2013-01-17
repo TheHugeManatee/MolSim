@@ -110,10 +110,11 @@ void ParticleGenerator::generateSphere(ParticleContainer& container,
 								xParticle[1] = center[1] + (h * x1) * *diffY;
 								xParticle[2] = center[2] + (h * x2) * *diffZ;
 								int tempRadius = radiusSphere + 1;
-								int pid = tempRadius + (*diffZ) * (x2+1) +
-										2*tempRadius * (tempRadius + (*diffY) * (x1+1)) +
-										4*tempRadius*tempRadius * (tempRadius + (*diffX) * (height+1));
+								int pid = tempRadius + (*diffZ) * (x2) +
+										2*tempRadius * (tempRadius + (*diffY) * (x1)) +
+										4*tempRadius*tempRadius * (tempRadius + (*diffX) * (height));
 
+								pid += 1 + 2 * tempRadius + 4*tempRadius*tempRadius;
 								Particle p(xParticle, initialVelocity, type, pid);
 
 								if (brownianMean != 0)
@@ -171,5 +172,73 @@ void ParticleGenerator::generateSphere(ParticleContainer& container,
 
 	}
 
+}
+
+void ParticleGenerator::generateCylinder(ParticleContainer& container,
+		utils::Vector<double, 3> bottom, int height, int radius, double h, int type,
+		utils::Vector<double, 3> initialVelocity, double brownianMean){
+
+	if (type >= Settings::numParticleTypes) {
+		LOG4CXX_FATAL(logger, "Undefined Type ID: " << type);
+		exit(1);
+	}
+
+	Settings::particleTypes[type].membraneDescriptor.nX0 = height;
+	Settings::particleTypes[type].membraneDescriptor.nX1 = radius * 2;
+	Settings::particleTypes[type].membraneDescriptor.nX2 = radius * 2;
+
+	LOG4CXX_INFO(ParticleGenerator::logger,
+			"Generating " << (4 * radius*radius*height) << " Particles on a cylinder");
+	std::vector<int> diffs;
+	diffs.push_back(-1);
+	diffs.push_back(1);
+
+
+		for (int h1 = 0; h1 < height; h1++) {
+			LOG4CXX_TRACE(ParticleGenerator::logger, "Height: \t " << height);
+
+			for (int x1 = 0; x1 < radius; x1++) {
+
+				int boundaryCircle = floor(
+						sqrt(radius * radius - x1 * x1) + 0.5);
+				LOG4CXX_TRACE(ParticleGenerator::logger,
+						"New boundary circle \t" <<boundaryCircle);
+
+				for (int x2 = 0; x2 < boundaryCircle; x2++) {
+
+						for (std::vector<int>::iterator diffY = diffs.begin();
+								diffY != diffs.end(); diffY++) {
+							for (std::vector<int>::iterator diffZ =
+									diffs.begin(); diffZ != diffs.end();
+									diffZ++) {
+
+								utils::Vector<double, 3> xParticle;
+								xParticle = bottom;
+								xParticle[0] += (h * h1);
+								xParticle[1] += (h * x1) * *diffY;
+								xParticle[2] += (h * x2) * *diffZ;
+
+								int tempRadius = radius + 1;
+
+								int pid = (tempRadius + (*diffZ) * (x2)) +
+										2*tempRadius * (tempRadius + (*diffY) * (x1)) +
+										4*tempRadius * tempRadius * (h1);
+
+								pid += 1+ 2* tempRadius + 4* tempRadius* tempRadius;
+								Particle p(xParticle, initialVelocity, type, pid);
+
+								if (brownianMean != 0)
+									MaxwellBoltzmannDistribution(p,
+											brownianMean, Settings::dimensions);
+								container.add(p);
+								if (x2 == 0)
+									break;
+							}
+							if (x1 == 0)
+								break;
+					}
+				}
+			}
+		}
 }
 

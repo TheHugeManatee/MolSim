@@ -60,5 +60,8 @@ namespace ParticleGenerator {
 
 
 
+	void generateCylinder(ParticleContainer& container,
+			utils::Vector<double, 3> bottom, int height, int radius, double h, int type,
+			utils::Vector<double, 3> initialVelocity, double brownianMean);
 }
 #endif /* PARTICLEGENERATOR_H_ */

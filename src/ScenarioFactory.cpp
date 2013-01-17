@@ -157,6 +157,7 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 				fileReader.readFile(container, (char*)Settings::inputFile.c_str());
 			}
 			LOG4CXX_TRACE(logger, "Cuboid generation:");
+
 			for(auto it = Settings::generator.cuboid().begin();
 					it != Settings::generator.cuboid().end();
 					++it) {
@@ -182,7 +183,37 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 							0);
 				}
 			}
-			LOG4CXX_TRACE(logger, "Generation finished!");
+			LOG4CXX_TRACE(logger, "Cylinder generation:");
+
+			for(auto it = Settings::generator.cylinder().begin();
+					it != Settings::generator.cylinder().end();
+					++it) {
+
+				auto c = (*it);
+				double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
+				double bottom[] = {c.bottom().x0(), c.bottom().x1(), c.bottom().x2()};
+				auto brown_opt = c.brownianMeanVelocity();
+				if(brown_opt.present()) {
+					ParticleGenerator::generateCylinder(container,
+							utils::Vector<double, 3> (bottom),
+							c.height(),
+							c.radius(),
+							c.stepWidth(), c.type(),
+							utils::Vector<double, 3> (v),
+							c.brownianMeanVelocity().get()
+					);
+				} else {
+					ParticleGenerator::generateCylinder(container,
+							utils::Vector<double, 3> (bottom),
+							c.height(),
+							c.radius(),
+							c.stepWidth(), c.type(),
+							utils::Vector<double, 3> (v),
+							0);
+				}
+			}
+
+			LOG4CXX_TRACE(logger, "Sphere generation:");
 
 			for(auto it = Settings::generator.sphere().begin();
 					it != Settings::generator.sphere().end();
@@ -209,6 +240,7 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 							0);
 				}
 			}
+			LOG4CXX_TRACE(logger, "Generation finished!");
 
 		};
 
