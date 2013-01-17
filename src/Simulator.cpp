@@ -93,11 +93,11 @@ inline void Simulator::addAdditionalForces(){
 	particleContainer->each([&](Particle &p){
 		for(int i = 0 ; i< Settings::forceFields.size() ; i++){
 			if(p.type == Settings::forceFields[i].type()){
-				int nX2 = Settings::particleTypes[p.type].membraneDescriptor.nX2;
-				int nX1 = Settings::particleTypes[p.type].membraneDescriptor.nX1;
-				int x2 = p.id % nX2;
-				int x1 = (p.id/nX2) % (nX1) ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
-				int x0 = p.id / (nX2*nX1);
+				int nX2 = Settings::particleTypes[p.type].membraneDescriptor.nX2+2;
+				int nX1 = Settings::particleTypes[p.type].membraneDescriptor.nX1+2;
+				int x2 = p.id % nX2 -1;
+				int x1 = (p.id/nX2) % (nX1) -1 ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
+				int x0 = p.id / (nX2*nX1) -1;
 				if(x2 >= Settings::forceFields[i].from().x2() && x1 >= Settings::forceFields[i].from().x1() &&
 					x0 >= Settings::forceFields[i].from().x0() && x2 <= Settings::forceFields[i].to().x2() &&
 					x1 <= Settings::forceFields[i].to().x1() && x0 <= Settings::forceFields[i].to().x0()){
