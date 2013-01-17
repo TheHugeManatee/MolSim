@@ -76,6 +76,14 @@
       <initialVelocity x0="" x1="" x2=""/>
       <brownianMeanVelocity></brownianMeanVelocity> <!-- (o)  -->
     </sphere>
+    <cylinder> <!-- (o)  -->
+      <bottom x0="" x1="" x2="" />
+      <height></height>
+      <radius></radius>
+      <stepWidth></stepWidth>
+      <type></type>
+      <initialVelocity x0="" x1="" x2=""/> <!-- (o)  -->
+	</cylinder
   </generator>
 
 </simulationConfig>
