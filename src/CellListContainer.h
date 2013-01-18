@@ -36,7 +36,7 @@ class CellListContainer: public ParticleContainer {
 	friend class CellListContainerTest;
 
 private:
-//	static log4cxx::LoggerPtr logger;
+	static log4cxx::LoggerPtr logger;
 
 protected:
 	/**

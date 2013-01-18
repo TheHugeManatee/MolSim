@@ -15,7 +15,11 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#ifndef NOFREEGLUT
 #include <GL/freeglut.h>
+#else
+#include <GL/glut.h>
+#endif
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,6 +99,7 @@ resize(int width, int height)
 
     Taken from freeglut shapes example
 */
+#ifndef NOFREEGLUT
 static void shapesPrintf (int row, int col, const char *fmt, ...)
 {
     static char buf[256];
@@ -132,7 +137,7 @@ static void shapesPrintf (int row, int col, const char *fmt, ...)
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
 }
-
+#endif
 
 /**
  * colors to use for different particle types
@@ -284,11 +289,11 @@ static void display(void)
 
 
 	glColor3d(0.1,0.1,0.4);
-
+#ifndef NOFREEGLUT
 	shapesPrintf(1, 3, "%i articles", render3dParticles.size());
 	shapesPrintf(2, 3, "Iteration %i", currentIteration);
 	shapesPrintf(3, 3, "Time %f", currentIteration*Settings::deltaT);
-
+#endif
 	glutSwapBuffers();
 
 	glPopMatrix();
@@ -302,10 +307,12 @@ static void display(void)
 static void
 key(unsigned char key, int x, int y)
 {
+
 	switch (key)
 	{
+#ifndef NOFREEGLUT
 	case 27 : glutLeaveMainLoop () ;      break;
-
+#endif
 	case 'a': camPosition[0] -= 1.0; break;
 	case 'd': camPosition[0] += 1.0; break;
 	case 's': camPosition[1] -= 1.0; break;
@@ -464,17 +471,18 @@ void * renderFunction(void* arg) {
 	glutDisplayFunc(display);
 	glutKeyboardFunc(key);
 	glutSpecialFunc(special);
-	glutIdleFunc(idle);
 	glutMouseFunc(mouse);
-	glutMotionFunc(mouseactivemove);
+	glutIdleFunc(idle);
+#ifndef NOFREEGLUT
 	glutMouseWheelFunc(mousewheel);
-
 	glutSetOption ( GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION ) ;
+#endif
+	glutMotionFunc(mouseactivemove);
+
 
 	glClearColor(1,1,1,1);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 
@@ -516,7 +524,6 @@ RenderOutputWriter::RenderOutputWriter() {
 	//kill with a signal of 0 does not actually kill the thread, but returns an error
 	//if the thread does not exist
 	int status = pthread_kill(renderingThread, 0);
-
 	//if an error occurred, the thread did not exists, so we create a new rendering thread
 	if(status) {
 		pthread_create(&renderingThread, NULL, renderFunction, NULL);

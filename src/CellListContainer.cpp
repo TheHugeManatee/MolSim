@@ -14,7 +14,7 @@
 #include<float.h>
 
 
-//log4cxx::LoggerPtr CellListContainer::logger = log4cxx::Logger::getLogger("CellListContainer");
+log4cxx::LoggerPtr CellListContainer::logger = log4cxx::Logger::getLogger("CellListContainer");
 long long CellListContainer::cellSwitches = 0;
 
 
@@ -30,7 +30,7 @@ CellListContainer::CellListContainer() {
 
 	size_ = 0;
 
-	//LOG4CXX_DEBUG(logger, "Simulation domain will be divided into " << nX0 << "x" << nX1 << "x" << nX2 << " cells");
+	LOG4CXX_DEBUG(logger, "Simulation domain will be divided into " << nX0 << "x" << nX1 << "x" << nX2 << " cells");
 
 	//create all the cells
 	cells.resize(nX0*nX1*nX2);
@@ -81,7 +81,9 @@ void CellListContainer::add(Particle & p) {
 void CellListContainer::each(std::function<void (Particle &)> fn) {
 	int s = cells.size();
 
-
+#ifdef FOR_PARALLEL
+#pragma omp parallel for
+#endif
 	for(int x0=1; x0 < nX0-1; x0++)
 		for(int x1=1; x1 < nX1-1; x1++)
 			for(int x2=1; x2 < nX2-1; x2++) {
@@ -107,11 +109,20 @@ void CellListContainer::each(std::function<void (Particle &)> fn) {
 		}\
 	}\
 }
-
+#include <omp.h>
+#include <stdio.h>
 void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn) {
 	double rcSquared = Settings::rCutoff*Settings::rCutoff;
+#ifdef FOR_PARALLEL
+#pragma omp parallel for
+#endif
+#pragma omp parallel
+	{
+		int tid = omp_get_thread_num();
+		int nt = omp_get_num_threads();
 
-	for(int x0=1; x0 < nX0-1; x0++) {
+	for(int x0=(tid*nX0)/nt; x0 < ((tid+1)*nX0)/nt; x0++) {
+		//printf("%i %i\n", tid, x0);
 		for(int x1=1; x1 < nX1-1; x1++) {
 			for(int x2=1; x2 < nX2-1; x2++) {
 				int cid = x2 + x1*nX2 + x0*nX2*nX1;
@@ -142,7 +153,7 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 			}
 		}
 	}
-
+	}
 }
 
 void CellListContainer::afterPositionChanges(
