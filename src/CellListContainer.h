@@ -36,7 +36,7 @@ class CellListContainer: public ParticleContainer {
 	friend class CellListContainerTest;
 
 private:
-	static log4cxx::LoggerPtr logger;
+//	static log4cxx::LoggerPtr logger;
 
 protected:
 	/**
@@ -85,9 +85,9 @@ protected:
 	 */
 	inline bool isHaloCell(int x0, int x1, int x2) {
 		if(Settings::dimensions == 3){
-		return (!x0 || !x1 || !x2 || (x0 == (nX0-1)) || (x1 == (nX1-1)) || (x2 == (nX2-1)));
+		return (x0==1 || x1==1 || x2==1 || (x0 == (nX0-2)) || (x1 == (nX1-2)) || (x2 == (nX2-2)));
 		}
-		return (!x0 || !x1 || (x0 == (nX0-1)) || (x1 == (nX1-1)));
+		return (x0==1 || x1==1 || (x0 == (nX0-2)) || (x1 == (nX1-2)));
 	}
 
 	/**
@@ -97,10 +97,10 @@ protected:
 	 * @param x2 cell index in x2 direction
 	 */
 	inline bool isBoundaryCell(int x0, int x1, int x2) {
-		return (x0 == 1 || x1 == 1 || x2 == 1 ||
-				x0 == (nX0 - 2) ||
-				x1 == (nX1 - 2) ||
-				x2 == (nX2 - 2) );
+		return (x0 == 2 || x1 == 2 || x2 == 2 ||
+				x0 == (nX0 - 3) ||
+				x1 == (nX1 - 3) ||
+				x2 == (nX2 - 3) );
 
 	}
 

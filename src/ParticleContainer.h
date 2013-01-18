@@ -23,7 +23,6 @@
 
 class ParticleContainer {
 	friend class CellListContainer;
-	friend class ParallelCellListContainer;
 
     protected:
         std::vector<Particle> particles;

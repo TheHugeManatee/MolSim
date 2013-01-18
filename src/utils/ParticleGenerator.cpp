@@ -10,7 +10,7 @@
 #include "MaxwellBoltzmannDistribution.h"
 #include <utils/Settings.h>
 #include <log4cxx/logger.h>
-
+#include <utils/Matrix.h>
 
 log4cxx::LoggerPtr ParticleGenerator::logger = log4cxx::Logger::getLogger("ParticleGenerator");
 
@@ -39,17 +39,21 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 	Settings::particleTypes[type].membraneDescriptor.nX1 = nX1;
 	Settings::particleTypes[type].membraneDescriptor.nX2 = nX2;
 
+	utils::Matrix t = utils::Matrix::rotatex0(+15);
+	utils::Matrix moveBack = utils::Matrix::translate(bottomLeft[0] + nX0*h/2, bottomLeft[1] + nX1*h/2, bottomLeft[2] + nX2*h/2);
 
 	for(int x0=0; x0 < nX0; x0++)
 		for(int x1=0; x1 < nX1; x1++)
 			for(int x2=0; x2 < nX2; x2++) {
 				utils::Vector<double, 3> x;
-				x[0] = bottomLeft[0] + x0 * h;
-				x[1] = bottomLeft[1] + x1 * h;
-				x[2] = bottomLeft[2] + x2 * h;
+				x[0] = (x0 - nX0/2) * h;
+				x[1] = (x1 - nX1/2) * h;
+				x[2] = (x2 - nX2/2) * h;
 
 				int pid = (x2+1) + (x1+1)* (nX2+2) + (x0+1)*(nX2+2)*(nX1+2);
 
+				//(moveBack*t*moveToOrigin).transform(x);
+				moveBack.transform(x);
 				Particle p(x, initialVelocity, type, pid);
 
 				if(brownianMean != 0)

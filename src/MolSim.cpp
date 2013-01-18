@@ -333,10 +333,18 @@ void printProgressBar(int percentage, int elapsed){
 		if(estDays) std::cout << estDays << "d ";
 		if(estHours) std::cout << estHours << "h ";
 		if(estMinutes) std::cout << estMinutes << "m ";
+#ifdef NDEBUG
 		std::cout << estSeconds <<"s    \r";
+#else
+		std::cout << estSeconds <<"s    \n";
+#endif
 	}
 	else{
+#ifdef NDEBUG
 		std::cout << " " << percentage << "%  Est. Remaining: TBD\r";
+#else
+		std::cout << " " << percentage << "%  Est. Remaining: TBD\n";
+#endif
 	}
 	std::cout.flush();
 }

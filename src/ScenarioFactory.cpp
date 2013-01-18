@@ -59,6 +59,10 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJones
 			p2.f = p2.f - resultForce;
 		};
 
+#define NEIGHBOR(id, otherId, breadth, length) ((otherId - 1 == id) || (otherId + 1 == id) || (otherId - breadth == id) || (otherId + breadth == id) || (otherId - breadth * length == id) || (otherId + breadth * length == id))
+#define FACEDIAG(id, otherId, breadth, length) ((otherId - 1 - breadth == id) || (otherId + 1 + breadth == id) || (otherId - breadth + 1 == id) || (otherId + breadth - 1 == id) || (otherId - breadth * length + 1 == id) || (otherId + breadth * length - 1 == id) || (otherId - breadth * length - 1 == id) || (otherId + breadth * length + 1 == id) || (otherId - breadth * (length + 1) == id) || (otherId + breadth * (length - 1) == id) || (otherId - breadth * (length - 1) == id) || (otherId + breadth* (length + 1) == id))
+#define SPACEDIAG(id, otherId, breadth, length) (otherId - 1 - breadth - breadth * length == id || otherId - 1 - breadth + breadth * length == id || otherId - 1 + breadth - breadth * length == id || otherId - 1 + breadth + breadth * length == id || otherId + 1 - breadth - breadth * length == id || otherId + 1 - breadth + breadth * length == id || otherId + 1 + breadth - breadth * length == id || otherId + 1 + breadth + breadth * length == id)
+
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForce =
 		[] (Particle& p1, Particle& p2) {
 			utils::Vector<double, 3> xDif = p2.x - p1.x;
@@ -79,7 +83,7 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 				//std::cout << "Particles in the same membrane" << std::endl;
 				double F = 0, norm = 1;
 				//std::cout << "Id1:" << p1.id << "Id2:"<< p2.id << std::endl;
-				if(p1.isNeighbour(p2)) {
+				/****** BRANCHING WITH INLINE  ****** /if(p1.isNeighbour(p2)) {
 					norm = sqrt(normSquared);
 					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness * (norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength);
 					//std::cout << "1:" << F << std::endl;
@@ -91,7 +95,40 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 					norm = sqrt(normSquared);
 					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*SQRTTHREE);
 					//std::cout << "3:" << F << std::endl;
+				}/**/
+				/****** BRANCHING WITH MACROS ******/
+				int b = Settings::particleTypes[p1.type].membraneDescriptor.nX2 +2;
+				int l = Settings::particleTypes[p1.type].membraneDescriptor.nX1 +2;
+				if(FACEDIAG(p1.id, p2.id, b, l)) {
+					norm = sqrt(normSquared);
+					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*SQRTTWO);
+					//std::cout << "2:" << F << std::endl;
+				} else if(NEIGHBOR(p1.id, p2.id, b, l)) {
+					norm = sqrt(normSquared);
+					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness * (norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength);
+					//std::cout << "1:" << F << std::endl;
+				} else if(SPACEDIAG(p1.id, p2.id, b, l)) {
+					norm = sqrt(normSquared);
+					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*SQRTTHREE);
+					//std::cout << "3:" << F << std::endl;
 				}
+
+				/****** BRANCHLESS WITH INLINE ****** /
+				double k = p1.isNeighbour(p2) * 1 + p1.isFaceDiagonal(p2) * SQRTTWO + p1.isSpaceDiagonal(p2) * SQRTTHREE;
+				if(k) {
+					norm = sqrt(normSquared);
+					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*k);
+				}/**/
+				/****** BRANCHLESS WITH MACROS ******* /
+				int b = Settings::particleTypes[p1.type].membraneDescriptor.nX2 +2;
+				int l = Settings::particleTypes[p1.type].membraneDescriptor.nX1 +2;
+				double k = NEIGHBOR(p1.id, p2.id, b, l) + FACEDIAG(p1.id, p2.id, b, l) * SQRTTWO + SPACEDIAG(p1.id, p2.id, b, l) * SQRTTHREE;
+
+				if(k) {
+					norm = sqrt(normSquared);
+					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*k);
+				}/**/
+
 				double a = F / norm;
 				//std::cout << a << std::endl;
 				resultForce = xDif * a;
@@ -157,7 +194,6 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 				fileReader.readFile(container, (char*)Settings::inputFile.c_str());
 			}
 			LOG4CXX_TRACE(logger, "Cuboid generation:");
-
 			for(auto it = Settings::generator.cuboid().begin();
 					it != Settings::generator.cuboid().end();
 					++it) {
@@ -183,7 +219,8 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 							0);
 				}
 			}
-			LOG4CXX_TRACE(logger, "Cylinder generation:");
+			
+						LOG4CXX_TRACE(logger, "Cylinder generation:");
 
 			for(auto it = Settings::generator.cylinder().begin();
 					it != Settings::generator.cylinder().end();
@@ -241,7 +278,6 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 				}
 			}
 			LOG4CXX_TRACE(logger, "Generation finished!");
-
 		};
 
 /*These are the handlers for a periodic boundaryHandling

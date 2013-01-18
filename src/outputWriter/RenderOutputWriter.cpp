@@ -9,6 +9,7 @@
 
 #include "utils/Settings.h"
 
+#include "utils/ColorCoding/Grayscale.h"
 
 
 #include <iostream>
@@ -29,7 +30,7 @@ const GLfloat light_position[] = { 2.0f, 5.0f, 5.0f, 0.0f };
 const GLfloat mat_ambient[]    = { 0.7f, 0.7f, 0.7f, 1.0f };
 const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
 const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
-const GLfloat high_shininess[] = { 100.0f };
+const GLfloat mat_shininess[] = { 10.0f };
 
 /**
  * global list containing the particles in the rendering
@@ -156,6 +157,9 @@ static void display(void)
 {
 	const double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 	const double a = t*90.0;
+	//ColorCoder *palette = new Grayscale();
+	//palette->setMin(0);
+	//palette->setMax(100);
 
 	glPushMatrix();
 
@@ -226,15 +230,22 @@ static void display(void)
 	glVertex3d(d[0], d[1], d[2]);
 	glEnd();
 
-	glEnable(GL_LIGHTING);
+	glLineWidth(1.0);
+
+	double color[3];
+
 	//draw the particles
 	if(recompileRequested) {
 		LOG4CXX_TRACE(RenderOutputWriter::logger, "Redrawing display lists...");
+
 		glNewList(particlesTotalList, GL_COMPILE_AND_EXECUTE);
+		glEnable(GL_LIGHTING);
 		int s = render3dParticles.size();
 		for(int i=0; i < s; i++) {
 			glPushMatrix();
 			glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
+			//palette->getColor(render3dParticles[i].x.L2Norm(), color);
+			//glColor3dv(color);
 			glTranslated(render3dParticles[i].x[0], render3dParticles[i].x[1], render3dParticles[i].x[2]);
 			//glutSolidSphere(0.5, 16, 16);
 			glScaled(Settings::particleTypes[render3dParticles[i].type].sigma,
@@ -244,6 +255,7 @@ static void display(void)
 			glPopMatrix();
 		}
 		//draw springs
+		glDisable(GL_LIGHTING);
 		glBegin(GL_LINES);
 		for(int i=0; i < render3dParticles.size(); i++) {
 			glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
@@ -261,8 +273,8 @@ static void display(void)
 		}
 		}
 		glEnd();
-
 		glEndList();
+		//reset the flag
 		recompileRequested = false;
 	}
 	else {
@@ -270,7 +282,7 @@ static void display(void)
 	}
 
 
-	glDisable(GL_LIGHTING);
+
 	glColor3d(0.1,0.1,0.4);
 
 	shapesPrintf(1, 3, "%i articles", render3dParticles.size());
@@ -281,6 +293,7 @@ static void display(void)
 
 	glPopMatrix();
 
+	//delete palette;
 }
 
 /**
@@ -477,15 +490,17 @@ void * renderFunction(void* arg) {
 	glMaterialfv(GL_FRONT, GL_AMBIENT,   mat_ambient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE,   mat_diffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR,  mat_specular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, high_shininess);
+	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
 	particleGeoList = glGenLists(2);
 	particlesTotalList = particleGeoList + 1;
 
+	glPointSize(5.0);
 	glNewList(particleGeoList, GL_COMPILE);
-
+	//glBegin(GL_POINTS);
+	//glVertex3d(0,0,0);
 	glutSolidSphere(0.5, 8, 8);
-
+	//glEnd();
 	glEndList();
 
 

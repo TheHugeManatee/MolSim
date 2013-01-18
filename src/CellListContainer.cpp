@@ -13,39 +13,42 @@
 #include <algorithm>
 #include<float.h>
 
-#include <thread>
 
-log4cxx::LoggerPtr CellListContainer::logger = log4cxx::Logger::getLogger("CellListContainer");
+//log4cxx::LoggerPtr CellListContainer::logger = log4cxx::Logger::getLogger("CellListContainer");
 long long CellListContainer::cellSwitches = 0;
 
+
 CellListContainer::CellListContainer() {
+	cellSwitches = 0;
 	edgeLength = Settings::rCutoff;
 	std::cout <<"CutOff:" << edgeLength;
 	//calculate the cells in each direction
-	//add 2 for halo
-	nX0 = std::ceil(Settings::domainSize[0] / edgeLength) + 2;
-	nX1 = std::ceil(Settings::domainSize[1] / edgeLength) + 2;
-	nX2 = std::ceil(Settings::domainSize[2] / edgeLength) + 2;
+	//add 2 for halo and another 2 for dead layer
+	nX0 = std::ceil(Settings::domainSize[0] / edgeLength) + 4;
+	nX1 = std::ceil(Settings::domainSize[1] / edgeLength) + 4;
+	nX2 = std::ceil(Settings::domainSize[2] / edgeLength) + 4;
 
 	size_ = 0;
 
-	LOG4CXX_DEBUG(logger, "Simulation domain will be divided into " << nX0 << "x" << nX1 << "x" << nX2 << " cells");
+	//LOG4CXX_DEBUG(logger, "Simulation domain will be divided into " << nX0 << "x" << nX1 << "x" << nX2 << " cells");
 
 	//create all the cells
 	cells.resize(nX0*nX1*nX2);
+
 }
 
 CellListContainer::~CellListContainer() {
 }
 
+
 inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 
-	assert(x0 >= 0);
-	assert(x0 < nX0);
-	assert(x1 >= 0);
-	assert(x1 < nX1);
-	assert(x2 >= 0);
-	assert(x2 < nX2);
+	assert(x0 >= 1);
+	assert(x0 < nX0-1);
+	assert(x1 >= 1);
+	assert(x1 < nX1-1);
+	assert(x2 >= 1);
+	assert(x2 < nX2-1);
 
 
 	return &cells[x2 + x1*nX2 + x0*nX2*nX1];
@@ -53,14 +56,14 @@ inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 
 ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
 
-	int x0 = (p.x[0]) / edgeLength + 1,
-		x1 = (p.x[1]) / edgeLength + 1,
-		x2 = (p.x[2]) / edgeLength + 1;
+	int x0 = (p.x[0]) / edgeLength + 2,
+		x1 = (p.x[1]) / edgeLength + 2,
+		x2 = (p.x[2]) / edgeLength + 2;
 
 	//crop the indices to the halo layer
-	x0 = std::min(nX0 - 1, std::max(0, x0));
-	x1 = std::min(nX1 - 1, std::max(0, x1));
-	x2 = std::min(nX2 - 1, std::max(0, x2));
+	x0 = std::min(nX0 - 2, std::max(1, x0));
+	x1 = std::min(nX1 - 2, std::max(1, x1));
+	x2 = std::min(nX2 - 2, std::max(1, x2));
 
 	return getCell(x0, x1, x2);
 }
@@ -75,72 +78,81 @@ void CellListContainer::add(Particle & p) {
 	size_++;
 }
 
-inline void CellListContainer::each(std::function<void (Particle &)> fn) {
+void CellListContainer::each(std::function<void (Particle &)> fn) {
 	int s = cells.size();
 
 
-	for(int i = 0; i < s; i++) {
-		cells[i].each(fn);
-	}
+	for(int x0=1; x0 < nX0-1; x0++)
+		for(int x1=1; x1 < nX1-1; x1++)
+			for(int x2=1; x2 < nX2-1; x2++) {
+				std::vector<Particle> &plist = cells[x2 + x1*nX2 + x0*nX2*nX1].particles;
+				int s = plist.size();
+				for(int i=0; i < s; i++)
+					fn(plist[i]);
+			}
+
+}
+
+/**
+ * this macro loops over all pairs of particles in the two containers and applies fn to the pair of them
+ * this is slightly faster than using an inline function
+ * it assumes the variables sc1 and rcSquared are already defined.
+ */
+#define EACHPAIR(fn, c1, c2) {\
+	int sc2 = c2.getSize();	\
+	for(int j = 0; j < sc2; j++) { \
+		for(int i = 0; i < sc1; i++) { \
+			if((c1.particles[i].x -c2.particles[j].x).LengthOptimizedR3Squared()<rcSquared) \
+		fn(c1.particles[i], c2.particles[j]); \
+		}\
+	}\
 }
 
 void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn) {
+	double rcSquared = Settings::rCutoff*Settings::rCutoff;
 
-	for(int x0=0; x0 < nX0; x0++) {
+	for(int x0=1; x0 < nX0-1; x0++) {
+		for(int x1=1; x1 < nX1-1; x1++) {
+			for(int x2=1; x2 < nX2-1; x2++) {
+				int cid = x2 + x1*nX2 + x0*nX2*nX1;
+				ParticleContainer &c = cells[cid];
+				int sc1 = c.getSize();
 
-
-		for(int x1=0; x1 < nX1; x1++) {
-			for(int x2=0; x2 < nX2; x2++) {
-				ParticleContainer &c = cells[x2 + x1*nX2 + x0*nX2*nX1];
 				//process the appropriate adjacent cells
 				//this will be 13 cell comparisons
 				//we rely on compiler optimization on this one :)
-				if(!c.getSize()) continue;
+				if(!sc1) continue;
 				c.eachPair(fn);
 
-				/*(0,1,0)*/if(x1 + 1 < nX1)	eachPair(fn, c, cells[x2 + (x1+1)*nX2 + x0*nX2*nX1]);
-				if(x2 + 1 < nX2) {
-					/*(1,0,0)*/eachPair(fn, c, cells[x2 + 1 + x1*nX2 + x0*nX2*nX1]);
-					if(x1 + 1 < nX1)
-						/*(1,1,0)*/eachPair(fn, c, cells[x2 + 1 + (x1+1)*nX2 + x0*nX2*nX1]);
-					if(x1 > 0)
-						/*(1,-1,0)*/eachPair(fn, c, cells[x2 + 1 + (x1-1)*nX2 + x0*nX2*nX1]);
-				}
-				if(x0 > 0) {
-					/*(0,0,-1)*/eachPair(fn, c, cells[x2 + x1*nX2 + (x0-1)*nX2*nX1]);
 
-					/*(0,1,-1)*/if(x1 + 1 < nX1)	eachPair(fn, c, cells[x2 + (x1+1)*nX2 + (x0-1)*nX2*nX1]);
-					if(x2 + 1 < nX2) {
-						/*(1,0,-1)*/eachPair(fn, c, cells[x2 + 1 + x1*nX2 + (x0-1)*nX2*nX1]);
-						if(x1 + 1 < nX1)
-							/*(1,1,-1)*/eachPair(fn, c, cells[x2 + 1 + (x1+1)*nX2 + (x0-1)*nX2*nX1]);
-						if(x1 > 0)
-							/*(1,-1,-1)*/eachPair(fn, c, cells[x2 + 1 + (x1-1)*nX2 + (x0-1)*nX2*nX1]);
-					}
-				}
-				if(x0 + 1 < nX0) {
-					/*(0,1,1)*/if(x1 + 1 < nX1)	eachPair(fn, c, cells[x2 + (x1+1)*nX2 + (x0+1)*nX2*nX1]);
-					if(x2 + 1 < nX2) {
-						/*(1,0,1)*/eachPair(fn, c, cells[x2 + 1 + x1*nX2 + (x0+1)*nX2*nX1]);
-						if(x1 + 1 < nX1)
-							/*(1,1,1)*/eachPair(fn, c, cells[x2 + 1 + (x1+1)*nX2 + (x0+1)*nX2*nX1]);
-						if(x1 > 0)
-							/*(1,-1,1)*/eachPair(fn, c, cells[x2 + 1 + (x1-1)*nX2 + (x0+1)*nX2*nX1]);
-					}
-				}
+				/*(0,1,0)*/	EACHPAIR(fn, c, cells[cid + nX2]);
+				/*(1,0,0)*/EACHPAIR(fn, c, cells[cid + 1]);
+				/*(1,1,0)*/EACHPAIR(fn, c, cells[cid + 1 + nX2]);
+				/*(1,-1,0)*/EACHPAIR(fn, c, cells[cid + 1 - nX2]);
+				/*(0,0,-1)*/EACHPAIR(fn, c, cells[cid - nX2*nX1]);
+
+				/*(0,1,-1)*/EACHPAIR(fn, c, cells[cid + nX2 - nX2*nX1]);
+				/*(1,0,-1)*/EACHPAIR(fn, c, cells[cid + 1 - nX2*nX1]);
+				/*(1,1,-1)*/EACHPAIR(fn, c, cells[cid + 1 + nX2 - nX2*nX1]);
+				/*(1,-1,-1)*/EACHPAIR(fn, c, cells[cid + 1 - nX2 - nX2*nX1]);
+				/*(0,1,1)*/EACHPAIR(fn, c, cells[cid + nX2 + nX2*nX1]);
+				/*(1,0,1)*/EACHPAIR(fn, c, cells[cid + 1 + nX2*nX1]);
+				/*(1,1,1)*/EACHPAIR(fn, c, cells[cid + 1 + nX2 + nX2*nX1]);
+				/*(1,-1,1)*/EACHPAIR(fn, c, cells[cid + 1 - nX2 + nX2*nX1]);
 			}
 		}
 	}
+
 }
 
 void CellListContainer::afterPositionChanges(
 		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6],
 		std::function<bool (ParticleContainer &container, Particle &)> haloHandler) {
 	int cellcount = cells.size();
-	int emptyCells = 0;
-	for(int x0=0; x0 < nX0; x0++)
-		for(int x1=0; x1 < nX1; x1++)
-			for(int x2=0; x2 < nX2; x2++) {
+
+	for(int x0=1; x0 < nX0-1; x0++)
+		for(int x1=1; x1 < nX1-1; x1++)
+			for(int x2=1; x2 < nX2-1; x2++) {
 				ParticleContainer &c = cells[x2 + x1*nX2 + x0*nX2*nX1];
 				int cellParticleCount = c.particles.size();
 				for(int i = 0; i < cellParticleCount; i++) {
@@ -157,13 +169,13 @@ void CellListContainer::afterPositionChanges(
 
 					//Check for all boundaries
 					else {
-						if(x0 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[0](*this, p);
-						if(x0 == (nX0 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[1](*this, p);
-						if(x1 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[2](*this, p);
-						if(x1 == (nX1 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[3](*this, p);
+						if(x0 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[0](*this, p);
+						if(x0 == (nX0 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[1](*this, p);
+						if(x1 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[2](*this, p);
+						if(x1 == (nX1 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[3](*this, p);
 						if(Settings::dimensions == 3 ){
-						if(x2 == 1) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
-						if(x2 == (nX2 - 2)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
+							if(x2 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
+							if(x2 == (nX2 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
 						}
 					}
 
@@ -190,18 +202,7 @@ void CellListContainer::afterPositionChanges(
 						i--;
 						size_--;
 					}
-#ifndef NDEBUG
-					//some color coding for the cells for debugging
-					else if(Settings::encodeCellsInType){
-						int _x0 = (p.x[0]) / edgeLength + 1,
-							_x1 = (p.x[1]) / edgeLength + 1,
-							_x2 = (p.x[2]) / edgeLength + 1;
-						p.type = (_x2 + _x1 + _x0) % 10;
-						//p.type = (_x2 + _x1*nX2 + _x0*nX2*nX1) % 9;
-					}
-#endif
 				}
-				if(!cellParticleCount) emptyCells++;
 	}
 	//LOG4CXX_TRACE(logger, "Cell switches: " << cellSwitches);
 	//LOG4CXX_TRACE(logger, "Particles Left: " << getSize());
@@ -220,11 +221,6 @@ void CellListContainer::eachPair(std::function<void (Particle&, Particle&)> fn, 
 				fn(c1.particles[i], c2.particles[j]);
 		}
 	}
-	/*c1.each([&] (Particle &particle1) {
-		c2.each([&] (Particle &particle2) {
-			fn(particle1, particle2);
-		});
-	});*/
 }
 
 inline int CellListContainer::getSize() {

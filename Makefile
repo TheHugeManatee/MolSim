@@ -1,5 +1,3 @@
-# This is a makefile template
-
 # create xsd build command lines: (to be integrated into the makefile)
 # xsd cxx-tree --disable-warning all --type-naming ucc --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/utils/ --generate-doxygen simulationConfig.xsd
 # xsd cxx-tree --disable-warning all --generate-doxygen --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/outputWriter --generate-serialization src/outputWriter/vtk-unstructured.xsd
@@ -27,15 +25,18 @@ SOURCES=\
 	src/utils/ParticleGenerator.cpp\
 	src/utils/SimulationConfig.cpp\
 	src/outputWriter/RenderOutputWriter.cpp\
-	src/utils/Thermostat.cpp
+	src/utils/Thermostat.cpp\
+	src/utils/ColorCoding/ColorCoder.cpp\
+	src/utils/ColorCoding/Grayscale.cpp\
+	src/utils/Matrix.cpp
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS= -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp
+CFLAGS=-pg -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp 
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp
+LDFLAGS=-pg -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp
 
 INCLUDES= -I./src -I./libxsd
 
@@ -46,21 +47,27 @@ all: $(SOURCES) $(EXECUTABLE)
 
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@ 
+	@echo 'Linking...'; \
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@; \
+	echo 'Done!'
 
 clean:
 	rm $(OBJECTS)
 
 .cpp.o:
+	@echo 'Compiling $<'; \
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	
 
 xsd: src/utils/SimulationConfig.cpp\
 	src/outputWriter/vtk-unstructured.cpp
 
 src/utils/SimulationConfig.cpp: simulationConfig.xsd
+	@echo 'Building SimulationConfig.cpp from xsd...'; \
 	xsd cxx-tree --disable-warning all --type-naming ucc --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/utils/ --generate-doxygen simulationConfig.xsd
 
 src/outputWriter/vtk-unstructured.cpp: src/outputWriter/vtk-unstructured.xsd
+	@echo 'Building vtk-unstructured.cpp...'; \
 	xsd cxx-tree --disable-warning all --generate-doxygen --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/outputWriter --generate-serialization src/outputWriter/vtk-unstructured.xsd
 
 test: all

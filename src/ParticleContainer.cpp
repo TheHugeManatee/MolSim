@@ -3,7 +3,7 @@
 
 #include "ParticleContainer.h"
 
-//base virtual constructor
+//base virtual destructor
 ParticleContainer::~ParticleContainer() {}
 
 void ParticleContainer::each(std::function<void (Particle&)> fn) {
