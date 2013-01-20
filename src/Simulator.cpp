@@ -140,29 +140,24 @@ void Simulator::plotParticles(int iteration) {
 #ifndef NOGLVISUALIZER
 	if(Settings::show3DVisual) {
 		outputWriter::RenderOutputWriter openglView;
-
+		LOG4CXX_TRACE(logger,"Plotting Particles");
 		openglView.plotParticles(*particleContainer, Settings::outputFilePrefix, iteration);
 	}
 #endif
 	if(Settings::disableOutput) return;
 	switch (Settings::outputFileType) {
 	case OutputFileType::xyz:
-
 		xyzWriter.plotParticles(*particleContainer, Settings::outputFilePrefix, iteration);
 	break;
 	case OutputFileType::vtk:
-
 		vtkWriter.initializeOutput(particleContainer->getSize());
-
 		particleContainer->each([&] (Particle& p) {
-			vtkWriter.plotParticle(p);
+#pragma omp critical (plot_particle)
+			{vtkWriter.plotParticle(p);}
 		});
-
 		vtkWriter.writeFile(Settings::outputFilePrefix, iteration);
-
 	break;
 	}
-
 	LOG4CXX_TRACE(logger,"Plotted \t"<< iteration << "\t Particles" );
 }
 
