@@ -204,7 +204,7 @@ int main(int argc, char* argsv[]) {
 
 	while (current_time < Settings::endTime) {
 		if (iteration % Settings::outputFrequency == 0) {
-			sim->plotParticles(iteration);
+			sim->plotParticles(iteration + Settings::outputFileIterationOffset);
 		}
 
 		sim->nextTimeStep();
