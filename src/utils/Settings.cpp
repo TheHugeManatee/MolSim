@@ -40,6 +40,7 @@ std::string Settings::lastStateFile = "ausgabe.txt";
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
+int Settings::outputFileIterationOffset = 0;
 OutputFileType Settings::outputFileType = OutputFileType::vtk;
 double Settings::rCutoff = 3;
 utils::Vector<double, 3> Settings::domainSize = 50;
@@ -121,6 +122,9 @@ void Settings::initSettings(int argc, char* argv[]) {
 			Settings::show3DVisual = true;
 		if(strcmp(argv[i], "-colorByCell") == 0)
 			Settings::encodeCellsInType = true;
+		if(strcmp(argv[i], "-outputFileIterationOffset") == 0 && argc > i + 1)
+			Settings::outputFileIterationOffset = atoi(argv[i+1]);
+
 	}
 
 	//Re-initialize the logger with possibly new configuration file
@@ -148,6 +152,7 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::disableOutput = xmlCfg->disableOutput();
 	    Settings::loggerConfigFile = xmlCfg->loggerConfigFile();
 	    Settings::outputFilePrefix = xmlCfg->outputFilePrefix();
+	    Settings::outputFileIterationOffset = xmlCfg->outputFileIterationOffset().present()?xmlCfg->outputFileIterationOffset().get():0;
 	    Settings::scenarioType = xmlCfg->scenarioType();
 	    auto inputFile_opt = xmlCfg->inputFile();
 	    if(inputFile_opt.present())

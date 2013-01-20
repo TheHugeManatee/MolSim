@@ -148,6 +148,11 @@ public:
 
 
 	/**
+	 * offset to be added to the iteration number in the output filename
+	 */
+	static int outputFileIterationOffset;
+
+	/**
 	 * number of defined particle types
 	 */
 	static int numParticleTypes;
