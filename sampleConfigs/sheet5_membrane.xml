@@ -52,7 +52,7 @@
  <generator>
   <cuboid><!-- (o)  -->
     <bottomLeft x0="15" x1="15" x2="1.5" />
-    <nX x0="5" x1="5" x2="1" />
+    <nX x0="50" x1="50" x2="1" />
     <stepWidth>2.2</stepWidth>
     <type>0</type>
     <initialVelocity x0="0" x1="0" x2="0"/>
