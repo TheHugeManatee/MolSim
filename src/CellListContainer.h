@@ -57,7 +57,7 @@ protected:
 	/**
 	 * the edge length of each cell
 	 */
-	double edgeLength;
+	double edgeLength[3];
 
 	/**
 	 * returns the cell indexed by the three cell coordinates
