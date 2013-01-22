@@ -11,7 +11,6 @@
 #define PARTICLEGENERATOR_H_
 
 #include "Particle.h"
-#include "Molecule.h"
 #include "utils/Vector.h"
 #include "utils/Matrix.h"
 #include <vector>
