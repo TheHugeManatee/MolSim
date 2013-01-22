@@ -10,7 +10,7 @@
 
 #include <string>
 #include "Vector.h"
-#include "simulationConfig.h"
+#include "SimulationConfig.h"
 
 namespace utils {
 

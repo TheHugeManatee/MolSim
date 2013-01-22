@@ -11,7 +11,7 @@
 
 #include "utils/ColorCoding/Grayscale.h"
 
-
+#include <signal.h>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -69,6 +69,7 @@ static double camRotation[3] = {0,0,0};
 
 
 pthread_t RenderOutputWriter::renderingThread;
+bool RenderOutputWriter::threadIsSpawned = false;
 log4cxx::LoggerPtr RenderOutputWriter::logger = log4cxx::Logger::getLogger("RenderOutputWriter");
 
 /**
@@ -523,10 +524,11 @@ RenderOutputWriter::RenderOutputWriter() {
 	//check if the rendering thread is active
 	//kill with a signal of 0 does not actually kill the thread, but returns an error
 	//if the thread does not exist
-	int status = pthread_kill(renderingThread, 0);
+	//int status = pthread_kill(renderingThread, 0);
 	//if an error occurred, the thread did not exists, so we create a new rendering thread
-	if(status) {
+	if(!threadIsSpawned) {
 		pthread_create(&renderingThread, NULL, renderFunction, NULL);
+		threadIsSpawned = true;
 	}
 
 }

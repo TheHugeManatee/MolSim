@@ -18,7 +18,7 @@
 //Forward declarations
 extern void initializeLogger();//This is implemented in MolSim.cpp
 
-int Settings::threadNumber = 0;
+int Settings::numThreads = 0;
 
 //variable definitions and  default settings
 double Settings::deltaT = 0.0014;
@@ -125,8 +125,8 @@ void Settings::initSettings(int argc, char* argv[]) {
 			Settings::encodeCellsInType = true;
 		if(strcmp(argv[i], "-outputFileIterationOffset") == 0 && argc > i + 1)
 			Settings::outputFileIterationOffset = atoi(argv[i+1]);
-		if(strcmp(argv[i], "-threadNumber") == 0 && argc > i + 1)
-			Settings::threadNumber = atoi(argv[i+1]);
+		if(strcmp(argv[i], "-numThreads") == 0 && argc > i + 1)
+			Settings::numThreads = atoi(argv[i+1]);
 
 	}
 

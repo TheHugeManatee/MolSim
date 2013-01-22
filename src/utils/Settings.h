@@ -33,7 +33,7 @@
 
 #include "utils/Vector.h"
 #include "utils/Matrix.h"
-#include "simulationConfig.h"
+#include "SimulationConfig.h"
 #include <log4cxx/logger.h>
 
 #include <string>
@@ -63,7 +63,7 @@ public:
 	/**
 	 * thread number to override automatic OpenMP settings
 	 */
-	static int threadNumber;
+	static int numThreads;
 
 	/**
 	 * starting time of the simulation

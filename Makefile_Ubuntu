@@ -30,11 +30,11 @@ SOURCES=\
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp -DFOR_PARALLEL
+CFLAGS=-pg -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp -DFOR_PARALLEL
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp
+LDFLAGS=-pg -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lGL -lGLU -fopenmp
 
 INCLUDES= -I./src -I./libxsd
 
@@ -45,7 +45,7 @@ all: $(SOURCES) $(EXECUTABLE)
 
 
 $(EXECUTABLE): $(OBJECTS)
-	@echo 'Linking...'; \
+	echo 'Linking...'; \
 	$(CC) $(OBJECTS) $(LDFLAGS) -o $@; \
 	echo 'Done!'
 

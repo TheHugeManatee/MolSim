@@ -58,8 +58,8 @@ clean:
 xsd: src/utils/SimulationConfig.cpp\
 	src/outputWriter/vtk-unstructured.cpp
 
-src/utils/SimulationConfig.cpp: simulationConfig.xsd
-	xsd cxx-tree --disable-warning all --type-naming ucc --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/utils/ --generate-doxygen simulationConfig.xsd
+src/utils/SimulationConfig.cpp: SimulationConfig.xsd
+	xsd cxx-tree --disable-warning all --type-naming ucc --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/utils/ --generate-doxygen SimulationConfig.xsd
 
 src/outputWriter/vtk-unstructured.cpp: src/outputWriter/vtk-unstructured.xsd
 	xsd cxx-tree --disable-warning all --generate-doxygen --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/outputWriter --generate-serialization src/outputWriter/vtk-unstructured.xsd

@@ -172,9 +172,12 @@ int main(int argc, char* argsv[]) {
 
 	LOG4CXX_TRACE(rootLogger, "Settings initialized!");
 
-	if(Settings::threadNumber > 0) {
-		LOG4CXX_INFO(rootLogger, "Setting OpenMP Threads to " << Settings::threadNumber);
-		omp_set_num_threads(Settings::threadNumber);
+	if(Settings::numThreads > 0) {
+		LOG4CXX_INFO(rootLogger, "Setting OpenMP Threads to " << Settings::numThreads);
+		omp_set_num_threads(Settings::numThreads);
+	}
+	else {
+		LOG4CXX_INFO(rootLogger, "Running on " << omp_get_max_threads() << " threads");
 	}
 
 	//Check if we should be executing some unit tests

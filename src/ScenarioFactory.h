@@ -13,7 +13,7 @@
 #include "FileReader.h"
 #include "ParticleContainer.h"
 
-#include "utils/simulationConfig.h"
+#include "utils/SimulationConfig.h"
 
 #include "utils/Matrix.h"
 

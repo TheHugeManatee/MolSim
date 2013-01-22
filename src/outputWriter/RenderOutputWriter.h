@@ -48,6 +48,8 @@ private:
 	 */
 	static pthread_t renderingThread;
 
+	static bool threadIsSpawned;
+
 public:
 	RenderOutputWriter();
 
