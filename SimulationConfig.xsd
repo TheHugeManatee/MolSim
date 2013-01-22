@@ -49,7 +49,8 @@
       <xsd:enumeration value="Gravity"/>
       <xsd:enumeration value="Lennard-Jones"/>
       <xsd:enumeration value="Membrane"/>
-    </xsd:restriction>
+      <xsd:enumeration value="Lennard-Jones-Smoothed"/>
+</xsd:restriction>
   </xsd:simpleType>    
   
   <xsd:simpleType name="ThermostatSwitch">
@@ -189,6 +190,7 @@
       <xsd:element name="scenarioType" type="ScenarioType"/>
       <xsd:element name="domainSize" type="floatVector" />
       <xsd:element name="cutoffRadius" type="cutOffRadius" />
+      <xsd:element name="lRadius" type="xsd:double" minOccurs = "0" maxOccurs = "1"/>      
       <xsd:element name="boundaryHandling" type="BoundaryHandlingType" />
       <xsd:element name="containerType" type="ContainerType" />
       <xsd:element name="gravitation" type="floatVector" minOccurs ="0" maxOccurs="1"/>
