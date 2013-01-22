@@ -97,7 +97,22 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 	double normSquared = xDif.LengthOptimizedR3Squared();
 	double sigmaNormalizedSquared = sigma*sigma/normSquared;
 	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
-	utils::Vector<double, 3> resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+	double norm = sqrt(normSquared);
+	utils::Vector<double, 3> resultForce;
+	resultForce = 0 ;
+	if(norm < Settings::rCutoff){
+		utils::Vector<double, 3> lennardJonesForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+		if(norm > Settings::rl){
+		double lennardJonesPotential = 4*epsilon* ((sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix) - (sigmaNormailzedRaisedBySix ));
+		utils::Vector<double, 3> smoothingForce = 2 * xDif * ((Settings::rCutoff - norm) * (4 * Settings::rCutoff - Settings::rl - 3 * norm)/( norm * (Settings::rCutoff - Settings::rl) *(Settings::rCutoff - Settings::rl)));
+		double smoothing = 1- (norm -Settings::rl) * (norm -Settings::rl) * ( 3 * Settings::rCutoff - Settings::rl -2 * norm ) / (Settings::rCutoff - Settings::rl) * (Settings::rCutoff - Settings::rl) * (Settings::rCutoff - Settings::rl);
+
+		resultForce = - lennardJonesPotential * smoothingForce - lennardJonesForce * smoothing;
+		}else{
+			utils::Vector<double, 3> resultForce = lennardJonesForce;
+		}
+	}
+
 	p1.f = p1.f + resultForce;
 
 	//resultForce = resultForce * -1;
@@ -240,7 +255,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = std::ceil(Settings::domainSize[0] / Settings::rCutoff) * Settings::rCutoff;
+					double realDomainSize = Settings::domainSize[0];
 					if(p.x[0] >= 0) {
 						zeroVelocity [0] = 0;
 						zeroVelocity [1] = 0;
@@ -261,7 +276,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = std::ceil(Settings::domainSize[0] / Settings::rCutoff) * Settings::rCutoff;
+					double realDomainSize = Settings::domainSize[0];
 					if(p.x[0] <= realDomainSize) {
 						zeroVelocity [0] = 0;
 						zeroVelocity [1] = 0;
@@ -281,7 +296,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = std::ceil(Settings::domainSize[1] / Settings::rCutoff) * Settings::rCutoff;
+					double realDomainSize = Settings::domainSize[1];
 					if(p.x[1] >= 0) {
 						zeroVelocity [0] = 0;
 						zeroVelocity [1] = 0;
@@ -301,7 +316,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = std::ceil(Settings::domainSize[1] / Settings::rCutoff) * Settings::rCutoff;
+					double realDomainSize = Settings::domainSize[1];
 					if(p.x[1] <= realDomainSize) {
 						zeroVelocity [0] = 0;
 						zeroVelocity [1] = 0;
@@ -322,7 +337,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = std::ceil(Settings::domainSize[2] / Settings::rCutoff) * Settings::rCutoff;
+					double realDomainSize = Settings::domainSize[2];
 					if(p.x[2]>= 0 ) {
 						zeroVelocity [0] = 0;
 						zeroVelocity [1] = 0;
@@ -342,7 +357,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = std::ceil(Settings::domainSize[2] / Settings::rCutoff) * Settings::rCutoff;
+					double realDomainSize = Settings::domainSize[2] / Settings::rCutoff;
 					if(p.x[2]<= realDomainSize ) {
 						zeroVelocity [0] = 0;
 						zeroVelocity [1] = 0;
@@ -391,7 +406,13 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		scenario->setup = ScenarioFactory::LennardJonesSetup;
 
 		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
-	} else {
+	} else if (type == ScenarioType::Lennard_Jones_Smoothed) {
+		scenario->calculateForce = ScenarioFactory::calculateSmoothLJ;
+
+		scenario->setup = ScenarioFactory::LennardJonesSetup;
+
+		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
+	}else {
 		LOG4CXX_FATAL(logger, "Unknown Simulation type!");
 		exit(-1);
 	}

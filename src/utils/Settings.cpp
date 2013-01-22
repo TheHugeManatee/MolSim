@@ -217,6 +217,11 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    	LOG4CXX_INFO(logger,"CutOff radius is scaled by " << max_sigma);
 	    }
 
+	    auto lRadius_opt = xmlCfg->lRadius();
+	    if(lRadius_opt.present()){
+	    	Settings::rl = lRadius_opt.get();
+	    }
+
 	    Settings::generator = xmlCfg->generator();
 
 	    auto thermostatSwitch_opt = xmlCfg->thermostatSwitch();
