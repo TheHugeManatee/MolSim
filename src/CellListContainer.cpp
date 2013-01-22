@@ -61,9 +61,17 @@ ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
 		x2 = (p.x[2]) / edgeLength + 2;
 
 	//crop the indices to the halo layer
-	x0 = std::min(nX0 - 2, std::max(1, x0));
-	x1 = std::min(nX1 - 2, std::max(1, x1));
-	x2 = std::min(nX2 - 2, std::max(1, x2));
+	if(p.x[0] > Settings::domainSize[0])
+		x0 = nX0 - 2;
+	else x0 = std::min(nX0 - 2, std::max(1, x0));
+
+	if(p.x[1] > Settings::domainSize[1])
+		x1 = nX1 - 2;
+	else x1 = std::min(nX1 - 2, std::max(1, x1));
+
+	if(p.x[2] > Settings::domainSize[2])
+		x2 = nX2 - 2;
+	else x2 = std::min(nX2 - 2, std::max(1, x2));
 
 	return getCell(x0, x1, x2);
 }
