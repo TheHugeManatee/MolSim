@@ -18,3 +18,4 @@ src/outputWriter/vtk-unstructured.cpp
 src/outputWriter/vtk-unstructured.h
 Default/
 *.state
+.cproject
