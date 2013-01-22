@@ -22,8 +22,8 @@ class Simulator {
 private:
 
 	SimulationScenario *scenario;
-	Thermostat *thermostat;
 	ParticleContainer *particleContainer;
+
 public:
 	Simulator();
 	virtual ~Simulator();
@@ -34,21 +34,6 @@ public:
 
 	/* processed iterations*/
 	static int iterations;
-
-	/**
-	 * calculate the force for all particles
-	 */
-	void calculateF();
-
-	/**
-	 * calculate the position for all particles
-	 */
-	void calculateX();
-
-	/**
-	 * calculate the velocity for all particles
-	 */
-	void calculateV();
 
 	/**
 	 * applies given force fields and gravity

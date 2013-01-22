@@ -13,6 +13,7 @@
 #include "Particle.h"
 #include "Molecule.h"
 #include "utils/Vector.h"
+#include "utils/Matrix.h"
 #include <vector>
 
 #include "ParticleContainer.h"
@@ -41,7 +42,8 @@ namespace ParticleGenerator {
 			int nX0, int nX1, int nX2,
 			double h, int type,
 			utils::Vector<double, 3> initialVelocity,
-			double brownianMean);
+			double brownianMean,
+			utils::Matrix transform = utils::Matrix());
 	/**
 	 * generates a sphere on a cuboid grid
 	 *
@@ -56,12 +58,14 @@ namespace ParticleGenerator {
 	 */
 	void generateSphere(ParticleContainer& container, utils::Vector<double, 3> center, int radiusSphere,
 											double h, int type, utils::Vector<double, 3> initialVelocity,
-											double brownianMean);
+											double brownianMean, utils::Matrix transform = utils::Matrix());
 
 
 
 	void generateCylinder(ParticleContainer& container,
 			utils::Vector<double, 3> bottom, int height, int radius, double h, int type,
-			utils::Vector<double, 3> initialVelocity, double brownianMean);
+			utils::Vector<double, 3> initialVelocity, double brownianMean, utils::Matrix transform = utils::Matrix());
+
+	void performGeneration(ParticleContainer &container);
 }
 #endif /* PARTICLEGENERATOR_H_ */

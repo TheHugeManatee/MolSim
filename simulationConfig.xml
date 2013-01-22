@@ -64,6 +64,16 @@
       <stepWidth>1.1225</stepWidth>
       <type>0</type>
       <initialVelocity x0="0" x1="0" x2="10"/>
+
+	  <transform type="perspective">
+	  	<x x0="0.01" x1="0" x2="0" />
+	  </transform>      
+      <transform type="translate">
+	  	<x x0="20" x1="0" x2="0" />
+	  </transform>
+	  
+
+	  
     </cuboid>
 
   <!--<cuboid>

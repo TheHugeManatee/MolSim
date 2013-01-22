@@ -26,17 +26,15 @@ SOURCES=\
 	src/utils/SimulationConfig.cpp\
 	src/outputWriter/RenderOutputWriter.cpp\
 	src/utils/Thermostat.cpp\
-	src/utils/ColorCoding/ColorCoder.cpp\
-	src/utils/ColorCoding/Grayscale.cpp\
 	src/utils/Matrix.cpp
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-pg -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp 
+CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp -DFOR_PARALLEL
 
 # Linker flags
 # ------------
-LDFLAGS=-pg -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp
 
 INCLUDES= -I./src -I./libxsd
 

@@ -10,6 +10,7 @@
 
 #include <string>
 #include "Vector.h"
+#include "simulationConfig.h"
 
 namespace utils {
 
@@ -34,6 +35,11 @@ public:
 	static Matrix rotatex2(double angle);
 	static Matrix shear(double x0x1, double x0x2 = 0, double x1x0 = 0, double x1x2 = 0, double x2x0 = 0, double x2x1 = 0);
 	static Matrix perspective(double x0, double x1, double x2);
+
+	/**
+	 * Builds a transformation matrix from an xsd sequence of transformations
+	 */
+	static Matrix buildFromXml(Transform &transformDef);
 };
 
 } /* namespace utils */

@@ -44,15 +44,20 @@ Simulator::Simulator() {
 	particleContainer->afterPositionChanges(boundaryHandlers ,scenario->haloHandler); */
 	LOG4CXX_TRACE(logger, "Scenario set up.");
 	//pre-calculate the forces for the first update
-	calculateF();
+	particleContainer->eachPair(scenario->calculateForce);
+	addAdditionalForces();
+
+
 	LOG4CXX_INFO(logger, "Simulator set up.");
 	LOG4CXX_INFO(logger, "Will run scenario " << Settings::scenarioType);
+
 	int particleContainerSize = particleContainer->getSize();
+
 	LOG4CXX_INFO(logger, "World has " << particleContainerSize << "particles");
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		thermostat = new Thermostat(Settings::dimensions,particleContainerSize); //TODO: What about 2 Dimensions case ??
-		thermostat->scaleInitialVelocity(particleContainer);
+		Thermostat::initialize(Settings::dimensions, particleContainerSize);
+		Thermostat::scaleInitialVelocity(particleContainer);
 	}
 
 	//plotParticles(0);
@@ -60,33 +65,9 @@ Simulator::Simulator() {
 
 Simulator::~Simulator() {
 	delete particleContainer;
-	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		delete thermostat;
-	}
 	delete scenario;
 }
 
-
-/**
-* Calculates forces for all given particles in the particle list
-* and sets the net force in the object's member f
-*/
-
-inline void Simulator::calculateF() {
-	particleContainer->eachPair(scenario->calculateForce);
-	//LOG4CXX_TRACE(logger,"Finished Force Calculation" );
-}
-
-
-inline void Simulator::calculateX() {
-    particleContainer->each(scenario->updatePosition);
-    //LOG4CXX_TRACE(logger,"Finished Position Calculation" );
-}
-
-inline void Simulator::calculateV() {
-	particleContainer->each(scenario->updateVelocity);
-	//LOG4CXX_TRACE(logger,"Finished Velocity Calculation" );
-}
 
 inline void Simulator::addAdditionalForces(){
 
@@ -153,7 +134,7 @@ void Simulator::plotParticles(int iteration) {
 		vtkWriter.initializeOutput(particleContainer->getSize());
 		particleContainer->each([&] (Particle& p) {
 #pragma omp critical (plot_particle)
-			{vtkWriter.plotParticle(p);}
+			vtkWriter.plotParticle(p);
 		});
 		vtkWriter.writeFile(Settings::outputFilePrefix, iteration);
 	break;
@@ -163,38 +144,38 @@ void Simulator::plotParticles(int iteration) {
 
 
 void Simulator::nextTimeStep() {
-
-	// calculate new positions
-	calculateX();
-
-	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
-
-	/*just a do nothing function TODO: find a better place for this*/
-	for(int i = 0 ; i<6 ; i++){
-	boundaryHandlers[i] = [] (ParticleContainer &container, Particle &p) {
-		return false;
+	static std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6] = {
+			[] (ParticleContainer &container, Particle &p) {return false;},
+			[] (ParticleContainer &container, Particle &p) {return false;},
+			[] (ParticleContainer &container, Particle &p) {return false;},
+			[] (ParticleContainer &container, Particle &p) {return false;},
+			[] (ParticleContainer &container, Particle &p) {return false;},
+			[] (ParticleContainer &container, Particle &p) {return false;}
 	};
+
+	//Calculate all forces
+	particleContainer->eachPair(scenario->calculateForce);
+	addAdditionalForces();
+
+	//clear halo
+	particleContainer->afterPositionChanges(boundaryHandlers, scenario->haloHandler );
+
+
+	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+		Thermostat::updateThermostate(particleContainer);
 	}
 
-	//clear force accumulation vector and rearrange internal particle container structure		/*This move is ugly but necessary for periodic boundary Handling*/
+	// calculate new positions
+    particleContainer->each(scenario->updatePosition);
+
+
+	//rearrange internal particle container structure											/*This move is ugly but necessary for periodic boundary Handling*/
 	particleContainer->afterPositionChanges(scenario->boundaryHandlers, boundaryHandlers[0]);	/*Without it we wouldn't have any way to calculate forces between */
 																								/*two opposite cells*/
 																								/*TODO:Maybe we should separate afterPostionChanges in one method
 																								*applying bounderyHandling an one to apply haloHandling and sort the cells
-	// calculate new forces																		*after force calculation*/
-	calculateF();
+																								*after force calculation*/
 
-	addAdditionalForces();
-
-	particleContainer->afterPositionChanges(boundaryHandlers, scenario->haloHandler );
-
-
-	// calculate new velocities
-	calculateV();
-
-	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		thermostat->thermostate(particleContainer);
-	}
 
 	Simulator::iterations++;
 //	LOG4CXX_TRACE(logger,"Iteration number " << Simulator::iterations); //This one is pretty annoying

@@ -145,4 +145,35 @@ std::string Matrix::toString() {
 	return ss.str();
 }
 
+
+utils::Matrix Matrix::buildFromXml(Transform &transformDef) {
+	 double x[3] = {0, 0, 0};
+
+	 if(transformDef.x().present()) {
+		 x[0] = transformDef.x().get().x0();
+		 x[1] = transformDef.x().get().x1();
+		 x[2] = transformDef.x().get().x2();
+	 }
+
+
+	 if(transformDef.type() == TransformType::scale)
+		 return utils::Matrix::scale(x[0], x[1], x[2]);
+	 else if(transformDef.type() == TransformType::translate)
+		 return utils::Matrix::translate(x[0], x[1], x[2]);
+	 else if(transformDef.type() == TransformType::rotatex0)
+		 return utils::Matrix::rotatex0(transformDef.angle());
+	 else if(transformDef.type() == TransformType::rotatex1)
+		 return utils::Matrix::rotatex1(transformDef.angle());
+	 else if(transformDef.type() == TransformType::rotatex2)
+		 return utils::Matrix::rotatex2(transformDef.angle());
+	 else if(transformDef.type() == TransformType::shear)
+		 return utils::Matrix::shear(transformDef.shear01(), transformDef.shear01(), transformDef.shear10(),
+				 	 	 	 		transformDef.shear12(), transformDef.shear20(), transformDef.shear21());
+	 else if(transformDef.type() == TransformType::perspective)
+		 return utils::Matrix::perspective(x[0], x[1], x[2]);
+
+	 return utils::Matrix();
+
+}
+
 } /* namespace utils */

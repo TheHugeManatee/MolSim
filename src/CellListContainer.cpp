@@ -116,12 +116,7 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 #ifdef FOR_PARALLEL
 #pragma omp parallel for
 #endif
-#pragma omp parallel
-	{
-		int tid = omp_get_thread_num();
-		int nt = omp_get_num_threads();
-
-	for(int x0=(tid*nX0)/nt; x0 < ((tid+1)*nX0)/nt; x0++) {
+	for(int x0=1; x0 < nX0-1; x0++) {
 		//printf("%i %i\n", tid, x0);
 		for(int x1=1; x1 < nX1-1; x1++) {
 			for(int x2=1; x2 < nX2-1; x2++) {
@@ -153,7 +148,6 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 			}
 		}
 	}
-	}
 }
 
 void CellListContainer::afterPositionChanges(
@@ -184,10 +178,8 @@ void CellListContainer::afterPositionChanges(
 						if(x0 == (nX0 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[1](*this, p);
 						if(x1 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[2](*this, p);
 						if(x1 == (nX1 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[3](*this, p);
-						if(Settings::dimensions == 3 ){
-							if(x2 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
-							if(x2 == (nX2 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
-						}
+						if(x2 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
+						if(x2 == (nX2 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
 					}
 
 					//if particle is not deleted, check if it should be in some different cell than it is now

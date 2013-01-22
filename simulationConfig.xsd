@@ -2,6 +2,32 @@
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             xmlns:xse="http://www.codesynthesis.com/xmlns/xml-schema-extension">
+
+  <xsd:simpleType name="TransformType">
+  	<xsd:restriction base="xsd:string">
+  		<xsd:enumeration value="scale" />
+  		<xsd:enumeration value="translate" />
+  		<xsd:enumeration value="rotatex0" />
+  		<xsd:enumeration value="rotatex1" />
+      <xsd:enumeration value="rotatex2" />
+      <xsd:enumeration value="shear" />
+      <xsd:enumeration value="perspective" />
+  	</xsd:restriction>
+  </xsd:simpleType> 
+       
+  <xsd:complexType name="transform">
+    <xsd:sequence>
+      <xsd:element name="x" type="floatVector" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="type" type="TransformType" use="required" />
+    <xsd:attribute name="angle" type="xsd:double" use="optional" default="0" />
+    <xsd:attribute name="shear01" type="xsd:double" use="optional" default="0" />
+    <xsd:attribute name="shear02" type="xsd:double" use="optional" default="0" />
+    <xsd:attribute name="shear10" type="xsd:double" use="optional" default="0" />
+    <xsd:attribute name="shear12" type="xsd:double" use="optional" default="0" />
+    <xsd:attribute name="shear20" type="xsd:double" use="optional" default="0" />
+    <xsd:attribute name="shear21" type="xsd:double" use="optional" default="0" />
+  </xsd:complexType>
        
   <xsd:simpleType name="BoundaryConditionType">
   	<xsd:restriction base="xsd:string">
@@ -92,6 +118,7 @@
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
 	  	<xsd:element name="brownianMeanVelocity" type="xsd:double" minOccurs="0" maxOccurs="1"/>
+	  	<xsd:element name="transform" type="transform" minOccurs="0" maxOccurs="unbounded" />
 	 </xsd:sequence>
   </xsd:complexType>
 
@@ -104,7 +131,7 @@
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
 	  	<xsd:element name="brownianMeanVelocity" type="xsd:double" minOccurs="0" maxOccurs="1"/>
-
+      <xsd:element name="transform" type="transform" minOccurs="0" maxOccurs="unbounded" />
 	 </xsd:sequence>
   </xsd:complexType>
 
@@ -117,6 +144,7 @@
 	  	<xsd:element name="type" type="xsd:int"/>
 	  	<xsd:element name="initialVelocity" type="floatVector"/>
 	  	<xsd:element name="brownianMeanVelocity" type="xsd:double" minOccurs="0" maxOccurs="1"/>
+	  	<xsd:element name="transform" type="transform" minOccurs="0" maxOccurs="unbounded" />
 	 </xsd:sequence>
  </xsd:complexType>
             
@@ -124,7 +152,7 @@
   	<xsd:sequence>
   		<xsd:element name="cuboid" type="cuboid" maxOccurs="unbounded"/>
   		<xsd:element name="sphere" type="sphere" maxOccurs="unbounded"/>
-		<xsd:element name="cylinder" type="cylinder" maxOccurs="unbounded"/>
+      <xsd:element name="cylinder" type="cylinder" maxOccurs="unbounded"/>
 	</xsd:sequence>
   </xsd:complexType>
   

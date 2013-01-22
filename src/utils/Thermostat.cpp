@@ -13,8 +13,15 @@ log4cxx::LoggerPtr Thermostat::logger = log4cxx::Logger::getLogger("Thermostat")
 
 double Thermostat::currentEnergy = 0;
 double Thermostat::currentTemperature = 0;
+double Thermostat::beta = 1;
+double Thermostat::targetEnergy;
+double Thermostat::energyPerStep;
+int Thermostat::dimensions;
+int Thermostat::numberOfParticles;
+int Thermostat::maxSteps;
+int Thermostat::stepSize;
 
-Thermostat::Thermostat(int arg_dimensions , int arg_numberOfParticles){
+void Thermostat::initialize(int arg_dimensions , int arg_numberOfParticles){
 	stepSize = Settings::thermostatSettings->controlInterval();
 	LOG4CXX_INFO(logger,"Thermostat turned on: Will check every "<< stepSize <<" steps");
 	auto targetTemperature_opt = Settings::thermostatSettings->targetTemperature();
@@ -25,7 +32,7 @@ Thermostat::Thermostat(int arg_dimensions , int arg_numberOfParticles){
 	}
 	numberOfParticles = arg_numberOfParticles;
 	if(numberOfParticles == 0)
-		LOG4CXX_FATAL(logger,"No paticles result will be wrong .... !");
+		LOG4CXX_FATAL(logger,"No particles! Result will be wrong .... !");
 
 	dimensions = arg_dimensions;
 
@@ -40,9 +47,6 @@ Thermostat::Thermostat(int arg_dimensions , int arg_numberOfParticles){
 
 	initTargetEnergy();
 
-}
-
-Thermostat::~Thermostat(){
 }
 
 /**
@@ -98,7 +102,7 @@ void Thermostat::initTargetEnergy(){
 
 /**
  * Calculates and returns the energy that has to be applied to the system in one timestep
- * accoring to the left steps and remaining Energy to be applied
+ * accoring to the remaining steps and remaining Energy to be applied
  * @return delta E_kin
  */
 void Thermostat::getStepEnergy(){
@@ -172,15 +176,13 @@ inline void Thermostat::iterateBeta(){
 }
 
 /*all the thermostation work*/
-void Thermostat::thermostate(ParticleContainer* particles) {
+void Thermostat::updateThermostate(ParticleContainer* particles) {
 	if ((maxSteps == 0 )||(Simulator::iterations < maxSteps)) {
 		int iterations = Simulator::iterations + 1;
 		if ((iterations % stepSize) == 0) {
 			calculateCurrentEnergy(particles);
 		}
-		particles->each([&] (Particle& p) {
-			p.v = p.v * beta;
-		});
+		//Notice: setting the velocities of the particles happens in Scenario::updateVerletPositionThermostate
 		iterateBeta();
 	}
 }

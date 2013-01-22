@@ -18,7 +18,8 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 		int nX0, int nX1, int nX2,
 		double h, int type,
 		utils::Vector<double, 3> initialVelocity,
-		double brownianMean) {
+		double brownianMean,
+		utils::Matrix transform) {
 
 	LOG4CXX_INFO(ParticleGenerator::logger, "Generating " << (nX0*nX1*nX2) << " Particles on a regular cuboid");
 	LOG4CXX_DEBUG(ParticleGenerator::logger, "Creating Cuboid");
@@ -39,7 +40,6 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 	Settings::particleTypes[type].membraneDescriptor.nX1 = nX1;
 	Settings::particleTypes[type].membraneDescriptor.nX2 = nX2;
 
-	utils::Matrix t = utils::Matrix::rotatex0(+15);
 	utils::Matrix moveBack = utils::Matrix::translate(bottomLeft[0] + nX0*h/2, bottomLeft[1] + nX1*h/2, bottomLeft[2] + nX2*h/2);
 
 	for(int x0=0; x0 < nX0; x0++)
@@ -53,7 +53,7 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 				int pid = (x2+1) + (x1+1)* (nX2+2) + (x0+1)*(nX2+2)*(nX1+2);
 
 				//(moveBack*t*moveToOrigin).transform(x);
-				moveBack.transform(x);
+				(transform*moveBack).transform(x);
 				Particle p(x, initialVelocity, type, pid);
 
 				if(brownianMean != 0)
@@ -65,7 +65,8 @@ void ParticleGenerator::regularCuboid(ParticleContainer& container, utils::Vecto
 
 void ParticleGenerator::generateSphere(ParticleContainer& container,
 		utils::Vector<double, 3> center, int radiusSphere, double h, int type,
-		utils::Vector<double, 3> initialVelocity, double brownianMean) {
+		utils::Vector<double, 3> initialVelocity, double brownianMean,
+		utils::Matrix transform) {
 
 	if (type >= Settings::numParticleTypes) {
 		LOG4CXX_FATAL(logger, "Undefined Type ID: " << type);
@@ -180,7 +181,8 @@ void ParticleGenerator::generateSphere(ParticleContainer& container,
 
 void ParticleGenerator::generateCylinder(ParticleContainer& container,
 		utils::Vector<double, 3> bottom, int height, int radius, double h, int type,
-		utils::Vector<double, 3> initialVelocity, double brownianMean){
+		utils::Vector<double, 3> initialVelocity, double brownianMean,
+		utils::Matrix transform){
 
 	if (type >= Settings::numParticleTypes) {
 		LOG4CXX_FATAL(logger, "Undefined Type ID: " << type);
@@ -246,3 +248,90 @@ void ParticleGenerator::generateCylinder(ParticleContainer& container,
 		}
 }
 
+
+void ParticleGenerator::performGeneration(ParticleContainer &container) {
+	LOG4CXX_TRACE(logger, "Cuboid generation:");
+	for(auto it = Settings::generator.cuboid().begin();
+			it != Settings::generator.cuboid().end();
+			++it) {
+
+		auto c = (*it);
+		double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
+		double bl[] = {c.bottomLeft().x0(), c.bottomLeft().x1(), c.bottomLeft().x2()};
+		double bMean = c.brownianMeanVelocity().present()?c.brownianMeanVelocity().get():0;
+
+		//multiply complete transformation matrix
+		utils::Matrix transformation;
+		for(auto it = c.transform().begin(); it != c.transform().end(); ++it) {
+			Transform transDef = *it;
+			transformation = utils::Matrix::buildFromXml(transDef) * transformation;
+		}
+
+		ParticleGenerator::regularCuboid(container,
+				utils::Vector<double, 3> (bl),
+				c.nX().x0(), c.nX().x1(), c.nX().x2(),
+				c.stepWidth(), c.type(),
+				utils::Vector<double, 3> (v),
+				bMean,
+				transformation
+		);
+
+	}
+
+	LOG4CXX_TRACE(logger, "Cylinder generation:");
+	for(auto it = Settings::generator.cylinder().begin();
+			it != Settings::generator.cylinder().end();
+			++it) {
+
+		auto c = (*it);
+		double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
+		double bottom[] = {c.bottom().x0(), c.bottom().x1(), c.bottom().x2()};
+		double bMean = c.brownianMeanVelocity().present()?c.brownianMeanVelocity().get():0;
+
+		//multiply complete transformation matrix
+		utils::Matrix transformation;
+		for(auto it = c.transform().begin(); it != c.transform().end(); ++it) {
+			Transform transDef = *it;
+			transformation = utils::Matrix::buildFromXml(transDef) * transformation;
+		}
+		ParticleGenerator::generateCylinder(container,
+				utils::Vector<double, 3> (bottom),
+				c.height(),
+				c.radius(),
+				c.stepWidth(), c.type(),
+				utils::Vector<double, 3> (v),
+				bMean,
+				transformation
+		);
+
+	}
+
+	LOG4CXX_TRACE(logger, "Sphere generation:");
+
+	for(auto it = Settings::generator.sphere().begin();
+			it != Settings::generator.sphere().end();
+			++it) {
+
+		auto c = (*it);
+		double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
+		double center[] = {c.center().x0(), c.center().x1(), c.center().x2()};
+		double bMean = c.brownianMeanVelocity().present()?c.brownianMeanVelocity().get():0;
+
+		//multiply complete transformation matrix
+		utils::Matrix transformation;
+		for(auto it = c.transform().begin(); it != c.transform().end(); ++it) {
+			Transform transDef = *it;
+			transformation = utils::Matrix::buildFromXml(transDef) * transformation;
+		}
+		ParticleGenerator::generateSphere(container,
+				utils::Vector<double, 3> (center),
+				c.radius(),
+				c.stepWidth(), c.type(),
+				utils::Vector<double, 3> (v),
+				bMean,
+				transformation
+		);
+
+	}
+	LOG4CXX_TRACE(logger, "Generation finished!");
+}

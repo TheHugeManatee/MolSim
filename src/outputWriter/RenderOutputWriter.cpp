@@ -538,6 +538,7 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 	int i = 0;
 	//copy particle data over
 	container.each([&] (Particle &p) {
+#pragma omp critical
 		render3dParticles[i++] = p;
 	});
 	//signal the rendering thread to recompile display list and redraw buffer

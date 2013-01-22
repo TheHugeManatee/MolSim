@@ -172,6 +172,11 @@ int main(int argc, char* argsv[]) {
 
 	LOG4CXX_TRACE(rootLogger, "Settings initialized!");
 
+	if(Settings::threadNumber > 0) {
+		LOG4CXX_INFO(rootLogger, "Setting OpenMP Threads to " << Settings::threadNumber);
+		omp_set_num_threads(Settings::threadNumber);
+	}
+
 	//Check if we should be executing some unit tests
 	if(!Settings::testCase.empty()) {
 		return executeTests();

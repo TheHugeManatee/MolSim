@@ -11,6 +11,8 @@
 
 #include "utils/Settings.h"
 #include "utils/Vector.h"
+#include "utils/Thermostat.h"
+
 #include <cstdlib>
 #include <cassert>
 #include <float.h>
@@ -27,6 +29,33 @@ std::function<void(Particle&)> ScenarioFactory::verletUpdatePosition =
 		[] (Particle& p) {
 			double dt = Settings::deltaT;
 
+			//new velocity
+			utils::Vector<double, 3> resultV;
+			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + p.f);
+			p.v = resultV;
+
+			//new position
+			utils::Vector<double, 3> resultX;
+			resultX= p.x + dt * p.v + dt * dt / (2 * Settings::particleTypes[p.type].mass) * p.f;
+			p.x = resultX;
+
+			//reset force accumulator
+			p.old_f = p.f;
+			p.f = 0;
+		};
+
+std::function<void(Particle&)> ScenarioFactory::verletUpdatePositionThermostate =
+		[] (Particle& p) {
+			double dt = Settings::deltaT;
+
+			//new velocity
+			utils::Vector<double, 3> resultV;
+			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + p.f);
+			//apply thermostate
+			p.v = resultV*Thermostat::beta;
+
+
+			//new position
 			utils::Vector<double, 3> resultX;
 			resultX= p.x + dt * p.v + dt * dt / (2 * Settings::particleTypes[p.type].mass) * p.f;
 			p.x = resultX;
@@ -58,6 +87,22 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJones
 			//resultForce = resultForce * -1;
 			p2.f = p2.f - resultForce;
 		};
+
+std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
+[] (Particle& p1, Particle& p2) {
+	utils::Vector<double, 3> xDif = p2.x - p1.x;
+	double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
+	double sigma = (Settings::particleTypes[p1.type].sigma + Settings::particleTypes[p2.type].sigma) / 2;
+	//double norm = xDif.L2Norm();
+	double normSquared = xDif.LengthOptimizedR3Squared();
+	double sigmaNormalizedSquared = sigma*sigma/normSquared;
+	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
+	utils::Vector<double, 3> resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+	p1.f = p1.f + resultForce;
+
+	//resultForce = resultForce * -1;
+	p2.f = p2.f - resultForce;
+};
 
 #define NEIGHBOR(id, otherId, breadth, length) ((otherId - 1 == id) || (otherId + 1 == id) || (otherId - breadth == id) || (otherId + breadth == id) || (otherId - breadth * length == id) || (otherId + breadth * length == id))
 #define FACEDIAG(id, otherId, breadth, length) ((otherId - 1 - breadth == id) || (otherId + 1 + breadth == id) || (otherId - breadth + 1 == id) || (otherId + breadth - 1 == id) || (otherId - breadth * length + 1 == id) || (otherId + breadth * length - 1 == id) || (otherId - breadth * length - 1 == id) || (otherId + breadth * length + 1 == id) || (otherId - breadth * (length + 1) == id) || (otherId + breadth * (length - 1) == id) || (otherId - breadth * (length - 1) == id) || (otherId + breadth* (length + 1) == id))
@@ -155,16 +200,6 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 
 	};
 
-/*std::function<void (Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce = [] (Particle& p1, Particle& p2) {
- utils::Vector<double, 3> xDif = p2.x - p1.x;
- double norm = xDif.L2Norm();
- double sigmaNormalized = Settings::sigma/norm;
- double sigmaNormailzedRaisedBySix = sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized*sigmaNormalized;
- utils::Vector<double, 3> resultForce = (24*Settings::epsilon / (norm * norm)) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
- p1.f = p1.f + resultForce;
- //resultForce = resultForce * -1;
- p2.f = p2.f - resultForce;
- };*/
 
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateGravityForce =
 		[] (Particle& p1, Particle& p2) {
@@ -193,91 +228,7 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 				FileReader fileReader;
 				fileReader.readFile(container, (char*)Settings::inputFile.c_str());
 			}
-			LOG4CXX_TRACE(logger, "Cuboid generation:");
-			for(auto it = Settings::generator.cuboid().begin();
-					it != Settings::generator.cuboid().end();
-					++it) {
-
-				auto c = (*it);
-				double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
-				double bl[] = {c.bottomLeft().x0(), c.bottomLeft().x1(), c.bottomLeft().x2()};
-				auto brown_opt = c.brownianMeanVelocity();
-				if(brown_opt.present()) {
-					ParticleGenerator::regularCuboid(container,
-							utils::Vector<double, 3> (bl),
-							c.nX().x0(), c.nX().x1(), c.nX().x2(),
-							c.stepWidth(), c.type(),
-							utils::Vector<double, 3> (v),
-							brown_opt.get()
-					);
-				} else {
-					ParticleGenerator::regularCuboid(container,
-							utils::Vector<double, 3> (bl),
-							c.nX().x0(), c.nX().x1(), c.nX().x2(),
-							c.stepWidth(), c.type(),
-							utils::Vector<double, 3> (v),
-							0);
-				}
-			}
-			
-						LOG4CXX_TRACE(logger, "Cylinder generation:");
-
-			for(auto it = Settings::generator.cylinder().begin();
-					it != Settings::generator.cylinder().end();
-					++it) {
-
-				auto c = (*it);
-				double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
-				double bottom[] = {c.bottom().x0(), c.bottom().x1(), c.bottom().x2()};
-				auto brown_opt = c.brownianMeanVelocity();
-				if(brown_opt.present()) {
-					ParticleGenerator::generateCylinder(container,
-							utils::Vector<double, 3> (bottom),
-							c.height(),
-							c.radius(),
-							c.stepWidth(), c.type(),
-							utils::Vector<double, 3> (v),
-							c.brownianMeanVelocity().get()
-					);
-				} else {
-					ParticleGenerator::generateCylinder(container,
-							utils::Vector<double, 3> (bottom),
-							c.height(),
-							c.radius(),
-							c.stepWidth(), c.type(),
-							utils::Vector<double, 3> (v),
-							0);
-				}
-			}
-
-			LOG4CXX_TRACE(logger, "Sphere generation:");
-
-			for(auto it = Settings::generator.sphere().begin();
-					it != Settings::generator.sphere().end();
-					++it) {
-
-				auto c = (*it);
-				double v[] = {c.initialVelocity().x0(), c.initialVelocity().x1(), c.initialVelocity().x2()};
-				double center[] = {c.center().x0(), c.center().x1(), c.center().x2()};
-				auto brown_opt = c.brownianMeanVelocity();
-				if(brown_opt.present()) {
-					ParticleGenerator::generateSphere(container,
-							utils::Vector<double, 3> (center),
-							c.radius(),
-							c.stepWidth(), c.type(),
-							utils::Vector<double, 3> (v),
-							c.brownianMeanVelocity().get()
-					);
-				} else {
-					ParticleGenerator::generateSphere(container,
-							utils::Vector<double, 3> (center),
-							c.radius(),
-							c.stepWidth(), c.type(),
-							utils::Vector<double, 3> (v),
-							0);
-				}
-			}
-			LOG4CXX_TRACE(logger, "Generation finished!");
+			ParticleGenerator::performGeneration(container);
 		};
 
 /*These are the handlers for a periodic boundaryHandling
@@ -411,13 +362,18 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 
 SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 	SimulationScenario *scenario = new SimulationScenario;
+
+	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON)
+		scenario->updatePosition = ScenarioFactory::verletUpdatePositionThermostate;
+	else
+		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
+
 	if (type == ScenarioType::Gravity) {
 		//Simple gravity simulation with gravitational constant g = 1
 		scenario->calculateForce = ScenarioFactory::calculateGravityForce;
 
 		scenario->setup = ScenarioFactory::basicFileReaderSetup;
 
-		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
 		LOG4CXX_DEBUG(logger, "Built Gravity Scenario");
 	} else if (type == ScenarioType::Lennard_Jones) {
@@ -426,7 +382,6 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 
 		scenario->setup = ScenarioFactory::LennardJonesSetup;
 
-		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
 
 		LOG4CXX_DEBUG(logger, "Built Lennard-Jones Scenario");
@@ -435,7 +390,6 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 
 		scenario->setup = ScenarioFactory::LennardJonesSetup;
 
-		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
 		scenario->updateVelocity = ScenarioFactory::verletUpdateVelocity;
 	} else {
 		LOG4CXX_FATAL(logger, "Unknown Simulation type!");
@@ -448,7 +402,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 	//
 	scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
 		return true; //delete all halo particles
-		};
+	};
 
 	//these are the boundary handlers for the reflect condition
 	//this is ugly but they have to be defined here so we can capture
@@ -465,7 +419,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = 0;
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = p.x[2];
-							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
+							calcForce(p, phantom);
 						}
 						return false;
 					},
@@ -476,7 +430,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = realDomainSize;
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = p.x[2];
-							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
+							calcForce(p, phantom);
 						}
 						return false;
 					},
@@ -486,7 +440,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = 0;
 							phantom.x[2] = p.x[2];
-							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
+							calcForce(p, phantom);
 						}
 						return false;
 					},
@@ -497,7 +451,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = realDomainSize;
 							phantom.x[2] = p.x[2];
-							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
+							calcForce(p, phantom);
 						}
 						return false;
 					},
@@ -507,7 +461,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = 0;
-							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
+							calcForce(p, phantom);
 						}
 						return false;
 					},
@@ -518,7 +472,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = p.x[1];
 							phantom.x[2] = realDomainSize;
-							ScenarioFactory::calculateLennardJonesPotentialForce(p, phantom);
+							calcForce(p, phantom);
 						}
 						return false;
 					} };

@@ -18,6 +18,7 @@
 //Forward declarations
 extern void initializeLogger();//This is implemented in MolSim.cpp
 
+int Settings::threadNumber = 0;
 
 //variable definitions and  default settings
 double Settings::deltaT = 0.0014;
@@ -43,6 +44,7 @@ std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
 int Settings::outputFileIterationOffset = 0;
 OutputFileType Settings::outputFileType = OutputFileType::vtk;
 double Settings::rCutoff = 3;
+double Settings::rl = 1.9;
 utils::Vector<double, 3> Settings::domainSize = 50;
 ContainerType Settings::containerType = ContainerType::ParticleContainer;
 BoundaryConditionType Settings::boundaryCondition[6] = {
@@ -84,7 +86,6 @@ template <typename T> int sgn(T val) {
  * parameters can be configured through the command line and through a config
  * standard config filename is config.cfg
  */
-#include <exception>
 void Settings::initSettings(int argc, char* argv[]) {
 
 	//Look if a config file parameter was specified
@@ -124,6 +125,8 @@ void Settings::initSettings(int argc, char* argv[]) {
 			Settings::encodeCellsInType = true;
 		if(strcmp(argv[i], "-outputFileIterationOffset") == 0 && argc > i + 1)
 			Settings::outputFileIterationOffset = atoi(argv[i+1]);
+		if(strcmp(argv[i], "-threadNumber") == 0 && argc > i + 1)
+			Settings::threadNumber = atoi(argv[i+1]);
 
 	}
 
@@ -134,7 +137,7 @@ void Settings::initSettings(int argc, char* argv[]) {
 
 	assert(Settings::deltaT != 0);//timestep needs to be non-zero
 
-	assert(sgn(Settings::deltaT) == sgn(Settings::endTime));	//deltaT and endTime have the same sign, otherwise the
+	assert(sgn(Settings::deltaT) == sgn(Settings::endTime));	//deltaT and endTime have the same sign, otherwise the computation will never end
 }
 
 
@@ -177,6 +180,7 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    Settings::containerType = xmlCfg->containerType();
 	    Settings::outputFileType = xmlCfg->outputFileType();
 	    auto cutOffRadius_arg = xmlCfg->cutoffRadius();
+
 
 	    double max_sigma = 0;
 
@@ -310,3 +314,4 @@ std::string Settings::toString() {
 
 	return s.str();
 }
+

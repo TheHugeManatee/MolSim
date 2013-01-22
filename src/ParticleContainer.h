@@ -87,11 +87,7 @@ class ParticleContainer {
         			std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6],
         			std::function<bool (ParticleContainer &container, Particle &p)> haloHandler
         ) {
-        	int s = particles.size();
-        	for(int i=0; i < s; i++) {
-        		particles[i].old_f = particles[i].f;
-        		particles[i].f = 0;
-        	}
+
         };
 };
 

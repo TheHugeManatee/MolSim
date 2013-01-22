@@ -15,6 +15,8 @@
 
 #include "utils/simulationConfig.h"
 
+#include "utils/Matrix.h"
+
 #include <log4cxx/logger.h>
 #include <functional>
 #include <string>
@@ -101,9 +103,14 @@ public:
 
 
 	/**
-	 * position update function using verlet integration
+	 * velocity and position update function using verlet integration
 	 */
 	static std::function<void (Particle&)> verletUpdatePosition;
+
+	/**
+	 * velocity position update, using thermostate influence
+	 */
+	static std::function<void (Particle&)> verletUpdatePositionThermostate;
 
 	/**
 	 * velocity update function using verlet integration
@@ -114,6 +121,8 @@ public:
 	 * force calculation based on the Lennard-Jones potential
 	 */
 	static std::function<void (Particle&, Particle&)> calculateLennardJonesPotentialForce;
+
+	static std::function<void (Particle&, Particle&)> calculateSmoothLJ;
 
 	/**
 	 * force calculation based on the Lennard-Jones potential

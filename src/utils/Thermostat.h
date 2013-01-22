@@ -18,33 +18,32 @@ class Thermostat{
 
 private:
 
-	void getStepEnergy();
-	void initTargetEnergy();
-	void calculateCurrentEnergy(ParticleContainer* particles);
-	void iterateBeta();
-	void setCurrentTemperature(ParticleContainer* particles);
+	static void getStepEnergy();
+	static void initTargetEnergy();
+	static void calculateCurrentEnergy(ParticleContainer* particles);
+	static void iterateBeta();
+	static void setCurrentTemperature(ParticleContainer* particles);
 
 
-	double targetEnergy;
-	double energyPerStep;
-	double beta;
-	int dimensions;
-	int numberOfParticles;
+	static double targetEnergy;
+	static double energyPerStep;
+	static int dimensions;
+	static int numberOfParticles;
 
-	int maxSteps;
-	int stepSize;
+	static int maxSteps;
+	static int stepSize;
 
 public:
 
-	Thermostat(int arg_dimensions , int arg_numberOfParticles);
-	~Thermostat();
+	static void initialize(int arg_dimensions , int arg_numberOfParticles);
 
-	void thermostate(ParticleContainer *particles);
-	void scaleInitialVelocity(ParticleContainer *particles);
+	static void updateThermostate(ParticleContainer *particles);
+	static void scaleInitialVelocity(ParticleContainer *particles);
 
 	static double currentEnergy;
 	static double currentTemperature;
 	static log4cxx::LoggerPtr logger;
+	static double beta;
 
 };
 

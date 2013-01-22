@@ -28,10 +28,11 @@
 #define SETTINGS_H_
 
 
+
 #include "ScenarioFactory.h"
 
 #include "utils/Vector.h"
-
+#include "utils/Matrix.h"
 #include "simulationConfig.h"
 #include <log4cxx/logger.h>
 
@@ -58,6 +59,12 @@ public:
 	 * @param argv parameters for the simulation. Command line Syntax example: deltaT <decimal value> endTime <decimal value>
 	 */
 	static void initSettings(int argc, char* argv[]);
+
+	/**
+	 * thread number to override automatic OpenMP settings
+	 */
+	static int threadNumber;
+
 	/**
 	 * starting time of the simulation
 	 * typically this should be zero, other values will only make sense if
@@ -187,6 +194,11 @@ public:
 	 */
 	static double rCutoff;
 
+	/**
+	 * r_l constant of the smoothed lennard-jones potential
+	 */
+	static double rl;
+
 
 	/**
 	 * the size of the simulation domain
@@ -244,6 +256,7 @@ private:
 	static log4cxx::LoggerPtr logger;
 
 	static std::string toString();
+
 };
 
 #endif /* SETTINGS_H_ */
