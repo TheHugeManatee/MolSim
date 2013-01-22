@@ -357,7 +357,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = Settings::domainSize[2] / Settings::rCutoff;
+					double realDomainSize = Settings::domainSize[2];
 					if(p.x[2]<= realDomainSize ) {
 						zeroVelocity [0] = 0;
 						zeroVelocity [1] = 0;
@@ -365,6 +365,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 						positionInHalo[0] = p.x[0];
 						positionInHalo[1] = p.x[1];
 						positionInHalo[2] = p.x[2] - realDomainSize;
+	//					std::cout << "Copying Particle to " << positionInHalo[2] << std::endl;
 						Particle pNew (positionInHalo, zeroVelocity, p.type, p.id);
 						container.add(pNew);
 					}

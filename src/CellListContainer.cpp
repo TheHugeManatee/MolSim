@@ -20,17 +20,22 @@ long long CellListContainer::cellSwitches = 0;
 
 CellListContainer::CellListContainer() {
 	cellSwitches = 0;
-	edgeLength = Settings::rCutoff;
-	std::cout <<"CutOff:" << edgeLength;
+
 	//calculate the cells in each direction
 	//add 2 for halo and another 2 for dead layer
-	nX0 = std::ceil(Settings::domainSize[0] / edgeLength) + 4;
-	nX1 = std::ceil(Settings::domainSize[1] / edgeLength) + 4;
-	nX2 = std::ceil(Settings::domainSize[2] / edgeLength) + 4;
-
+	nX0 = std::ceil(Settings::domainSize[0] / Settings::rCutoff) + 4;
+	nX1 = std::ceil(Settings::domainSize[1] / Settings::rCutoff) + 4;
+	nX2 = std::ceil(Settings::domainSize[2] / Settings::rCutoff) + 4;
+	std::cout << "." << std::endl;
+	edgeLength[0] = Settings::domainSize[0] / (nX0-4);
+	edgeLength[1] = Settings::domainSize[1] / (nX1-4);
+	edgeLength[2] = Settings::domainSize[2] / (nX2-4);
+	std::cout << "." << std::endl;
 	size_ = 0;
 
 	LOG4CXX_DEBUG(logger, "Simulation domain will be divided into " << nX0 << "x" << nX1 << "x" << nX2 << " cells");
+	LOG4CXX_DEBUG(logger, "cell sizes are " << edgeLength[0] << "x" << edgeLength[1] << "x" << edgeLength[2] << " cells");
+
 
 	//create all the cells
 	cells.resize(nX0*nX1*nX2);
@@ -56,9 +61,9 @@ inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 
 ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
 
-	int x0 = (p.x[0]) / edgeLength + 2,
-		x1 = (p.x[1]) / edgeLength + 2,
-		x2 = (p.x[2]) / edgeLength + 2;
+	int x0 = (p.x[0]) / edgeLength[0] + 2,
+		x1 = (p.x[1]) / edgeLength[1] + 2,
+		x2 = (p.x[2]) / edgeLength[2] + 2;
 
 	//crop the indices to the halo layer
 	if(p.x[0] > Settings::domainSize[0])
@@ -73,6 +78,8 @@ ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
 		x2 = nX2 - 2;
 	else x2 = std::min(nX2 - 2, std::max(1, x2));
 
+//	std::cout << "Added Particle to Layer: " << x0 <<" " << x1 << " "<< x2  << std::endl;
+
 	return getCell(x0, x1, x2);
 }
 
@@ -82,7 +89,6 @@ void CellListContainer::add(Particle & p) {
 
 	assert(cell != NULL);
 	cell->add(p);
-
 	size_++;
 }
 
@@ -92,9 +98,9 @@ void CellListContainer::each(std::function<void (Particle &)> fn) {
 #ifdef FOR_PARALLEL
 #pragma omp parallel for
 #endif
-	for(int x0=1; x0 < nX0-1; x0++)
-		for(int x1=1; x1 < nX1-1; x1++)
-			for(int x2=1; x2 < nX2-1; x2++) {
+	for(int x0=2; x0 < nX0-2; x0++)
+		for(int x1=2; x1 < nX1-2; x1++)
+			for(int x2=2; x2 < nX2-2; x2++) {
 				std::vector<Particle> &plist = cells[x2 + x1*nX2 + x0*nX2*nX1].particles;
 				int s = plist.size();
 				for(int i=0; i < s; i++)
@@ -237,8 +243,11 @@ void CellListContainer::eachPair(std::function<void (Particle&, Particle&)> fn, 
 inline int CellListContainer::getSize() {
 	int cellcount = cells.size();
 	int size = 0;
-	for(int ci = 0; ci < cellcount; ci++) {
-		size += cells[ci].getSize();
+	for(int x0=2; x0 < nX0-2; x0++)
+		for(int x1=2; x1 < nX1-2; x1++)
+			for(int x2=2; x2 < nX2-2; x2++) {
+				std::vector<Particle> &plist = cells[x2 + x1*nX2 + x0*nX2*nX1].particles;
+				size += plist.size();
 	}
 //	assert(size == size_);
 	return size;
