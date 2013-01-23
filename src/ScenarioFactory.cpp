@@ -72,6 +72,31 @@ std::function<void(Particle&)> ScenarioFactory::verletUpdateVelocity =
 			p.v = resultV;
 		};
 
+std::function<void(Particle &)> ScenarioFactory::addAdditionalForces =
+		[] (Particle &p) {
+	for(int i = 0 ; i< Settings::forceFields.size() ; i++){
+				if(p.type == Settings::forceFields[i].type()){
+					int nX2 = Settings::particleTypes[p.type].membraneDescriptor.nX2+2;
+					int nX1 = Settings::particleTypes[p.type].membraneDescriptor.nX1+2;
+					int x2 = p.id % nX2 -1;
+					int x1 = (p.id/nX2) % (nX1) -1 ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
+					int x0 = p.id / (nX2*nX1) -1;
+					if(x2 >= Settings::forceFields[i].from().x2() && x1 >= Settings::forceFields[i].from().x1() &&
+						x0 >= Settings::forceFields[i].from().x0() && x2 <= Settings::forceFields[i].to().x2() &&
+						x1 <= Settings::forceFields[i].to().x1() && x0 <= Settings::forceFields[i].to().x0()){
+						p.f[0] = p.f[0] + Settings::forceFields[i].force().x0();
+						p.f[1] = p.f[1] + Settings::forceFields[i].force().x1();
+						p.f[2] = p.f[2] + Settings::forceFields[i].force().x2();
+
+					}
+				}
+			}
+
+			utils::Vector<double, 3> gravitationalForce;
+			gravitationalForce= Settings::particleTypes[p.type].mass * Settings::gravitation;
+			p.f = p.f + gravitationalForce;
+};
+
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce =
 		[] (Particle& p1, Particle& p2) {
 			utils::Vector<double, 3> xDif = p2.x - p1.x;
@@ -256,19 +281,16 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[0];
-					if(p.x[0] >= 0) {
-						zeroVelocity [0] = 0;
-						zeroVelocity [1] = 0;
-						zeroVelocity [2] = 0;
+					//if(p.x[0] >= 0) {
 						positionInHalo[0] = realDomainSize + p.x[0];
 						positionInHalo[1] = p.x[1];
 						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, zeroVelocity, p.type, p.id);
+						Particle pNew (positionInHalo, p.v, p.type, p.id);
 						container.add(pNew);
-					}
-					if(p.x[0] < 0) { //wrap particle around if we are outside the domain
-						p.x[0] = realDomainSize + p.x[0];
-					}
+					//}
+					//if(p.x[0] < 0) { //wrap particle around if we are outside the domain
+					//	p.x[0] = realDomainSize + p.x[0];
+					//}
 					return false;
 
 				},
@@ -277,19 +299,16 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[0];
-					if(p.x[0] <= realDomainSize) {
-						zeroVelocity [0] = 0;
-						zeroVelocity [1] = 0;
-						zeroVelocity [2] = 0;
+					//if(p.x[0] <= realDomainSize) {
 						positionInHalo[0] = p.x[0] - realDomainSize;
 						positionInHalo[1] = p.x[1];
 						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, zeroVelocity, p.type, p.id);
+						Particle pNew (positionInHalo, p.v, p.type, p.id);
 						container.add(pNew);
-					}
-					if(p.x[0] > realDomainSize) { //wrap particle around if we are outside the domain
-						p.x[0] = p.x[0] - realDomainSize;
-					}
+					//}
+					//if(p.x[0] > realDomainSize) { //wrap particle around if we are outside the domain
+					//	p.x[0] = p.x[0] - realDomainSize;
+					//}
 					return false;
 				},
 				//x1 = 0 boundary
@@ -297,19 +316,16 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[1];
-					if(p.x[1] >= 0) {
-						zeroVelocity [0] = 0;
-						zeroVelocity [1] = 0;
-						zeroVelocity [2] = 0;
+					//if(p.x[1] >= 0) {
 						positionInHalo[0] = p.x[0];
 						positionInHalo[1] = p.x[1] + realDomainSize;
 						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, zeroVelocity, p.type, p.id);
+						Particle pNew (positionInHalo, p.v, p.type, p.id);
 						container.add(pNew);
-					}
-					if(p.x[1] < 0) { //wrap particle around if we are outside the domain
-						p.x[1] = realDomainSize + p.x[1];
-					}
+					//}
+					//if(p.x[1] < 0) { //wrap particle around if we are outside the domain
+					//	p.x[1] = realDomainSize + p.x[1];
+					//}
 					return false;
 				},
 				//x1 = domain[1] boundary
@@ -317,19 +333,16 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[1];
-					if(p.x[1] <= realDomainSize) {
-						zeroVelocity [0] = 0;
-						zeroVelocity [1] = 0;
-						zeroVelocity [2] = 0;
+					//if(p.x[1] <= realDomainSize) {
 						positionInHalo[0] = p.x[0];
 						positionInHalo[1] = p.x[1] - realDomainSize;
 						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, zeroVelocity, p.type, p.id);
+						Particle pNew (positionInHalo, p.v, p.type, p.id);
 						container.add(pNew);
-					}
-					if(p.x[1] > realDomainSize) { //wrap particle around if we are outside the domain
-						p.x[1] = p.x[1] - realDomainSize;
-					}
+					//}
+					//if(p.x[1] > realDomainSize) { //wrap particle around if we are outside the domain
+					//	p.x[1] = p.x[1] - realDomainSize;
+					//}
 
 					return false;
 				},
@@ -338,19 +351,16 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[2];
-					if(p.x[2]>= 0 ) {
-						zeroVelocity [0] = 0;
-						zeroVelocity [1] = 0;
-						zeroVelocity [2] = 0;
+					//if(p.x[2]>= 0 ) {
 						positionInHalo[0] = p.x[0];
 						positionInHalo[1] = p.x[1];
 						positionInHalo[2] = realDomainSize + p.x[2];
-						Particle pNew (positionInHalo, zeroVelocity, p.type, p.id);
+						Particle pNew (positionInHalo, p.v, p.type, p.id);
 						container.add(pNew);
-					}
-					if(p.x[2] < 0) { //wrap particle around if we are outside the domain
-						p.x[2] = realDomainSize + p.x[2];
-					}
+					//}
+					//if(p.x[2] < 0) { //wrap particle around if we are outside the domain
+					//	p.x[2] = realDomainSize + p.x[2];
+					//}
 					return false;
 				},
 				//x2 = domain[2] boundary
@@ -358,26 +368,25 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[2];
-					if(p.x[2]<= realDomainSize ) {
-						zeroVelocity [0] = 0;
-						zeroVelocity [1] = 0;
-						zeroVelocity [2] = 0;
+					//if(p.x[2]<= realDomainSize ) {
 						positionInHalo[0] = p.x[0];
 						positionInHalo[1] = p.x[1];
 						positionInHalo[2] = p.x[2] - realDomainSize;
 	//					std::cout << "Copying Particle to " << positionInHalo[2] << std::endl;
-						Particle pNew (positionInHalo, zeroVelocity, p.type, p.id);
+						Particle pNew (positionInHalo, p.v, p.type, p.id);
 						container.add(pNew);
-					}
-					if(p.x[2] > realDomainSize) { //we have a litte problem around here: particles with x[i] > Settings::domainSize[i] are deleted accoding to the HaloHandler
-						p.x[2] = p.x[2] - realDomainSize;//
-					}
+					//}
+					//if(p.x[2] > realDomainSize) { //we have a litte problem around here: particles with x[i] > Settings::domainSize[i] are deleted accoding to the HaloHandler
+					//	p.x[2] = p.x[2] - realDomainSize;//
+					//}
 					return false;
 
 				} };
 
 SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 	SimulationScenario *scenario = new SimulationScenario;
+
+	scenario->addAdditionalForces = ScenarioFactory::addAdditionalForces;
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON)
 		scenario->updatePosition = ScenarioFactory::verletUpdatePositionThermostate;

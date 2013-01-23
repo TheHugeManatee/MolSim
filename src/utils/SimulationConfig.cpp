@@ -1965,6 +1965,30 @@ cutoffRadius (::std::auto_ptr< CutoffRadiusType > x)
   this->cutoffRadius_.set (x);
 }
 
+const SimulationConfig::LRadiusOptional& SimulationConfig::
+lRadius () const
+{
+  return this->lRadius_;
+}
+
+SimulationConfig::LRadiusOptional& SimulationConfig::
+lRadius ()
+{
+  return this->lRadius_;
+}
+
+void SimulationConfig::
+lRadius (const LRadiusType& x)
+{
+  this->lRadius_.set (x);
+}
+
+void SimulationConfig::
+lRadius (const LRadiusOptional& x)
+{
+  this->lRadius_ = x;
+}
+
 const SimulationConfig::BoundaryHandlingType& SimulationConfig::
 boundaryHandling () const
 {
@@ -2827,11 +2851,11 @@ _xsd_ScenarioType_convert () const
   ::xsd::cxx::tree::enum_comparator< char > c (_xsd_ScenarioType_literals_);
   const Value* i (::std::lower_bound (
                     _xsd_ScenarioType_indexes_,
-                    _xsd_ScenarioType_indexes_ + 3,
+                    _xsd_ScenarioType_indexes_ + 4,
                     *this,
                     c));
 
-  if (i == _xsd_ScenarioType_indexes_ + 3 || _xsd_ScenarioType_literals_[*i] != *this)
+  if (i == _xsd_ScenarioType_indexes_ + 4 || _xsd_ScenarioType_literals_[*i] != *this)
   {
     throw ::xsd::cxx::tree::unexpected_enumerator < char > (*this);
   }
@@ -2840,18 +2864,20 @@ _xsd_ScenarioType_convert () const
 }
 
 const char* const ScenarioType::
-_xsd_ScenarioType_literals_[3] =
+_xsd_ScenarioType_literals_[4] =
 {
   "Gravity",
   "Lennard-Jones",
-  "Membrane"
+  "Membrane",
+  "Lennard-Jones-Smoothed"
 };
 
 const ScenarioType::Value ScenarioType::
-_xsd_ScenarioType_indexes_[3] =
+_xsd_ScenarioType_indexes_[4] =
 {
   ::ScenarioType::Gravity,
   ::ScenarioType::Lennard_Jones,
+  ::ScenarioType::Lennard_Jones_Smoothed,
   ::ScenarioType::Membrane
 };
 
@@ -4904,6 +4930,7 @@ SimulationConfig (const DeltaTType& deltaT,
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
   cutoffRadius_ (cutoffRadius, ::xml_schema::Flags (), this),
+  lRadius_ (::xml_schema::Flags (), this),
   boundaryHandling_ (boundaryHandling, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   gravitation_ (::xml_schema::Flags (), this),
@@ -4945,6 +4972,7 @@ SimulationConfig (const DeltaTType& deltaT,
   scenarioType_ (scenarioType, ::xml_schema::Flags (), this),
   domainSize_ (domainSize, ::xml_schema::Flags (), this),
   cutoffRadius_ (cutoffRadius, ::xml_schema::Flags (), this),
+  lRadius_ (::xml_schema::Flags (), this),
   boundaryHandling_ (boundaryHandling, ::xml_schema::Flags (), this),
   containerType_ (containerType, ::xml_schema::Flags (), this),
   gravitation_ (::xml_schema::Flags (), this),
@@ -4975,6 +5003,7 @@ SimulationConfig (const SimulationConfig& x,
   scenarioType_ (x.scenarioType_, f, this),
   domainSize_ (x.domainSize_, f, this),
   cutoffRadius_ (x.cutoffRadius_, f, this),
+  lRadius_ (x.lRadius_, f, this),
   boundaryHandling_ (x.boundaryHandling_, f, this),
   containerType_ (x.containerType_, f, this),
   gravitation_ (x.gravitation_, f, this),
@@ -5005,6 +5034,7 @@ SimulationConfig (const ::xercesc::DOMElement& e,
   scenarioType_ (f, this),
   domainSize_ (f, this),
   cutoffRadius_ (f, this),
+  lRadius_ (f, this),
   boundaryHandling_ (f, this),
   containerType_ (f, this),
   gravitation_ (f, this),
@@ -5110,6 +5140,17 @@ parse (::xsd::cxx::xml::dom::parser< char >& p,
       if (!cutoffRadius_.present ())
       {
         this->cutoffRadius_.set (r);
+        continue;
+      }
+    }
+
+    // lRadius
+    //
+    if (n.name () == "lRadius" && n.namespace_ ().empty ())
+    {
+      if (!this->lRadius_)
+      {
+        this->lRadius_.set (LRadiusTraits::create (i, f, this));
         continue;
       }
     }

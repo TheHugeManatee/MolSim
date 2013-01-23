@@ -68,6 +68,7 @@ typedef struct {
 	 */
 	std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
 
+	std::function<void (Particle &)> addAdditionalForces;
 
 } SimulationScenario;
 
@@ -148,6 +149,8 @@ public:
 
 
 	static std::function<bool (ParticleContainer &container, Particle &p)> periodicHandlers[6];
+
+	static std::function<void (Particle &p)> addAdditionalForces;
 };
 
 

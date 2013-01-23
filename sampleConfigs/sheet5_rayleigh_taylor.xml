@@ -30,7 +30,7 @@
   <saveLastState></saveLastState> <!--(o) for a given filePath the last state of the particles is saved (can be used as inputFile afterwards) -->
   <inputFile></inputFile> <!-- (o)  -->
   
-  <thermostatSwitch>OFF</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
+  <thermostatSwitch>ON</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
 
   <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
 	<initTemperature>-233.2</initTemperature> <!-- (o) -->

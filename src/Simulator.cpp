@@ -11,6 +11,7 @@
 
 #include "outputWriter/XYZWriter.h"
 #include "outputWriter/VTKWriter.h"
+
 #ifndef NOGLVISUALIZER
 #include "outputWriter/RenderOutputWriter.h"
 #endif
@@ -27,13 +28,17 @@ Simulator::Simulator() {
 	}
 	else {
 		particleContainer = new CellListContainer();
+
+#ifdef _OPENMP
+		queue = new JobQueue((CellListContainer*)particleContainer);
+#endif
 	}
 
 	scenario = ScenarioFactory::build(Settings::scenarioType);
 
 	scenario->setup(*particleContainer);
 
-	particleContainer->afterPositionChanges(scenario->boundaryHandlers, scenario->haloHandler);
+	particleContainer->afterPositionChanges(scenario->boundaryHandlers);
 
 	/* std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
 	for(int i = 0 ; i<6 ; i++){
@@ -66,35 +71,16 @@ Simulator::Simulator() {
 Simulator::~Simulator() {
 	delete particleContainer;
 	delete scenario;
+#ifdef _OPENMP
+	delete queue;
+#endif
 }
 
 
 inline void Simulator::addAdditionalForces(){
 
-	particleContainer->each([&](Particle &p){
-		for(int i = 0 ; i< Settings::forceFields.size() ; i++){
-			if(p.type == Settings::forceFields[i].type()){
-				int nX2 = Settings::particleTypes[p.type].membraneDescriptor.nX2+2;
-				int nX1 = Settings::particleTypes[p.type].membraneDescriptor.nX1+2;
-				int x2 = p.id % nX2 -1;
-				int x1 = (p.id/nX2) % (nX1) -1 ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
-				int x0 = p.id / (nX2*nX1) -1;
-				if(x2 >= Settings::forceFields[i].from().x2() && x1 >= Settings::forceFields[i].from().x1() &&
-					x0 >= Settings::forceFields[i].from().x0() && x2 <= Settings::forceFields[i].to().x2() &&
-					x1 <= Settings::forceFields[i].to().x1() && x0 <= Settings::forceFields[i].to().x0()){
-					p.f[0] = p.f[0] + Settings::forceFields[i].force().x0();
-					p.f[1] = p.f[1] + Settings::forceFields[i].force().x1();
-					p.f[2] = p.f[2] + Settings::forceFields[i].force().x2();
+	particleContainer->each(scenario->addAdditionalForces);
 
-				}
-			}
-		}
-
-		utils::Vector<double, 3> gravitationalForce;
-		gravitationalForce= Settings::particleTypes[p.type].mass * Settings::gravitation;
-		p.f = p.f + gravitationalForce;
-
-	});
 }
 
 
@@ -105,10 +91,13 @@ void Simulator::exportPhaseSpace(void){
 	myfile.open (Settings::lastStateFile);
 	myfile << "# automatically generated file" << std::endl << "0" << std::endl;
 	particleContainer->each([&] (Particle &p){
-
-		myfile << p.toStringForExport();
-		myfile << std::endl;
-
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+		{
+			myfile << p.toStringForExport();
+			myfile << std::endl;
+		}
 	});
 	myfile.close();
 }
@@ -133,7 +122,9 @@ void Simulator::plotParticles(int iteration) {
 	case OutputFileType::vtk:
 		vtkWriter.initializeOutput(particleContainer->getSize());
 		particleContainer->each([&] (Particle& p) {
+#ifdef _OPENMP
 #pragma omp critical (plot_particle)
+#endif
 			vtkWriter.plotParticle(p);
 		});
 		vtkWriter.writeFile(Settings::outputFilePrefix, iteration);
@@ -153,24 +144,37 @@ void Simulator::nextTimeStep() {
 			[] (ParticleContainer &container, Particle &p) {return false;}
 	};
 
+#ifdef _OPENMP
+#pragma omp parallel
+	{
+		Job *job;
+		while( (job = queue->dequeue()) != NULL ) {
+			(*job)((CellListContainer *)particleContainer, scenario);
+
+			job->enqueueDependentJobs(*queue);
+		}
+	}
+
+	queue->resetJobs();
+#else
 	//Calculate all forces
 	particleContainer->eachPair(scenario->calculateForce);
-	addAdditionalForces();
+	particleContainer->each(scenario->addAdditionalForces);
 
-	//clear halo
-	particleContainer->afterPositionChanges(boundaryHandlers, scenario->haloHandler );
+	//update velocity and position
+	particleContainer->each(scenario->updatePosition);
+#endif
+
+	particleContainer->clearHalo();
 
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
 		Thermostat::updateThermostate(particleContainer);
 	}
 
-	// calculate new positions
-    particleContainer->each(scenario->updatePosition);
-
 
 	//rearrange internal particle container structure											/*This move is ugly but necessary for periodic boundary Handling*/
-	particleContainer->afterPositionChanges(scenario->boundaryHandlers, boundaryHandlers[0]);	/*Without it we wouldn't have any way to calculate forces between */
+	particleContainer->afterPositionChanges(scenario->boundaryHandlers);	/*Without it we wouldn't have any way to calculate forces between */
 																								/*two opposite cells*/
 																								/*TODO:Maybe we should separate afterPostionChanges in one method
 																								*applying bounderyHandling an one to apply haloHandling and sort the cells
@@ -178,7 +182,7 @@ void Simulator::nextTimeStep() {
 
 
 	Simulator::iterations++;
-//	LOG4CXX_TRACE(logger,"Iteration number " << Simulator::iterations); //This one is pretty annoying
+	LOG4CXX_TRACE(logger,"Iteration number " << Simulator::iterations); //This one is pretty annoying
 }
 
 

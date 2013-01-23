@@ -17,6 +17,21 @@
 #include <functional>
 
 /**
+ * this macro loops over all pairs of particles in the two containers and applies fn to the pair of them
+ * this is slightly faster than using an inline function
+ * it assumes the variables sc1 and rcSquared are already defined.
+ */
+#define EACHPAIR(fn, c1, c2) {\
+	int sc2 = c2.getSize();	\
+	for(int j = 0; j < sc2; j++) { \
+		for(int i = 0; i < sc1; i++) { \
+			if((c1.particles[i].x -c2.particles[j].x).LengthOptimizedR3Squared()<rcSquared) \
+		fn(c1.particles[i], c2.particles[j]); \
+		}\
+	}\
+}
+
+/**
  * @class CellListContainer
  *
  * This class implements a particle container that manages its particles by putting them into a regular grid of cells, each cell
@@ -34,9 +49,14 @@
  */
 class CellListContainer: public ParticleContainer {
 	friend class CellListContainerTest;
+	friend class Job;
+	friend class JobQueue;
+	friend class SliceJobX0;
+	friend class BlockJobX0;
 
 private:
 	static log4cxx::LoggerPtr logger;
+	std::vector<ParticleContainer *> haloCells;
 
 protected:
 	/**
@@ -112,9 +132,7 @@ public:
 	virtual ~CellListContainer();
 
 	void afterPositionChanges(
-			std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6],
-			std::function<bool (ParticleContainer &container, Particle &)> haloHandler
-	);
+			std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6]);
 
     void each(std::function<void (Particle&)> fn);
 
@@ -127,6 +145,8 @@ public:
     void eachPair(std::function<void (Particle&, Particle&)> fn);
     void add(Particle& p);
     int getSize();
+
+    void clearHalo();
 
 };
 

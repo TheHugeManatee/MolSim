@@ -16,6 +16,7 @@
 #include "ParticleContainer.h"
 #include "ScenarioFactory.h"
 #include "utils/Thermostat.h"
+#include "JobQueue.h"
 #include <log4cxx/logger.h>
 
 class Simulator {
@@ -23,6 +24,9 @@ private:
 
 	SimulationScenario *scenario;
 	ParticleContainer *particleContainer;
+#ifdef _OPENMP
+	JobQueue *queue;
+#endif
 
 public:
 	Simulator();

@@ -11,9 +11,9 @@
   <cutoffRadius scaled="1" radius="3.0"/>
 
   <boundaryHandling
-  	top="Reflect" bottom="Reflect"
-  	left="Reflect" right="Reflect"
-  	front="Reflect" back="Reflect"
+  	top="Periodic" bottom="Periodic"
+  	left="Periodic" right="Periodic"
+  	front="Periodic" back="Periodic"
   />
   
   <containerType>CellListContainer</containerType>
@@ -54,7 +54,7 @@
       <radius>8</radius>
       <stepWidth>1.1225</stepWidth>
       <type>1</type>
-      <initialVelocity x0="0" x1="0" x2="-4.5"/>
+      <initialVelocity x0="-10" x1="0" x2="-4.5"/>
 	</sphere>
 	
 

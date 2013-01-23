@@ -26,11 +26,12 @@ SOURCES=\
 	src/utils/SimulationConfig.cpp\
 	src/outputWriter/RenderOutputWriter.cpp\
 	src/utils/Thermostat.cpp\
-	src/utils/Matrix.cpp
+	src/utils/Matrix.cpp\
+	src/JobQueue.cpp
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp -DFOR_PARALLEL
+CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp
 
 # Linker flags
 # ------------

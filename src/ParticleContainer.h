@@ -23,6 +23,10 @@
 
 class ParticleContainer {
 	friend class CellListContainer;
+	friend class Job;
+	friend class SliceJobX0;
+	friend class BlockJobX0;
+
 
     protected:
         std::vector<Particle> particles;
@@ -84,11 +88,11 @@ class ParticleContainer {
          *  	so make sure this will not be a problem
          */
         virtual void afterPositionChanges(
-        			std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6],
-        			std::function<bool (ParticleContainer &container, Particle &p)> haloHandler
-        ) {
+        			std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6]) {
 
         };
+
+        virtual void clearHalo();
 };
 
 #endif

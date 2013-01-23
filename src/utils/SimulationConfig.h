@@ -1655,7 +1655,8 @@ class ScenarioType: public ::xml_schema::String
   {
     Gravity,
     Lennard_Jones,
-    Membrane
+    Membrane,
+    Lennard_Jones_Smoothed
   };
 
   /**
@@ -1780,8 +1781,8 @@ class ScenarioType: public ::xml_schema::String
   _xsd_ScenarioType_convert () const;
 
   public:
-  static const char* const _xsd_ScenarioType_literals_[3];
-  static const Value _xsd_ScenarioType_indexes_[3];
+  static const char* const _xsd_ScenarioType_literals_[4];
+  static const Value _xsd_ScenarioType_indexes_[4];
 
   //@endcond
 };
@@ -6890,6 +6891,71 @@ class SimulationConfig: public ::xml_schema::Type
   //@}
 
   /**
+   * @name lRadius
+   *
+   * @brief Accessor and modifier functions for the %lRadius
+   * optional element.
+   */
+  //@{
+
+  /**
+   * @brief Element type.
+   */
+  typedef ::xml_schema::Double LRadiusType;
+
+  /**
+   * @brief Element optional container type.
+   */
+  typedef ::xsd::cxx::tree::optional< LRadiusType > LRadiusOptional;
+
+  /**
+   * @brief Element traits type.
+   */
+  typedef ::xsd::cxx::tree::traits< LRadiusType, char, ::xsd::cxx::tree::schema_type::double_ > LRadiusTraits;
+
+  /**
+   * @brief Return a read-only (constant) reference to the element
+   * container.
+   *
+   * @return A constant reference to the optional container.
+   */
+  const LRadiusOptional&
+  lRadius () const;
+
+  /**
+   * @brief Return a read-write reference to the element container.
+   *
+   * @return A reference to the optional container.
+   */
+  LRadiusOptional&
+  lRadius ();
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x A new value to set.
+   *
+   * This function makes a copy of its argument and sets it as
+   * the new value of the element.
+   */
+  void
+  lRadius (const LRadiusType& x);
+
+  /**
+   * @brief Set the element value.
+   *
+   * @param x An optional container with the new value to set.
+   *
+   * If the value is present in @a x then this function makes a copy 
+   * of this value and sets it as the new value of the element.
+   * Otherwise the element container is set the 'not present' state.
+   */
+  void
+  lRadius (const LRadiusOptional& x);
+
+  //@}
+
+  /**
    * @name boundaryHandling
    *
    * @brief Accessor and modifier functions for the %boundaryHandling
@@ -8010,6 +8076,7 @@ class SimulationConfig: public ::xml_schema::Type
   ::xsd::cxx::tree::one< ScenarioTypeType > scenarioType_;
   ::xsd::cxx::tree::one< DomainSizeType > domainSize_;
   ::xsd::cxx::tree::one< CutoffRadiusType > cutoffRadius_;
+  LRadiusOptional lRadius_;
   ::xsd::cxx::tree::one< BoundaryHandlingType > boundaryHandling_;
   ::xsd::cxx::tree::one< ContainerTypeType > containerType_;
   GravitationOptional gravitation_;

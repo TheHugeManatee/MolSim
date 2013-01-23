@@ -8,6 +8,7 @@
 #include "CellListContainer.h"
 
 #include "utils/Settings.h"
+#include "JobQueue.h"
 
 #include <cassert>
 #include <algorithm>
@@ -26,11 +27,11 @@ CellListContainer::CellListContainer() {
 	nX0 = std::ceil(Settings::domainSize[0] / Settings::rCutoff) + 4;
 	nX1 = std::ceil(Settings::domainSize[1] / Settings::rCutoff) + 4;
 	nX2 = std::ceil(Settings::domainSize[2] / Settings::rCutoff) + 4;
-	std::cout << "." << std::endl;
+
 	edgeLength[0] = Settings::domainSize[0] / (nX0-4);
 	edgeLength[1] = Settings::domainSize[1] / (nX1-4);
 	edgeLength[2] = Settings::domainSize[2] / (nX2-4);
-	std::cout << "." << std::endl;
+
 	size_ = 0;
 
 	LOG4CXX_DEBUG(logger, "Simulation domain will be divided into " << nX0 << "x" << nX1 << "x" << nX2 << " cells");
@@ -40,6 +41,17 @@ CellListContainer::CellListContainer() {
 	//create all the cells
 	cells.resize(nX0*nX1*nX2);
 
+	haloCells.reserve(2*((nX0-2)*(nX1-2) + (nX0-2)*(nX2-2) + (nX1-2)*(nX2-2)));
+
+	std::cout << "Halo cells size: " << haloCells.size();
+
+	for(int x0=1; x0 < nX0-1; x0++)
+		for(int x1=1; x1 < nX1-1; x1++)
+			for(int x2=1; x2 < nX2-1; x2++) {
+				if(isHaloCell(x0, x1, x2)) {
+					haloCells.push_back(&cells[x2 + x1*nX2 + x0*nX2*nX1]);
+				}
+			}
 }
 
 CellListContainer::~CellListContainer() {
@@ -66,17 +78,9 @@ ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
 		x2 = (p.x[2]) / edgeLength[2] + 2;
 
 	//crop the indices to the halo layer
-	if(p.x[0] > Settings::domainSize[0])
-		x0 = nX0 - 2;
-	else x0 = std::min(nX0 - 2, std::max(1, x0));
-
-	if(p.x[1] > Settings::domainSize[1])
-		x1 = nX1 - 2;
-	else x1 = std::min(nX1 - 2, std::max(1, x1));
-
-	if(p.x[2] > Settings::domainSize[2])
-		x2 = nX2 - 2;
-	else x2 = std::min(nX2 - 2, std::max(1, x2));
+	x0 = std::min(nX0 - 2, std::max(1, x0));
+	x1 = std::min(nX1 - 2, std::max(1, x1));
+	x2 = std::min(nX2 - 2, std::max(1, x2));
 
 //	std::cout << "Added Particle to Layer: " << x0 <<" " << x1 << " "<< x2  << std::endl;
 
@@ -94,9 +98,10 @@ void CellListContainer::add(Particle & p) {
 
 void CellListContainer::each(std::function<void (Particle &)> fn) {
 	int s = cells.size();
-
+#ifdef _OPENMP
 #ifdef FOR_PARALLEL
 #pragma omp parallel for
+#endif
 #endif
 	for(int x0=2; x0 < nX0-2; x0++)
 		for(int x1=2; x1 < nX1-2; x1++)
@@ -123,12 +128,13 @@ void CellListContainer::each(std::function<void (Particle &)> fn) {
 		}\
 	}\
 }
-#include <omp.h>
-#include <stdio.h>
+
 void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn) {
 	double rcSquared = Settings::rCutoff*Settings::rCutoff;
+#ifdef _OPENMP
 #ifdef FOR_PARALLEL
 #pragma omp parallel for
+#endif
 #endif
 	for(int x0=1; x0 < nX0-1; x0++) {
 		//printf("%i %i\n", tid, x0);
@@ -165,13 +171,14 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 }
 
 void CellListContainer::afterPositionChanges(
-		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6],
-		std::function<bool (ParticleContainer &container, Particle &)> haloHandler) {
+		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6]) {
 	int cellcount = cells.size();
-
-	for(int x0=1; x0 < nX0-1; x0++)
-		for(int x1=1; x1 < nX1-1; x1++)
-			for(int x2=1; x2 < nX2-1; x2++) {
+#ifdef _OPENMP
+//#pragma omp parallel for
+#endif
+	for(int x0=2; x0 < nX0-2; x0++)
+		for(int x1=2; x1 < nX1-2; x1++)
+			for(int x2=2; x2 < nX2-2; x2++) {
 				ParticleContainer &c = cells[x2 + x1*nX2 + x0*nX2*nX1];
 				int cellParticleCount = c.particles.size();
 				for(int i = 0; i < cellParticleCount; i++) {
@@ -180,21 +187,13 @@ void CellListContainer::afterPositionChanges(
 
 					bool particleToBeRemoved = false;
 
-					//if the halo handler or the boundary handler say the particle should be removed, kill it
-
-					if(isHaloCell(x0, x1, x2)) {
-						particleToBeRemoved = haloHandler(*this, p);
-					}
-
 					//Check for all boundaries
-					else {
-						if(x0 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[0](*this, p);
-						if(x0 == (nX0 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[1](*this, p);
-						if(x1 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[2](*this, p);
-						if(x1 == (nX1 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[3](*this, p);
-						if(x2 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
-						if(x2 == (nX2 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
-					}
+					if(x0 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[0](*this, p);
+					if(x0 == (nX0 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[1](*this, p);
+					if(x1 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[2](*this, p);
+					if(x1 == (nX1 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[3](*this, p);
+					if(x2 == 2) 			particleToBeRemoved = particleToBeRemoved || boundaryHandlers[4](*this, p);
+					if(x2 == (nX2 - 3)) 	particleToBeRemoved = particleToBeRemoved || boundaryHandlers[5](*this, p);
 
 					//if particle is not deleted, check if it should be in some different cell than it is now
 					if(!particleToBeRemoved) {
@@ -253,4 +252,9 @@ inline int CellListContainer::getSize() {
 	return size;
 }
 
-
+void CellListContainer::clearHalo() {
+	int s = haloCells.size();
+	for(int i=0; i < s; i++) {
+		haloCells[i]->particles.clear();
+	}
+}

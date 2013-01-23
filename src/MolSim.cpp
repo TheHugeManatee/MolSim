@@ -104,7 +104,9 @@
 #include <log4cxx/basicconfigurator.h>
 #include <log4cxx/propertyconfigurator.h>
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include "UnitTests/ParticleContainerTests.h"
 #include "UnitTests/ParticleGeneratorTests.h"
@@ -112,6 +114,12 @@
 
 #include "utils/Settings.h"
 #include "Simulator.h"
+
+#ifndef NOGLVISUALIZER
+namespace outputWriter {
+extern std::vector<Particle> render3dParticles;
+}
+#endif
 
 //Forward declarations
 int executeTests();
@@ -172,6 +180,7 @@ int main(int argc, char* argsv[]) {
 
 	LOG4CXX_TRACE(rootLogger, "Settings initialized!");
 
+#ifdef _OPENMP
 	if(Settings::numThreads > 0) {
 		LOG4CXX_INFO(rootLogger, "Setting OpenMP Threads to " << Settings::numThreads);
 		omp_set_num_threads(Settings::numThreads);
@@ -179,6 +188,9 @@ int main(int argc, char* argsv[]) {
 	else {
 		LOG4CXX_INFO(rootLogger, "Running on " << omp_get_max_threads() << " threads");
 	}
+#else
+	LOG4CXX_INFO(rootLogger, "Running serial version!");
+#endif
 
 	//Check if we should be executing some unit tests
 	if(!Settings::testCase.empty()) {
@@ -250,8 +262,12 @@ int main(int argc, char* argsv[]) {
 
 	//10 is arbitrarily chosen. there will always be some stray particles because of
 	//static instances that will be destroyed at program exit
+#ifndef NOGLVISUALIZER
+	if(Particle::createdInstances - Particle::destroyedInstances - outputWriter::render3dParticles.size() > 10) {
+#else
 	if(Particle::createdInstances - Particle::destroyedInstances > 10) {
-		LOG4CXX_WARN(rootLogger, "Significant mismatch between created and destroyed particle instances. This can be a memory leak!" << (Particle::createdInstances - Particle::destroyedInstances));
+#endif
+		LOG4CXX_WARN(rootLogger, "Significant mismatch between created and destroyed particle instances. This can be a memory leak! " << (Particle::createdInstances - Particle::destroyedInstances));
 	}
 
 	LOG4CXX_DEBUG(rootLogger, "output written. Terminating...");

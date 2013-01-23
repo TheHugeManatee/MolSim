@@ -261,24 +261,33 @@ static void display(void)
 			glPopMatrix();
 		}
 		//draw springs
-		glDisable(GL_LIGHTING);
-		glBegin(GL_LINES);
-		for(int i=0; i < render3dParticles.size(); i++) {
-			glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
-			for(int j = i + 1; j < s; j++) {
-				if(	Settings::particleTypes[render3dParticles[i].type].isMolecule &&
-					render3dParticles[i].type == render3dParticles[j].type && (
-						render3dParticles[i].isNeighbour(render3dParticles[j])
-						|| render3dParticles[i].isFaceDiagonal(render3dParticles[j])
-						|| render3dParticles[i].isSpaceDiagonal(render3dParticles[j])
-					)) {
+		if(Settings::scenarioType == ScenarioType::Membrane) {
+			glDisable(GL_LIGHTING);
+			glBegin(GL_LINES);
+			for(int i=0; i < render3dParticles.size(); i++) {
+				//glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
+				glColor3d(0.7, 0.7, 0.7);
+				for(int j = i + 1; j < s; j++) {
+					if(	Settings::particleTypes[render3dParticles[i].type].isMolecule &&
+						render3dParticles[i].type == render3dParticles[j].type && (
+							render3dParticles[i].isNeighbour(render3dParticles[j])
+							|| render3dParticles[i].isFaceDiagonal(render3dParticles[j])
+							|| render3dParticles[i].isSpaceDiagonal(render3dParticles[j])
+						)) {
 
-					glVertex3dv(&render3dParticles[i].x[0]);
-					glVertex3dv(&render3dParticles[j].x[0]);
-				}
+						if((render3dParticles[i].x - render3dParticles[j].x).LengthOptimizedR3Squared() <= Settings::rCutoff*Settings::rCutoff) {
+
+							glVertex3dv(&render3dParticles[i].x[0]);
+							glVertex3dv(&render3dParticles[j].x[0]);
+						}
+						//else
+						//	glColor3d(0.6, 0.6, 0.6);
+
+					}
+			}
+			}
+			glEnd();
 		}
-		}
-		glEnd();
 		glEndList();
 		//reset the flag
 		recompileRequested = false;
@@ -291,7 +300,7 @@ static void display(void)
 
 	glColor3d(0.1,0.1,0.4);
 #ifndef NOFREEGLUT
-	shapesPrintf(1, 3, "%i articles", render3dParticles.size());
+	shapesPrintf(1, 3, "%i particles", render3dParticles.size());
 	shapesPrintf(2, 3, "Iteration %i", currentIteration);
 	shapesPrintf(3, 3, "Time %f", currentIteration*Settings::deltaT);
 #endif
@@ -540,7 +549,9 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 	int i = 0;
 	//copy particle data over
 	container.each([&] (Particle &p) {
+#ifdef _OPENMP
 #pragma omp critical
+#endif
 		render3dParticles[i++] = p;
 	});
 	//signal the rendering thread to recompile display list and redraw buffer
