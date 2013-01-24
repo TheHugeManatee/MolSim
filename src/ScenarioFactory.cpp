@@ -132,25 +132,22 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 	//double norm = xDif.L2Norm();
 	double normSquared = xDif.LengthOptimizedR3Squared();
 	double sigmaNormalizedSquared = sigma*sigma/normSquared;
-	double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
-	double norm = sqrt(normSquared);
+	double sigmaNormalizedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
+	double radDif = Settings::rCutoff - Settings::rl;
 	utils::Vector<double, 3> resultForce;
-	resultForce = 0 ;
+	double norm = sqrt(normSquared);
 	if(norm < Settings::rCutoff){
-		utils::Vector<double, 3> lennardJonesForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+		utils::Vector<double, 3> lennardJonesForce = (24*epsilon/ normSquared) * ((sigmaNormalizedRaisedBySix) - 2 * (sigmaNormalizedRaisedBySix * sigmaNormalizedRaisedBySix))*xDif;
 		if(norm > Settings::rl){
-		double lennardJonesPotential = 4*epsilon* ((sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix) - (sigmaNormailzedRaisedBySix ));
-		utils::Vector<double, 3> smoothingForce = 2 * xDif * ((Settings::rCutoff - norm) * (4 * Settings::rCutoff - Settings::rl - 3 * norm)/( norm * (Settings::rCutoff - Settings::rl) *(Settings::rCutoff - Settings::rl)));
-		double smoothing = 1- (norm -Settings::rl) * (norm -Settings::rl) * ( 3 * Settings::rCutoff - Settings::rl -2 * norm ) / (Settings::rCutoff - Settings::rl) * (Settings::rCutoff - Settings::rl) * (Settings::rCutoff - Settings::rl);
-
-		resultForce = - lennardJonesPotential * smoothingForce - lennardJonesForce * smoothing;
+		double lennardJonesPotential = 4*epsilon* ((sigmaNormalizedRaisedBySix * sigmaNormalizedRaisedBySix) - (sigmaNormalizedRaisedBySix ));
+		utils::Vector<double, 3> smoothingForce = 2 / (radDif) * xDif * (-radDif + radDif * Settings::rl / norm + 3 * norm - 4 * Settings::rl - Settings::rl * Settings::rl / norm);
+		double smoothing = 1- (norm -Settings::rl) * (norm -Settings::rl) * ( 3 * Settings::rCutoff - Settings::rl - 2 * norm ) / ((radDif) * (radDif) * (radDif));
+		resultForce =  lennardJonesPotential * smoothingForce - lennardJonesForce * smoothing;
 		}else{
-			utils::Vector<double, 3> resultForce = lennardJonesForce;
+		resultForce = lennardJonesForce;
 		}
 	}
-
 	p1.f = p1.f + resultForce;
-
 	//resultForce = resultForce * -1;
 	p2.f = p2.f - resultForce;
 };
