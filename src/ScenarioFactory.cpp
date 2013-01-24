@@ -102,15 +102,26 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJones
 			utils::Vector<double, 3> xDif = p2.x - p1.x;
 			double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
 			double sigma = (Settings::particleTypes[p1.type].sigma + Settings::particleTypes[p2.type].sigma) / 2;
-			//double norm = xDif.L2Norm();
+
 			double normSquared = xDif.LengthOptimizedR3Squared();
 			double sigmaNormalizedSquared = sigma*sigma/normSquared;
 			double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
-			utils::Vector<double, 3> resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
-			p1.f = p1.f + resultForce;
+
+			double magnitude = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix));
+
+			//utils::Vector<double, 3> resultForce = magnitude*xDif;
+
+
+			//p1.f = p1.f + resultForce;
+			p1.f[0] += magnitude * xDif[0];
+			p1.f[1] += magnitude * xDif[1];
+			p1.f[2] += magnitude * xDif[2];
 
 			//resultForce = resultForce * -1;
-			p2.f = p2.f - resultForce;
+			//p2.f = p2.f - resultForce;
+			p2.f[0] -= magnitude * xDif[0];
+			p2.f[1] -= magnitude * xDif[1];
+			p2.f[2] -= magnitude * xDif[2];
 		};
 
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
@@ -162,26 +173,12 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 			double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
 
 			utils::Vector<double, 3> resultForce;
-			resultForce = 0;
+			double forceMagnitude = 0;
 
 			if(Settings::particleTypes[p1.type].isMolecule && (p1.type == p2.type) && (p1.type != -1)) {
-				//std::cout << "Particles in the same membrane" << std::endl;
+
 				double F = 0, norm = 1;
-				//std::cout << "Id1:" << p1.id << "Id2:"<< p2.id << std::endl;
-				/****** BRANCHING WITH INLINE  ****** /if(p1.isNeighbour(p2)) {
-					norm = sqrt(normSquared);
-					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness * (norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength);
-					//std::cout << "1:" << F << std::endl;
-				} else if(p1.isFaceDiagonal(p2)) {
-					norm = sqrt(normSquared);
-					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*SQRTTWO);
-					//std::cout << "2:" << F << std::endl;
-				} else if(p1.isSpaceDiagonal(p2)) {
-					norm = sqrt(normSquared);
-					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*SQRTTHREE);
-					//std::cout << "3:" << F << std::endl;
-				}/**/
-				/****** BRANCHING WITH MACROS ******/
+
 				int b = Settings::particleTypes[p1.type].membraneDescriptor.nX2 +2;
 				int l = Settings::particleTypes[p1.type].membraneDescriptor.nX1 +2;
 				if(FACEDIAG(p1.id, p2.id, b, l)) {
@@ -198,46 +195,26 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 					//std::cout << "3:" << F << std::endl;
 				}
 
-				/****** BRANCHLESS WITH INLINE ****** /
-				double k = p1.isNeighbour(p2) * 1 + p1.isFaceDiagonal(p2) * SQRTTWO + p1.isSpaceDiagonal(p2) * SQRTTHREE;
-				if(k) {
-					norm = sqrt(normSquared);
-					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*k);
-				}/**/
-				/****** BRANCHLESS WITH MACROS ******* /
-				int b = Settings::particleTypes[p1.type].membraneDescriptor.nX2 +2;
-				int l = Settings::particleTypes[p1.type].membraneDescriptor.nX1 +2;
-				double k = NEIGHBOR(p1.id, p2.id, b, l) + FACEDIAG(p1.id, p2.id, b, l) * SQRTTWO + SPACEDIAG(p1.id, p2.id, b, l) * SQRTTHREE;
-
-				if(k) {
-					norm = sqrt(normSquared);
-					F = Settings::particleTypes[p1.type].membraneDescriptor.stiffness *(norm - Settings::particleTypes[p1.type].membraneDescriptor.averageBondLength*k);
-				}/**/
-
-				double a = F / norm;
-				//std::cout << a << std::endl;
-				resultForce = xDif * a;
+				forceMagnitude += F / norm;
 
 				if(normSquared < TWORAISED1_6 * sigma * TWORAISED1_6 * sigma) { //use repulsing part of LJ-Potential
-					resultForce = resultForce + (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
+					forceMagnitude = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix));
 				}
 
-				p1.f = p1.f + resultForce;
 
-				//resultForce = resultForce * -1;
-				p2.f = p2.f - resultForce;
 			} else {
-				resultForce = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix))*xDif;
-				p1.f = p1.f + resultForce;
-
-				//resultForce = resultForce * -1;
-				p2.f = p2.f - resultForce;
+				forceMagnitude = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix));
 			}
 
-			//assert(p1.f[0] < 1000);
-			//assert(p1.f[1] < 1000);
-			//assert(p1.f[2] < 1000);
+			resultForce = forceMagnitude * xDif;
 
+			p1.f[0] += resultForce[0];
+			p1.f[1] += resultForce[1];
+			p1.f[2] += resultForce[2];
+
+			p2.f[0] -= resultForce[0];
+			p2.f[1] -= resultForce[1];
+			p2.f[2] -= resultForce[2];
 	};
 
 
@@ -281,16 +258,13 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[0];
-					//if(p.x[0] >= 0) {
-						positionInHalo[0] = realDomainSize + p.x[0];
-						positionInHalo[1] = p.x[1];
-						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, p.v, p.type, p.id);
-						container.add(pNew);
-					//}
-					//if(p.x[0] < 0) { //wrap particle around if we are outside the domain
-					//	p.x[0] = realDomainSize + p.x[0];
-					//}
+
+					positionInHalo[0] = realDomainSize + p.x[0];
+					positionInHalo[1] = p.x[1];
+					positionInHalo[2] = p.x[2];
+					Particle pNew (positionInHalo, p.v, p.type, p.id);
+					container.add(pNew);
+
 					return false;
 
 				},
@@ -299,16 +273,13 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[0];
-					//if(p.x[0] <= realDomainSize) {
-						positionInHalo[0] = p.x[0] - realDomainSize;
-						positionInHalo[1] = p.x[1];
-						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, p.v, p.type, p.id);
-						container.add(pNew);
-					//}
-					//if(p.x[0] > realDomainSize) { //wrap particle around if we are outside the domain
-					//	p.x[0] = p.x[0] - realDomainSize;
-					//}
+
+					positionInHalo[0] = p.x[0] - realDomainSize;
+					positionInHalo[1] = p.x[1];
+					positionInHalo[2] = p.x[2];
+					Particle pNew (positionInHalo, p.v, p.type, p.id);
+					container.add(pNew);
+
 					return false;
 				},
 				//x1 = 0 boundary
@@ -316,16 +287,13 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[1];
-					//if(p.x[1] >= 0) {
-						positionInHalo[0] = p.x[0];
-						positionInHalo[1] = p.x[1] + realDomainSize;
-						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, p.v, p.type, p.id);
-						container.add(pNew);
-					//}
-					//if(p.x[1] < 0) { //wrap particle around if we are outside the domain
-					//	p.x[1] = realDomainSize + p.x[1];
-					//}
+
+					positionInHalo[0] = p.x[0];
+					positionInHalo[1] = p.x[1] + realDomainSize;
+					positionInHalo[2] = p.x[2];
+					Particle pNew (positionInHalo, p.v, p.type, p.id);
+					container.add(pNew);
+
 					return false;
 				},
 				//x1 = domain[1] boundary
@@ -333,16 +301,12 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[1];
-					//if(p.x[1] <= realDomainSize) {
-						positionInHalo[0] = p.x[0];
-						positionInHalo[1] = p.x[1] - realDomainSize;
-						positionInHalo[2] = p.x[2];
-						Particle pNew (positionInHalo, p.v, p.type, p.id);
-						container.add(pNew);
-					//}
-					//if(p.x[1] > realDomainSize) { //wrap particle around if we are outside the domain
-					//	p.x[1] = p.x[1] - realDomainSize;
-					//}
+
+					positionInHalo[0] = p.x[0];
+					positionInHalo[1] = p.x[1] - realDomainSize;
+					positionInHalo[2] = p.x[2];
+					Particle pNew (positionInHalo, p.v, p.type, p.id);
+					container.add(pNew);
 
 					return false;
 				},
@@ -351,36 +315,28 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
 					double realDomainSize = Settings::domainSize[2];
-					//if(p.x[2]>= 0 ) {
-						positionInHalo[0] = p.x[0];
-						positionInHalo[1] = p.x[1];
-						positionInHalo[2] = realDomainSize + p.x[2];
-						Particle pNew (positionInHalo, p.v, p.type, p.id);
-						container.add(pNew);
-					//}
-					//if(p.x[2] < 0) { //wrap particle around if we are outside the domain
-					//	p.x[2] = realDomainSize + p.x[2];
-					//}
+
+					positionInHalo[0] = p.x[0];
+					positionInHalo[1] = p.x[1];
+					positionInHalo[2] = realDomainSize + p.x[2];
+					Particle pNew (positionInHalo, p.v, p.type, p.id);
+					container.add(pNew);
+
 					return false;
 				},
 				//x2 = domain[2] boundary
 				[] (ParticleContainer &container, Particle &p) {
 					utils::Vector <double ,3> positionInHalo;
 					utils::Vector <double, 3> zeroVelocity;
-					double realDomainSize = Settings::domainSize[2];
-					//if(p.x[2]<= realDomainSize ) {
-						positionInHalo[0] = p.x[0];
-						positionInHalo[1] = p.x[1];
-						positionInHalo[2] = p.x[2] - realDomainSize;
-	//					std::cout << "Copying Particle to " << positionInHalo[2] << std::endl;
-						Particle pNew (positionInHalo, p.v, p.type, p.id);
-						container.add(pNew);
-					//}
-					//if(p.x[2] > realDomainSize) { //we have a litte problem around here: particles with x[i] > Settings::domainSize[i] are deleted accoding to the HaloHandler
-					//	p.x[2] = p.x[2] - realDomainSize;//
-					//}
-					return false;
 
+					double realDomainSize = Settings::domainSize[2];
+					positionInHalo[0] = p.x[0];
+					positionInHalo[1] = p.x[1];
+					positionInHalo[2] = p.x[2] - realDomainSize;
+					Particle pNew (positionInHalo, p.v, p.type, p.id);
+					container.add(pNew);
+
+					return false;
 				} };
 
 SimulationScenario *ScenarioFactory::build(ScenarioType type) {
@@ -394,7 +350,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
 
 	if (type == ScenarioType::Gravity) {
-		//Simple gravity simulation with gravitational constant g = 1
+
 		scenario->calculateForce = ScenarioFactory::calculateGravityForce;
 
 		scenario->setup = ScenarioFactory::basicFileReaderSetup;
@@ -426,14 +382,6 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 		LOG4CXX_FATAL(logger, "Unknown Simulation type!");
 		exit(-1);
 	}
-
-	//For now, the halo handler always deletes the particles
-	//TODO: make HaloHandling chooseable by Halo position equally to boundaryHandling
-	//Needed for a periodic Boundary Handling
-	//
-	scenario->haloHandler = [] (ParticleContainer &container, Particle &p) {
-		return true; //delete all halo particles
-	};
 
 	//these are the boundary handlers for the reflect condition
 	//this is ugly but they have to be defined here so we can capture

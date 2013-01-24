@@ -137,7 +137,6 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 #endif
 #endif
 	for(int x0=1; x0 < nX0-1; x0++) {
-		//printf("%i %i\n", tid, x0);
 		for(int x1=1; x1 < nX1-1; x1++) {
 			for(int x2=1; x2 < nX2-1; x2++) {
 				int cid = x2 + x1*nX2 + x0*nX2*nX1;
@@ -174,7 +173,7 @@ void CellListContainer::afterPositionChanges(
 		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6]) {
 	int cellcount = cells.size();
 #ifdef _OPENMP
-//#pragma omp parallel for
+#pragma omp parallel for
 #endif
 	for(int x0=2; x0 < nX0-2; x0++)
 		for(int x1=2; x1 < nX1-2; x1++)
@@ -220,9 +219,7 @@ void CellListContainer::afterPositionChanges(
 					}
 				}
 	}
-	//LOG4CXX_TRACE(logger, "Cell switches: " << cellSwitches);
-	//LOG4CXX_TRACE(logger, "Particles Left: " << getSize());
-	//LOG4CXX_TRACE(logger, "Empty cells: " << emptyCells);
+
 }
 
 

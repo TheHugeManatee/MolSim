@@ -13,7 +13,9 @@ doxy/
 *.stackdump
 doxys_documentation/
 src/utils/simulationConfig.h
+src/utils/SimulationConfig.h
 src/utils/simulationConfig.cpp
+src/utils/SimulationConfig.cpp
 src/outputWriter/vtk-unstructured.cpp
 src/outputWriter/vtk-unstructured.h
 Default/

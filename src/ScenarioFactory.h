@@ -57,9 +57,6 @@ typedef struct {
 	 */
 	std::function<void (ParticleContainer& container)> setup;
 
-
-	std::function<bool (ParticleContainer &container, Particle & p)> haloHandler;
-
 	/**
 	 * the boundary handlers for each boundary:
 	 * indices are used as boundaryHandlers[axis + (inPositiveDirection?0:1)]
