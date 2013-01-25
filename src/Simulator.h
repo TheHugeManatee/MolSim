@@ -16,6 +16,7 @@
 #include "ParticleContainer.h"
 #include "ScenarioFactory.h"
 #include "utils/Thermostat.h"
+#include "utils/ThermostatDiscrete.h"
 #include "JobQueue.h"
 #include <log4cxx/logger.h>
 
@@ -34,6 +35,8 @@ public:
 	static log4cxx::LoggerPtr logger;
 
 	void exportPhaseSpace(void);
+
+
 
 
 	/* processed iterations*/

@@ -20,10 +20,8 @@ private:
 
 	static void getStepEnergy();
 	static void initTargetEnergy();
-	static void calculateCurrentEnergy(ParticleContainer* particles);
 	static void iterateBeta();
-	static void setCurrentTemperature(ParticleContainer* particles);
-
+	static void calculateCurrentEnergy(ParticleContainer* particles);
 
 	static double targetEnergy;
 	static double energyPerStep;
@@ -39,6 +37,7 @@ public:
 
 	static void updateThermostate(ParticleContainer *particles);
 	static void scaleInitialVelocity(ParticleContainer *particles);
+	static void setCurrentTemperature(ParticleContainer* particles);
 
 	static double currentEnergy;
 	static double currentTemperature;

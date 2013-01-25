@@ -226,26 +226,19 @@ int main(int argc, char* argsv[]) {
 		if (iteration % Settings::outputFrequency == 0) {
 			sim->plotParticles(iteration + Settings::outputFileIterationOffset);
 		}
-
 		sim->nextTimeStep();
-
 		iteration++;
-		
 		if(iteration == nextProgressBarDraw) {
 			nextProgressBarDraw+=iterationsPerPercent;
 			printProgressBar(100*iteration/maxIterations, -(benchmarkStartTime - getMilliCount()));
 		}
-
 		LOG4CXX_TRACE(rootLogger, "Iteration " << iteration << " finished.");
-
 		current_time += Settings::deltaT;
-
 		timeForOneIteration = ((double)(benchmarkStartTime - getMilliCount()))/iteration;
 		//if(iteration % 100 == 0)
 		//std::cout << "timeforoneiteration: " << timeForOneIteration<<std::endl;
 	}
 
-	std::cout << std::endl;
 
 	int benchmarkEndTime = getMilliCount();
 
@@ -324,8 +317,8 @@ void initializeLogger() {
 void printProgressBar(int percentage, int elapsed){
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
 	std::cout <<"[";
-	std::cout << floor(Thermostat::currentTemperature);
-	std::cout << " C";
+	std::cout << floor(ThermostatDiscrete::currentTemperature * 10000)/10000.0;
+	std::cout << " K";
 	std::cout <<"]";
 	}
 	std::cout << "[";

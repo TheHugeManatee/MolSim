@@ -102,6 +102,23 @@ void Simulator::exportPhaseSpace(void){
 	myfile.close();
 }
 
+void Simulator::printDiffusion(){
+	std::ostream myfile;
+	myfile.open("Diffusion.csv");
+	double diffusion = 0;
+
+	particleContainer->each([&] (Particle &p)){
+		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared();
+	}
+
+	int num = particleContainer->getSize();
+	diffusion = diffusion / num ;
+	myfile << diffusion  << std::endl;
+	myfile.close();
+}
+
+void Simulator::
+
 void Simulator::plotParticles(int iteration) {
 	outputWriter::VTKWriter vtkWriter;
 	outputWriter::XYZWriter xyzWriter;
@@ -144,6 +161,7 @@ void Simulator::nextTimeStep() {
 			[] (ParticleContainer &container, Particle &p) {return false;}
 	};
 
+
 #ifdef _OPENMP
 #pragma omp parallel
 	{
@@ -169,13 +187,13 @@ void Simulator::nextTimeStep() {
 
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		Thermostat::updateThermostate(particleContainer);
+		ThermostatDiscrete::updateThermostate(particleContainer);
 	}
 
 
 	//rearrange internal particle container structure											/*This move is ugly but necessary for periodic boundary Handling*/
 	particleContainer->afterPositionChanges(scenario->boundaryHandlers);	/*Without it we wouldn't have any way to calculate forces between */
-																								/*two opposite cells*/
+																					/*two opposite cells*/
 																								/*TODO:Maybe we should separate afterPostionChanges in one method
 																								*applying bounderyHandling an one to apply haloHandling and sort the cells
 																								*after force calculation*/

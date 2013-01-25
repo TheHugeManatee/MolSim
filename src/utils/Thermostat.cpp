@@ -54,27 +54,28 @@ void Thermostat::initialize(int arg_dimensions , int arg_numberOfParticles){
  */
 void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 	auto initialTemperature_arg = Settings::thermostatSettings->initTemperature() ;
+	numberOfParticles = particles->getSize();
 	if(initialTemperature_arg.present()){
-		double initialTemperature = initialTemperature_arg.get() + 273.2;
+		double initialTemperature = initialTemperature_arg.get();
 		particles->each([&] (Particle& p) {
 			double scale = sqrt( BOLTZMANN * initialTemperature / (Settings::particleTypes[p.type].mass));
 			MaxwellBoltzmannDistribution(p , scale , dimensions);
 		});
 
 		LOG4CXX_DEBUG(logger,"Applied initial Temperature " << initialTemperature_arg.get());
-		LOG4CXX_DEBUG(logger,"Initial energy should be \t"<< initialTemperature * BOLTZMANN * numberOfParticles * dimensions / 2 );
+		LOG4CXX_DEBUG(logger,"Initial energy should be \t"<< initialTemperature * BOLTZMANN * numberOfParticles * Settings::dimensions / 2 );
 
 	}else{
 		LOG4CXX_DEBUG(logger,"Initial Temperature not given, continuing without further velocity scaling");
 	}
 
-	calculateCurrentEnergy(particles);
+//	calculateCurrentEnergy(particles);
 /**	particles->each([&] (Particle& p) {
 		Thermostat::currentEnergy += Settings::particleTypes[p.type].mass * p.v.LengthOptimizedR3Squared() ;
 	});
 	Thermostat::currentEnergy = Thermostat::currentEnergy / 2;
 **/
-	LOG4CXX_DEBUG(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
+//	LOG4CXX_DEBUG(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
 }
 
 /**
@@ -87,12 +88,12 @@ void Thermostat::initTargetEnergy(){
 	if(targetTemperature_opt.present()){
 		double targetTemperature = targetTemperature_opt.get();
 		//	std::cout << dimensions <<"\t" << numberOfParticles << "\t" << targetTemperature << "\t" << boltzmann << std::endl;
-		double arg_targetEnergy = dimensions / 2.0 * numberOfParticles * (targetTemperature + 273.2) * BOLTZMANN;   //transfer from celsius to kelvin !
+		double arg_targetEnergy = dimensions / 2.0 * numberOfParticles * (targetTemperature) * BOLTZMANN;   //transfer from celsius to kelvin !
 		LOG4CXX_DEBUG(logger,"Target Energy is :\t"<<arg_targetEnergy);
 		Thermostat::targetEnergy = arg_targetEnergy;
 	}else if(initialTemperature_opt.present()){
 		double initTemperature = initialTemperature_opt.get();
-		double arg_initialEnergy = 	dimensions / 2.0 * numberOfParticles * (initTemperature + 273.2) * BOLTZMANN;
+		double arg_initialEnergy = 	dimensions / 2.0 * numberOfParticles * (initTemperature) * BOLTZMANN;
 		Thermostat::targetEnergy = arg_initialEnergy ;
 		LOG4CXX_DEBUG(logger,"Target Energy is :\t"<<arg_initialEnergy);
 	}else{
@@ -188,7 +189,7 @@ void Thermostat::updateThermostate(ParticleContainer* particles) {
 }
 
 void Thermostat::setCurrentTemperature(ParticleContainer* particles){
-	double currentTemperature_arg = 2 * currentEnergy / (dimensions * numberOfParticles * BOLTZMANN) - 273.2;
+	double currentTemperature_arg = 2 * currentEnergy / (dimensions * numberOfParticles * BOLTZMANN);
 	currentTemperature = currentTemperature_arg;
 	LOG4CXX_TRACE(logger,"Temperature : " << Thermostat::currentTemperature << " degrees");
 }
