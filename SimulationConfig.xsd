@@ -163,7 +163,8 @@
   	  <xsd:element name="targetTemperature" type="xsd:double" minOccurs ="0" maxOccurs="1"/>
   	  <xsd:element name="controlInterval" type="xsd:int"/>
   	  <xsd:element name="estimatedSteps" type="xsd:int" minOccurs ="0" maxOccurs="1"/>
-  	  <xsd:element name="maxSteps" type="xsd:int" minOccurs ="0" maxOccurs="1"/>
+	  <xsd:element name="temperaturePerStep" type="xsd:double" minOccurs ="0" maxOccurs="1"/>
+	  <xsd:element name="maxSteps" type="xsd:int" minOccurs ="0" maxOccurs="1"/>
 	</xsd:sequence> 
  </xsd:complexType>
 
