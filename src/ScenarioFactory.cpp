@@ -12,11 +12,12 @@
 #include "utils/Settings.h"
 #include "utils/Vector.h"
 #include "utils/Thermostat.h"
-
+#include "Simulator.h"
 #include <cstdlib>
 #include <cassert>
 #include <float.h>
 #include <math.h>
+
 
 #define TWORAISED1_6 	1.12246204830937298143353304967917
 #define SQRTTWO 		1.41421356237309504880168872420969
@@ -52,8 +53,10 @@ std::function<void(Particle&)> ScenarioFactory::verletUpdatePositionThermostate 
 			utils::Vector<double, 3> resultV;
 			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + p.f);
 			//apply thermostate
-			p.v = resultV*Thermostat::beta;
-
+			if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+				if(Simulator::iterations % Settings::thermostatSettings->controlInterval() == 0 )
+					p.v = resultV*ThermostatDiscrete::beta;
+			}
 
 			//new position
 			utils::Vector<double, 3> resultX;
@@ -401,7 +404,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 					},
 					//x0 = domain[0] boundary, "right"
 					[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
-						double realDomainSize = std::ceil(Settings::domainSize[0] / Settings::rCutoff) * Settings::rCutoff;
+						double realDomainSize = Settings::domainSize[0];
 						if(p.x[0] > (realDomainSize - TWORAISED1_6 * Settings::particleTypes[p.type].sigma)) {
 							phantom.x[0] = realDomainSize;
 							phantom.x[1] = p.x[1];
@@ -422,7 +425,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 					},
 					//x1 = domain[1] boundary, "top"
 					[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
-						double realDomainSize = std::ceil(Settings::domainSize[1] / Settings::rCutoff) * Settings::rCutoff;
+						double realDomainSize = Settings::domainSize[1];
 						if(p.x[1] > (realDomainSize - TWORAISED1_6 * Settings::particleTypes[p.type].sigma)) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = realDomainSize;
@@ -443,7 +446,7 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 					},
 					//x2 = domain[2] boundary, "front"
 					[&calcForce, &phantom] (ParticleContainer &container, Particle &p) {
-						double realDomainSize = std::ceil(Settings::domainSize[2] / Settings::rCutoff) * Settings::rCutoff;
+						double realDomainSize = Settings::domainSize[2];
 						if(p.x[2] > (realDomainSize - TWORAISED1_6 * Settings::particleTypes[p.type].sigma)) {
 							phantom.x[0] = p.x[0];
 							phantom.x[1] = p.x[1];
