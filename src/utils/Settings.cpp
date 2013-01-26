@@ -38,6 +38,12 @@ std::string Settings::configFile = "simulationConfig.xml";
 std::string Settings::inputFile = "";
 bool Settings::saveLastState = "false";
 std::string Settings::lastStateFile = "ausgabe.txt";
+
+bool Settings::printStatistics = "false";
+std::string Settings::statisticsFile = "";
+int Settings::statisticsInterval = 0;
+double Settings::deltaRDF = 0;
+
 std::string Settings::testCase = "";
 std::string Settings::loggerConfigFile = "";
 std::string Settings::outputFilePrefix = "OutputFiles/MD_vtk_";
@@ -168,6 +174,16 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    }else{
 	    	LOG4CXX_DEBUG(logger,"No file for last state given");
 	    }
+
+	    auto printStatistics_opt = xmlCfg->statistics();
+	    Settings::printStatistics = printStatistics_opt.present();
+	    if(Settings::printStatistics){
+	    	Settings::statisticsFile = printStatistics_opt.get().fileName();
+	    	Settings::statisticsInterval = printStatistics_opt.get().interval();
+	    	Settings::deltaRDF = printStatistics_opt.get().deltaR();
+	    	LOG4CXX_INFO(logger, "Saving statistics to " << Settings::statisticsFile <<" every "<< Settings::statisticsInterval <<" for Radius: " << Settings::deltaRDF);
+	    }
+
 	    Settings::domainSize[0] = xmlCfg->domainSize().x0();
 	    Settings::domainSize[1] = xmlCfg->domainSize().x1();
 	    Settings::domainSize[2] = xmlCfg->domainSize().x2();
