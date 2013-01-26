@@ -183,7 +183,13 @@
   </xsd:sequence>
 </xsd:complexType>
 
-  <xsd:complexType name="simulationConfig">
+<xsd:complexType name="statistics">
+  <xsd:attribute name="fileName" type="xsd:string" use="required" />
+  <xsd:attribute name="interval" type="xsd:int" use="required" />  
+  <xsd:attribute name="deltaR" type="xsd:double" use="required" />
+</xsd:complexType>
+
+<xsd:complexType name="simulationConfig">
     <xsd:sequence>
       <xsd:element name="deltaT" type="xsd:double"/>
       <xsd:element name="endTime" type="xsd:double"/>
@@ -203,6 +209,7 @@
       <xsd:element name="outputFileType" type="OutputFileType"/>
       <xsd:element name="saveLastState" type="xsd:string" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="inputFile" type="xsd:string" minOccurs ="0" maxOccurs="1"/>
+      <xsd:element name="statistics" type="statistics" minOccurs="0" maxOccurs="1" />
       <xsd:element name="thermostatSwitch" type="ThermostatSwitch" minOccurs ="0" maxOccurs="1"/>
       <xsd:element name="thermostatSettings" type="ThermostatSettings" minOccurs ="0" maxOccurs="1"/>      
       <xsd:element name="typeList" type="TypesList" />
