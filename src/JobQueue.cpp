@@ -114,19 +114,19 @@ void BlockJobX0::exec(CellListContainer *container, SimulationScenario *scenario
 				c.eachPair(scenario->calculateForce);
 
 				/*(0,1,0)*/	EACHPAIR(scenario->calculateForce, c, cells[cid + nX2]);
-				/*(1,0,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1]);
-				/*(1,1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2]);
-				/*(1,-1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2]);
-				/*(0,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid - nX2*nX1]);
+				/*(1,0,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1]);
+				/*(1,1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + nX2]);
+				/*(1,-1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - nX2]);
+				/*(0,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid - 1]);
 
-				/*(0,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 - nX2*nX1]);
-				/*(1,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2*nX1]);
-				/*(1,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2 - nX2*nX1]);
-				/*(1,-1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2 - nX2*nX1]);
-				/*(0,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 + nX2*nX1]);
-				/*(1,0,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2*nX1]);
-				/*(1,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2 + nX2*nX1]);
-				/*(1,-1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2 + nX2*nX1]);
+				/*(0,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 - 1]);
+				/*(1,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - 1]);
+				/*(1,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + nX2 - 1]);
+				/*(1,-1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - nX2 - 1]);
+				/*(0,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 + 1]);
+				/*(1,0,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + 1]);
+				/*(1,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + nX2 + 1]);
+				/*(1,-1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - nX2 + 1]);
 			}
 		}
 	}

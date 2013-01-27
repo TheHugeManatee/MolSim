@@ -69,8 +69,12 @@ static double camPosition[3] = {10, 10, 10};
 /// the rotation around the three primary axes in degrees
 static double camRotation[3] = {0,0,0};
 
-bool renderHalo = false;
+bool renderHalo = true;
 bool renderMembrane = true;
+bool renderingPaused = false;
+bool renderCells = true;
+int cellCount[3];
+double cellSizes[3];
 
 
 pthread_t RenderOutputWriter::renderingThread;
@@ -93,6 +97,94 @@ resize(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity() ;
+}
+
+static void drawBoxAndCells() {
+		//draw the simulation domain box
+	glLineWidth(2.0);
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES);
+
+	const auto d = Settings::domainSize;
+	if(renderCells) {
+		int h = renderHalo?1:0;
+		//x[0] direction
+		glColor3d(1.0, 0.0, 0.0);
+		for(int x1=-h; x1 <= cellCount[1]-4+h; x1++)
+			for(int x2=-h; x2 <= cellCount[2]-4+h; x2++){
+				glVertex3d(-cellSizes[0]*h, x1*cellSizes[1], x2*cellSizes[2]);
+				glVertex3d(d[0]+cellSizes[0]*h, x1*cellSizes[1], x2*cellSizes[2]);
+		}
+
+		//x[1] direction
+		glColor3d(0.0, 1.0, 0.0);
+		for(int x0=-h; x0 <= cellCount[0]-4+h; x0++)
+			for(int x2=-h; x2 <= cellCount[2]-4+h; x2++){
+				glVertex3d(x0*cellSizes[0], -cellSizes[1]*h, x2*cellSizes[2]);
+				glVertex3d(x0*cellSizes[0], d[1]+cellSizes[1]*h, x2*cellSizes[2]);
+		}
+
+		//x[2] direction
+		glColor3d(0.0, 0.0, 1.0);
+		for(int x0=-h; x0 <= cellCount[0]-4+h; x0++)
+			for(int x1=-h; x1 <= cellCount[1]-4+h; x1++){
+				glVertex3d(x0*cellSizes[0], x1*cellSizes[1], -cellSizes[2]*h);
+				glVertex3d(x0*cellSizes[0], x1*cellSizes[1], d[2]+cellSizes[2]*h);
+		}
+
+	}
+	else {
+
+		glColor3d(1.0, 0.0, 0.0);
+		glVertex3d(0.0,0, 0);
+		glVertex3d(d[0], 0, 0);
+
+
+		glVertex3d(0.0, d[1], 0.0);
+		glVertex3d(d[0], d[1], 0.0);
+
+		glVertex3d(0.0, 0.0, d[2]);
+		glVertex3d(d[0], 0.0, d[2]);
+
+		glVertex3d(0.0, d[1], d[2]);
+		glVertex3d(d[0], d[1], d[2]);
+		glEnd();
+		//x[1] direction
+		glColor3d(0.0, 1.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex3d(0.0, 0.0, 0.0);
+		glVertex3d(0.0, d[1], 0.0);
+
+		glVertex3d(d[0], 0.0, 0.0);
+		glVertex3d(d[0], d[1], 0.0);
+
+		glVertex3d(0.0, 0.0, d[2]);
+		glVertex3d(0.0, d[1], d[2]);
+
+		glVertex3d(d[0], 0.0, d[2]);
+		glVertex3d(d[0], d[1], d[2]);
+		glEnd();
+		//x[2] direction
+		glColor3d(0.0, 0.0, 1.0);
+		glBegin(GL_LINES);
+		glVertex3d(0.0, 0.0, 0.0);
+		glVertex3d(0.0, 0.0, d[2]);
+
+		glVertex3d(0.0, d[1], 0.0);
+		glVertex3d(0.0, d[1], d[2]);
+
+		glVertex3d(d[0], 0.0, 0.0);
+		glVertex3d(d[0], 0.0, d[2]);
+
+		glVertex3d(d[0], d[1], 0.0);
+		glVertex3d(d[0], d[1], d[2]);
+
+	}
+	glEnd();
+
+	glLineWidth(1.0);
+	glEnable(GL_LIGHTING);
 }
 
 /*!
@@ -193,55 +285,7 @@ static void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	//draw the simulation domain box
-	glLineWidth(2.0);
-	//x[0] direction
-	glColor3d(1.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex3d(0.0, 0.0, 0.0);
-	glVertex3d(d[0], 0.0, 0.0);
-
-	glVertex3d(0.0, d[1], 0.0);
-	glVertex3d(d[0], d[1], 0.0);
-
-	glVertex3d(0.0, 0.0, d[2]);
-	glVertex3d(d[0], 0.0, d[2]);
-
-	glVertex3d(0.0, d[1], d[2]);
-	glVertex3d(d[0], d[1], d[2]);
-	glEnd();
-	//x[1] direction
-	glColor3d(0.0, 1.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex3d(0.0, 0.0, 0.0);
-	glVertex3d(0.0, d[1], 0.0);
-
-	glVertex3d(d[0], 0.0, 0.0);
-	glVertex3d(d[0], d[1], 0.0);
-
-	glVertex3d(0.0, 0.0, d[2]);
-	glVertex3d(0.0, d[1], d[2]);
-
-	glVertex3d(d[0], 0.0, d[2]);
-	glVertex3d(d[0], d[1], d[2]);
-	glEnd();
-	//x[2] direction
-	glColor3d(0.0, 0.0, 1.0);
-	glBegin(GL_LINES);
-	glVertex3d(0.0, 0.0, 0.0);
-	glVertex3d(0.0, 0.0, d[2]);
-
-	glVertex3d(0.0, d[1], 0.0);
-	glVertex3d(0.0, d[1], d[2]);
-
-	glVertex3d(d[0], 0.0, 0.0);
-	glVertex3d(d[0], 0.0, d[2]);
-
-	glVertex3d(d[0], d[1], 0.0);
-	glVertex3d(d[0], d[1], d[2]);
-	glEnd();
-
-	glLineWidth(1.0);
+	drawBoxAndCells();
 
 	double color[3];
 
@@ -336,6 +380,8 @@ key(unsigned char key, int x, int y)
 	case 'e': camPosition[2] += 1.0; break;
 	case 'h': renderHalo = !renderHalo; break;
 	case 'm': renderMembrane = !renderMembrane; break;
+	case 'p': renderingPaused = !renderingPaused; break;
+	case 'c' : renderCells = !renderCells; break;
 
 	default:
 		break;
@@ -552,7 +598,6 @@ RenderOutputWriter::RenderOutputWriter() {
 void RenderOutputWriter::plotParticles(ParticleContainer & container, const std::string& filename, int iteration) {
 	currentIteration = iteration;
 
-
 	//copy particle data over
 /*	container.each([&] (Particle &p) {
 #ifdef _OPENMP
@@ -561,7 +606,16 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 		render3dParticles[i++] = p;
 	});*/
 
+	if(renderingPaused) return;
+
 	CellListContainer *cc = (CellListContainer*)&container;
+
+	cellCount[0] = cc->nX0;
+	cellCount[1] = cc->nX1;
+	cellCount[2] = cc->nX2;
+	cellSizes[0] = cc->edgeLength[0];
+	cellSizes[1] = cc->edgeLength[1];
+	cellSizes[2] = cc->edgeLength[2];
 
 	bool maskHalo = !renderHalo;
 
@@ -583,6 +637,7 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 	//signal the rendering thread to recompile display list and redraw buffer
 	redrawRequested = true;
 	recompileRequested = true;
+
 }
 
 } //namespace outputWriter
