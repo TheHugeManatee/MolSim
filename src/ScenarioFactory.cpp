@@ -269,26 +269,27 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					if(p.x[1] < Settings::rCutoff){
 						pNew.x[1] += Settings::domainSize[1];
 						container.add(pNew);
-/*						if(p.x[2] < Settings::rCutoff){
+						if(p.x[2] < Settings::rCutoff){
 							pNew.x[2] += Settings::domainSize[2];
 							container.add(pNew);
-							return false;
+							pNew.x= positionInHalo;
 						}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
 							pNew.x[2] -= Settings::domainSize[2];
 							container.add(pNew);
-							return false;
-						}*/
+							pNew.x= positionInHalo;
+
+						}
 					}else if(p.x[1] > Settings::domainSize[1] - Settings::rCutoff){
 						pNew.x[1] -= Settings::domainSize[1];
 						container.add(pNew);
 						if(p.x[2] < Settings::rCutoff){
 							pNew.x[2] += Settings::domainSize[2];
 							container.add(pNew);
-							return false;
+							pNew.x= positionInHalo;
 						}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
 							pNew.x[2] -= Settings::domainSize[2];
 							container.add(pNew);
-							return false;
+							pNew.x= positionInHalo;
 						}
 					}
 
@@ -323,11 +324,11 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 						if(p.x[2] < Settings::rCutoff){
 							pNew.x[2] += Settings::domainSize[2];
 							container.add(pNew);
-							pNew.x[1]= positionInHalo[1];
+							pNew.x= positionInHalo;
 						}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
 							pNew.x[2] -= Settings::domainSize[2];
 							container.add(pNew);
-							pNew.x[1]= positionInHalo[1];
+							pNew.x= positionInHalo;
 						}
 					}else if(p.x[1] > Settings::domainSize[1] - Settings::rCutoff){
 						pNew.x[1] -= Settings::domainSize[1];
@@ -335,11 +336,11 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 						if(p.x[2] < Settings::rCutoff){
 							pNew.x[2] += Settings::domainSize[2];
 							container.add(pNew);
-							pNew.x[1]= positionInHalo[1];
+							pNew.x= positionInHalo;
 						}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
 							pNew.x[2] -= Settings::domainSize[2];
 							container.add(pNew);
-							pNew.x[1]= positionInHalo[1];
+							pNew.x= positionInHalo;
 						}
 					}
 
