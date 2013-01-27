@@ -5,40 +5,39 @@
        
   <deltaT>0.00005</deltaT>
   <endTime>15</endTime>
+  <dimensions>2</dimensions>
   <scenarioType>Lennard-Jones</scenarioType>
   <domainSize x0="303" x1="180.0" x2="7.5" />
+  <cutoffRadius scaled="1" radius="2.3" />
   <boundaryHandling
   	top="Reflect" bottom="Reflect"
-  	left="Reflect" right="Reflect"
+  	left="Periodic" right="Periodic"
   	front="Reflect" back="Reflect"
   />
-  <containerType>CelllistContainer</containerType>
-  <epsilon>5</epsilon>
-  <sigma>1</sigma>
-  <gravityConstant>-12.44</gravityConstant>
-  <outputFrequency>100</outputFrequency>
+  <containerType>CellListContainer</containerType>
+  <gravitation x0="0" x1="-12.44" x2="0" />  <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
   <loggerConfigFile>Logger.properties</loggerConfigFile>
   <outputFilePrefix>OutputFiles/MD_vtk</outputFilePrefix>
   <outputFileType>vtk</outputFileType>
-  <cutoffRadius>2.5</cutoffRadius>
+  <saveLastState>drop.state</saveLastState>
   <inputFile></inputFile>
   
+  <thermostatSwitch>ON</thermostatSwitch>
  <thermostatSettings>
   	<initTemperature>0.5</initTemperature>
   	<targetTemperature>0.5</targetTemperature>
   	<controlInterval>1000</controlInterval>
-  	<estimatedSteps>300000</estimatedSteps>
-  	<maxSteps>300000</maxSteps>
+  	<temperatutePerStep>-1</temperatutePerStep>
  </thermostatSettings> 
   
 <typeList>
- <particleType Nr = "1" sigma = "1.2" epsilon = "1.0" />
- <particleType Nr = "2" sigma = "1.1" epsilon = "1.0" />
+ <particleType mass = "1.0" sigma = "1.2" epsilon = "1.0" />
+ <particleType mass = "1.0" sigma = "1.1" epsilon = "1.0" />
  </typeList> 
  
   <generator>
-  <sphere>
+<!--  <sphere>
       <center x0="150" x1="150" x2="3.75" />
       <radius>20</radius>
       <stepWidth>1.2</stepWidth>
@@ -46,15 +45,13 @@
       <type>1</type>
       <initialVelocity x0="0" x1="0" x2="0"/>
       <brownianMeanVelocity>0.0</brownianMeanVelocity>
-    </sphere>  
+    </sphere>  -->
 	 <cuboid>
       <bottomLeft x0="1.5" x1="2" x2="3.75" />
-      <nX x0="50" x1="4" x2="10" />
+      <nX x0="250" x1="50" x2="1" />
       <stepWidth>1.2</stepWidth>
-      <mass>1</mass>
-      <type>1</type>
+      <type>0</type>
       <initialVelocity x0="0" x1="0" x2="0"/>
-      <brownianMeanVelocity>0.0</brownianMeanVelocity>
    </cuboid>
     
   </generator>

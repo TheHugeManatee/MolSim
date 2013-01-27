@@ -141,8 +141,8 @@ void Simulator::getRadialDistribution(){
 
 	if(Simulator::iterations % Settings::statisticsInterval == 0){
 		for (int i = 0 ; i < nIntervals ; i++ ){
-			double radius = sqrt(Settings::deltaRDF * Settings::deltaRDF * i) ;
-			double radiusPlus = sqrt(Settings::deltaRDF * Settings::deltaRDF * (i+1));
+			double radius = Settings::deltaRDF * i ;
+			double radiusPlus = Settings::deltaRDF * (i+1);
 			double volume = 0.2666666666666666666666666666666 / ((radiusPlus * radiusPlus * radiusPlus) - (radius * radius * radius)) * PI ;
 			radialDistribution[i] = radialDistribution[i]/ volume;
 		}
