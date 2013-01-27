@@ -34,7 +34,7 @@ SOURCES=\
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-g -fpermissive -std=gnu++0x -Wno-deprecated -fopenmp
+CFLAGS=-O3 -fpermissive -std=gnu++0x -Wno-deprecated -fopenmp
 
 # Linker flags
 # ------------
