@@ -69,6 +69,9 @@ static double camPosition[3] = {10, 10, 10};
 /// the rotation around the three primary axes in degrees
 static double camRotation[3] = {0,0,0};
 
+bool renderHalo = false;
+bool renderMembrane = true;
+
 
 pthread_t RenderOutputWriter::renderingThread;
 bool RenderOutputWriter::threadIsSpawned = false;
@@ -263,7 +266,7 @@ static void display(void)
 			glPopMatrix();
 		}
 		//draw springs
-		if(Settings::scenarioType == ScenarioType::Membrane) {
+		if(Settings::scenarioType == ScenarioType::Membrane && renderMembrane) {
 			glDisable(GL_LIGHTING);
 			glBegin(GL_LINES);
 			for(int i=0; i < render3dParticles.size(); i++) {
@@ -331,6 +334,8 @@ key(unsigned char key, int x, int y)
 	case 'w': camPosition[1] += 1.0; break;
 	case 'q': camPosition[2] -= 1.0; break;
 	case 'e': camPosition[2] += 1.0; break;
+	case 'h': renderHalo = !renderHalo; break;
+	case 'm': renderMembrane = !renderMembrane; break;
 
 	default:
 		break;
@@ -558,14 +563,16 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 
 	CellListContainer *cc = (CellListContainer*)&container;
 
-	render3dParticles.resize(cc->getSize(true));
+	bool maskHalo = !renderHalo;
+
+	render3dParticles.resize(cc->getSize(!maskHalo));
 	int i = 0;
 
 	int nX0 = cc->nX0, nX1 = cc->nX1, nX2 = cc->nX2;
 
-	for(int x0=1; x0 < nX0-1; x0++)
-		for(int x1=1; x1 < nX1-1; x1++)
-			for(int x2=1; x2 < nX2-1; x2++) {
+	for(int x0=1+maskHalo; x0 < nX0-1-maskHalo; x0++)
+		for(int x1=1+maskHalo; x1 < nX1-1-maskHalo; x1++)
+			for(int x2=1+maskHalo; x2 < nX2-1-maskHalo; x2++) {
 				ParticleContainer &plist = cc->cells[x2 + x1*nX2 + x0*nX2*nX1];
 				int s = plist.getSize();
 				plist.each([&] (Particle &p) {
