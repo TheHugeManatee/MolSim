@@ -16,6 +16,10 @@
 
 #include <functional>
 
+namespace outputWriter {
+		class RenderOutputWriter;
+}
+
 /**
  * this macro loops over all pairs of particles in the two containers and applies fn to the pair of them
  * this is slightly faster than using an inline function
@@ -48,13 +52,18 @@
  *
  */
 class CellListContainer: public ParticleContainer {
-	friend class CellListContainerTest;
+	friend class CellListContainerTest; //the test needs to have access to the internal structures
+
+	//these need to have access to achieve proper workload distribution
 	friend class Job;
 	friend class SimulationJobQueue;
 	friend class APCJobQueue;
 	friend class SliceJobX0;
 	friend class BlockJobX0;
 	friend class APCSliceJob;
+
+	//this is needed to display internal structures of the container
+	friend class outputWriter::RenderOutputWriter;
 
 private:
 	static log4cxx::LoggerPtr logger;
@@ -146,7 +155,8 @@ public:
      */
     void eachPair(std::function<void (Particle&, Particle&)> fn);
     void add(Particle& p);
-    int getSize();
+    int getSize(bool withHalo);
+    int getSize(void) {return getSize(false);};
 
     void clearHalo();
 

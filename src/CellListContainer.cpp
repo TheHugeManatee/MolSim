@@ -236,16 +236,17 @@ void CellListContainer::eachPair(std::function<void (Particle&, Particle&)> fn, 
 	}
 }
 
-inline int CellListContainer::getSize() {
+int CellListContainer::getSize(bool withHalo) {
 	int cellcount = cells.size();
 	int size = 0;
-	for(int x0=2; x0 < nX0-2; x0++)
-		for(int x1=2; x1 < nX1-2; x1++)
-			for(int x2=2; x2 < nX2-2; x2++) {
+	int k = withHalo?1:2;
+	for(int x0=k; x0 < nX0-k; x0++)
+		for(int x1=k; x1 < nX1-k; x1++)
+			for(int x2=k; x2 < nX2-k; x2++) {
 				std::vector<Particle> &plist = cells[x2 + x1*nX2 + x0*nX2*nX1].particles;
 				size += plist.size();
 	}
-//	assert(size == size_);
+
 	return size;
 }
 

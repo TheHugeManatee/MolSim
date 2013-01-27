@@ -11,6 +11,8 @@
 
 #include "utils/ColorCoding/Grayscale.h"
 
+#include "../CellListContainer.h"
+
 #include <signal.h>
 #include <iostream>
 #include <string>
@@ -545,15 +547,32 @@ RenderOutputWriter::RenderOutputWriter() {
 void RenderOutputWriter::plotParticles(ParticleContainer & container, const std::string& filename, int iteration) {
 	currentIteration = iteration;
 
-	render3dParticles.resize(container.getSize());
-	int i = 0;
+
 	//copy particle data over
-	container.each([&] (Particle &p) {
+/*	container.each([&] (Particle &p) {
 #ifdef _OPENMP
 #pragma omp critical
 #endif
 		render3dParticles[i++] = p;
-	});
+	});*/
+
+	CellListContainer *cc = (CellListContainer*)&container;
+
+	render3dParticles.resize(cc->getSize(true));
+	int i = 0;
+
+	int nX0 = cc->nX0, nX1 = cc->nX1, nX2 = cc->nX2;
+
+	for(int x0=1; x0 < nX0-1; x0++)
+		for(int x1=1; x1 < nX1-1; x1++)
+			for(int x2=1; x2 < nX2-1; x2++) {
+				ParticleContainer &plist = cc->cells[x2 + x1*nX2 + x0*nX2*nX1];
+				int s = plist.getSize();
+				plist.each([&] (Particle &p) {
+					render3dParticles[i++] = p;
+				});
+			}
+
 	//signal the rendering thread to recompile display list and redraw buffer
 	redrawRequested = true;
 	recompileRequested = true;

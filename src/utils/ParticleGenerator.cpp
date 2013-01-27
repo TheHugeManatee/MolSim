@@ -77,8 +77,9 @@ void ParticleGenerator::generateSphere(ParticleContainer& container,
 	Settings::particleTypes[type].membraneDescriptor.nX1 = radiusSphere * 2;
 	Settings::particleTypes[type].membraneDescriptor.nX2 = radiusSphere * 2;
 
+	double r = (radiusSphere+radiusSphere)/2;
 	LOG4CXX_INFO(ParticleGenerator::logger,
-			"Generating " << (4 * radiusSphere*radiusSphere) << " Particles on a sphere");
+			"Generating approx." << (int)(4/3 * r*r*r * 3.14159265) << " Particles on a sphere");
 	std::vector<int> diffs;
 	diffs.push_back(-1);
 	diffs.push_back(1);
