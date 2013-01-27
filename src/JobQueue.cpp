@@ -69,6 +69,4 @@ void JobQueue::resetJobs() {
 	unlock();
 }
 
-
-
 #endif
