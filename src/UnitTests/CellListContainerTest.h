@@ -10,6 +10,8 @@
 
 #include <vector>
 #include <cppunit/TestFixture.h>
+#include <cppunit/TestAssert.h>
+#include <cppunit/TestCaller.h>
 #include <random>
 #include "utils/Settings.h"
 #include "utils/Vector.h"
@@ -38,7 +40,7 @@ public:
 					y[0]=0;
 					y[1]=0;
 					y[2]=0;
-					Particle p(x,y,0,);
+					Particle p(x,y,0);
 					testArray.push_back(p);
 				}
 			}
@@ -72,7 +74,6 @@ public:
 			p.x=(utils::Vector<double, 3>(nX0*h,nX1*h,nX2*h) - p.x);
 		} );
 
-		testContainer.updateCells();
 
 		for( int i = 0 ; i<10 ; i++){
 			for(int j = 0 ; i<10 ; i++){

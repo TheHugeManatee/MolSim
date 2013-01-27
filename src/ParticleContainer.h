@@ -26,6 +26,7 @@ class ParticleContainer {
 	friend class Job;
 	friend class SliceJobX0;
 	friend class BlockJobX0;
+	friend class APCSliceJob;
 
 
     protected:

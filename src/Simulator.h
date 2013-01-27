@@ -26,7 +26,8 @@ private:
 	SimulationScenario *scenario;
 	ParticleContainer *particleContainer;
 #ifdef _OPENMP
-	JobQueue *queue;
+	JobQueue *simulationJobs;
+	JobQueue *apcJobs;
 #endif
 
 public:
@@ -37,7 +38,7 @@ public:
 	void exportPhaseSpace(void);
 
 
-
+//	void printDiffusion();
 
 	/* processed iterations*/
 	static int iterations;

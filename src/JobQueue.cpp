@@ -1,8 +1,8 @@
 /*
- * JobQueue.cpp
+ * @file JobQueue.cpp
  *
- *  Created on: 22.01.2013
- *      Author: j
+ * @date 22.01.2013
+ * @author Jakob Weiss
  */
 
 #include "JobQueue.h"
@@ -12,29 +12,8 @@
 #include <omp.h>
 #include <stdio.h>
 
-JobQueue::JobQueue(CellListContainer *cont) {
+JobQueue::JobQueue() {
 	omp_init_lock(&lock_);
-
-
-	SliceJob *slice = NULL;
-	//this is just some random heuristic
-	int numBlocks = cont->nX0 - 2;
-
-	for(int i=0; i < numBlocks; i++) {
-		int startSlice = i * (cont->nX0 - 2)/numBlocks + 1;
-		int endSlice = (i+1) * (cont->nX0 - 2)/numBlocks + 1;
-
-		SliceJob *nextSlice = (endSlice == cont->nX0)?NULL:(new SliceJobX0(endSlice));
-		BlockJob *block = new BlockJobX0(startSlice, endSlice, slice, nextSlice);
-
-		if(nextSlice) jobs.push_back(nextSlice);
-		jobs.push_back(block);
-
-		queue.push(block);
-
-		slice = nextSlice;
-	}
-
 }
 
 JobQueue::~JobQueue() {
@@ -65,6 +44,19 @@ Job * JobQueue::dequeue() {
 	unlock();
 	return job;
 };
+
+void JobQueue::executeJobsParallel(CellListContainer *particleContainer, SimulationScenario *scenario) {
+#pragma omp parallel
+	{
+		Job *job;
+		while( (job = dequeue()) != NULL ) {
+			job->exec(particleContainer, scenario);
+
+			job->enqueueDependentJobs(*this);
+		}
+	}
+
+}
 
 void JobQueue::resetJobs() {
 	int s = jobs.size();
@@ -98,7 +90,7 @@ void BlockJob::enqueueDependentJobs(JobQueue &queue) {
 	}
 }
 
-void BlockJobX0::operator() (CellListContainer *container, SimulationScenario *scenario) {
+void BlockJobX0::exec(CellListContainer *container, SimulationScenario *scenario) {
 
 //	printf("##Block from %i to %i\n", start, end);
 
@@ -159,7 +151,7 @@ void BlockJobX0::operator() (CellListContainer *container, SimulationScenario *s
 
 
 
-void SliceJobX0::operator() (CellListContainer *container, SimulationScenario *scenario) {
+void SliceJobX0::exec(CellListContainer *container, SimulationScenario *scenario) {
 	int nX0 = container->nX0, nX1 = container->nX1, nX2 = container->nX2;
 	int x0 = sliceIdx;
 	std::vector<ParticleContainer> &cells = container->cells;
@@ -181,5 +173,6 @@ void SliceJobX0::operator() (CellListContainer *container, SimulationScenario *s
 		}
 	}
 }
+
 
 #endif

@@ -50,9 +50,11 @@
 class CellListContainer: public ParticleContainer {
 	friend class CellListContainerTest;
 	friend class Job;
-	friend class JobQueue;
+	friend class SimulationJobQueue;
+	friend class APCJobQueue;
 	friend class SliceJobX0;
 	friend class BlockJobX0;
+	friend class APCSliceJob;
 
 private:
 	static log4cxx::LoggerPtr logger;
@@ -82,13 +84,13 @@ protected:
 	/**
 	 * returns the cell indexed by the three cell coordinates
 	 */
-	inline ParticleContainer * getCell(int x0, int x1, int x2);
+	ParticleContainer * getCell(int x0, int x1, int x2);
 
 	/**
 	 * returns the cell the particle should be in right now,
 	 * based on the current position
 	 */
-	inline ParticleContainer * getContainingCell(Particle& p);
+	ParticleContainer * getContainingCell(Particle& p);
 
 	/**
 	 * applies a function to pairs of particles combined from two containers

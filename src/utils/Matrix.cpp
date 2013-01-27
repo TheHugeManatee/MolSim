@@ -32,7 +32,7 @@ Matrix Matrix::operator*(const Matrix& rhs) {
 		for( int c=0; c < 4; c++) {
 			double s = 0;
 			for(int k=0; k < 4; k++) {
-				s += m[c + 4*k]*rhs.m[k + 4*r];
+				s += rhs.m[c + 4*k]*m[k + 4*r];
 			}
 			res[c + 4*r] = s;
 		}
@@ -41,6 +41,10 @@ Matrix Matrix::operator*(const Matrix& rhs) {
 	return Matrix(res);
 }
 
+
+double Matrix::operator[](int i) {
+	return m[i];
+};
 void Matrix::transform(double v[3]) {
 	double t[4];
 	t[0] = m[ 0]*v[0] + m[ 1]*v[1] + m[ 2]*v[2] + m[ 3];

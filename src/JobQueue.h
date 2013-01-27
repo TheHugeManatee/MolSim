@@ -1,8 +1,8 @@
 /*
- * JobQueue.h
+ * @file JobQueue.h
  *
- *  Created on: 22.01.2013
- *      Author: j
+ * @date 22.01.2013
+ * @author Jakob Weiss
  */
 
 #ifndef JOBQUEUE_H_
@@ -21,15 +21,25 @@ class BlockJob;
 class SliceJob;
 class JobQueue;
 
+
+/**
+ * @class JobQueue
+ *
+ * this class manages jobs that can be distributed over different threads
+ * the enqueue and dequeue operations are protected by locks to prevent race conditions
+ * between threads accessing the queue simultaneously
+ *
+ *
+ */
 class JobQueue {
-private:
+protected:
 	omp_lock_t lock_;
 	std::queue<Job *> queue;
 
 	std::vector<Job *> jobs;
 
 public:
-	JobQueue(CellListContainer *cont);
+	JobQueue();
 	~JobQueue();
 
 	void lock() 	{	omp_set_lock(&lock_);	};
@@ -38,10 +48,20 @@ public:
 	void enqueue(Job *job);
 	Job* dequeue();
 
+	void executeJobsParallel(CellListContainer *particleContainer, SimulationScenario *scenario);
 	void resetJobs();
 
 };
 
+/**
+ * a basic job object
+ *
+ * this can be locked and unlocked witht the lock() and unlock() methods respectively for thread safety
+ *
+ * the operator() can be overwritten to implement the functionality of the job
+ *
+ *
+ */
 class Job {
 private:
 	omp_lock_t lock_;
@@ -54,7 +74,7 @@ public:
 	void unlock() 	{	omp_unset_lock(&lock_);	};
 
 
-	virtual void operator() (CellListContainer *container, SimulationScenario *scenario) = 0;
+	virtual void exec(CellListContainer *container, SimulationScenario *scenario) = 0;
 	virtual void enqueueDependentJobs(JobQueue &queue) {};
 	virtual bool reset() { return true; };
 };
@@ -96,14 +116,14 @@ public:
 	BlockJobX0(int start_, int end_, SliceJob *firstSlice_, SliceJob *succeedingSlice_) :
 		BlockJob(start_, end_, firstSlice_, succeedingSlice_) {	};
 
-	void operator() (CellListContainer *container, SimulationScenario *scenario);
+	void exec(CellListContainer *container, SimulationScenario *scenario);
 };
 
 class SliceJobX0 : public SliceJob {
 public:
 	SliceJobX0(int sliceIdx_) : SliceJob(sliceIdx_) {};
 
-	void operator() (CellListContainer *container, SimulationScenario *scenario);
+	void exec(CellListContainer *container, SimulationScenario *scenario);
 	void enqueueDependentJobs(JobQueue &queue) {};
 
 };
