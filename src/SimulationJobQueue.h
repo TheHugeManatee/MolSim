@@ -26,7 +26,7 @@ protected:
 public:
 	BlockJob(int dependencies, int start_, int end_, Job *firstSlice_, Job *succeedingSlice_) : Job(dependencies),
 		start(start_), end(end_), firstSlice(firstSlice_), succeedingSlice(succeedingSlice_)  {
-		std::cout << "Block Job from " << start_ << " to " << end_ << " created; slices are " << firstSlice_ << " and " << succeedingSlice_ <<  std::endl;
+//		std::cout << "Block Job from " << start_ << " to " << end_ << " created; slices are " << firstSlice_ << " and " << succeedingSlice_ <<  std::endl;
 	};
 
 	virtual void enqueueDependentJobs(JobQueue &queue);
@@ -37,7 +37,7 @@ class DependentBlockJob : public BlockJob {
 public:
 	DependentBlockJob(int dependencies, int start_, int end_, Job *firstSlice_, Job *succeedingSlice_) :
 		BlockJob(dependencies, start_, end_, firstSlice_, succeedingSlice_) {
-		std::cout << "  New dependent block job: from " << start_ << " to " << end_ << " dependencies: " << dependencies << std::endl;
+//		std::cout << "  New dependent block job: from " << start_ << " to " << end_ << " dependencies: " << dependencies << std::endl;
 	};
 };
 
@@ -49,7 +49,7 @@ private:
 public:
 	BaseBlockJob(int start_, int end_, Job *firstSlice_, Job *succeedingSlice_, Job *prevBlock_ = NULL, Job *nextBlock_ = NULL) :
 		BlockJob(0, start_, end_, firstSlice_, succeedingSlice_), prevBlock(prevBlock_), nextBlock(nextBlock_) {
-		std::cout << "  New Base block job from " << start_ << " to " << end_ << "; prev = " << prevBlock_ << "; next = " << nextBlock << std::endl;
+//		std::cout << "  New Base block job from " << start_ << " to " << end_ << "; prev = " << prevBlock_ << "; next = " << nextBlock << std::endl;
 	}
 
 	void enqueueDependentJobs(JobQueue &queue);

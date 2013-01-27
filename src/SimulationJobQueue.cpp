@@ -23,13 +23,13 @@ SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
 		SliceJob *nextSlice = (endSlice == cont->nX0-2)?NULL:(new SliceJob(endSlice));
 		BlockJob *block;
 
-		//odd ones will be base jobs, even ones will depend on the adjacent even ones
+		//odd ones will be base jobs, even ones will depend on the adjacent odd ones
 		if(i%2) {
 			block = new BaseBlockJob(startSlice, endSlice, slice, nextSlice);
 			queue.push(block);
 		}
 		else
-			block = new DependentBlockJob((i==numBlocks-1)?1:2, startSlice, endSlice, slice, nextSlice);
+			block = new DependentBlockJob((!i||i==(numBlocks-1))?1:2, startSlice, endSlice, slice, nextSlice);
 
 		if(nextSlice) jobs.push_back(nextSlice);
 		jobs.push_back(block);
@@ -91,19 +91,19 @@ void BlockJob::exec(CellListContainer *container, SimulationScenario *scenario) 
 				c.eachPair(scenario->calculateForce);
 
 				/*(0,1,0)*/	EACHPAIR(scenario->calculateForce, c, cells[cid + nX2]);
-				/*(1,0,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1]);
-				/*(1,1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2]);
-				/*(1,-1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2]);
-				/*(0,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid - nX2*nX1]);
+				/*(1,0,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1]);
+				/*(1,1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + nX2]);
+				/*(1,-1,0)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - nX2]);
+				/*(0,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid - 1]);
 
-				/*(0,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 - nX2*nX1]);
-				/*(1,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2*nX1]);
-				/*(1,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2 - nX2*nX1]);
-				/*(1,-1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2 - nX2*nX1]);
-				/*(0,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 + nX2*nX1]);
-				/*(1,0,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2*nX1]);
-				/*(1,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 + nX2 + nX2*nX1]);
-				/*(1,-1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + 1 - nX2 + nX2*nX1]);
+				/*(0,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 - 1]);
+				/*(1,0,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - 1]);
+				/*(1,1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + nX2 - 1]);
+				/*(1,-1,-1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - nX2 - 1]);
+				/*(0,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2 + 1]);
+				/*(1,0,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + 1]);
+				/*(1,1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 + nX2 + 1]);
+				/*(1,-1,1)*/EACHPAIR(scenario->calculateForce, c, cells[cid + nX2*nX1 - nX2 + 1]);
 			}
 		}
 	}
