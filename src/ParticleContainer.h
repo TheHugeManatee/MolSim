@@ -24,8 +24,8 @@
 class ParticleContainer {
 	friend class CellListContainer;
 	friend class Job;
-	friend class SliceJobX0;
-	friend class BlockJobX0;
+	friend class SliceJob;
+	friend class BlockJob;
 	friend class APCSliceJob;
 
 

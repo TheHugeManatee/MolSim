@@ -12,21 +12,39 @@ SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
 	//each job has just one slice.. this seems to be the optimal case..
 	int numBlocks = cont->nX0 - 3;
 
+	std::vector<BlockJob *> blockList;
+
 	//enqueue the blocks directly and assign the slices as successors of the blocks
 	//note: first slice does not need to be executed because it is a halo slice
 	for(int i=0; i < numBlocks; i++) {
 		int startSlice = i * (cont->nX0 - 3)/numBlocks + 1;
 		int endSlice = (i+1) * (cont->nX0 - 3)/numBlocks + 1;
 
-		SliceJob *nextSlice = (endSlice == cont->nX0-2)?NULL:(new SliceJobX0(endSlice));
-		BlockJob *block = new BlockJobX0(startSlice, endSlice, slice, nextSlice);
+		SliceJob *nextSlice = (endSlice == cont->nX0-2)?NULL:(new SliceJob(endSlice));
+		BlockJob *block;
+
+		//odd ones will be base jobs, even ones will depend on the adjacent even ones
+		if(i%2) {
+			block = new BaseBlockJob(startSlice, endSlice, slice, nextSlice);
+			queue.push(block);
+		}
+		else
+			block = new DependentBlockJob((i==numBlocks-1)?1:2, startSlice, endSlice, slice, nextSlice);
 
 		if(nextSlice) jobs.push_back(nextSlice);
 		jobs.push_back(block);
 
-		queue.push(block);
+		blockList.push_back(block);
 
 		slice = nextSlice;
+	}
+
+	//loop over all blocks to tie the dependent ones to the independent
+	int bCount = blockList.size();
+	for(int i=1; i < bCount; i+=2) {
+		((BaseBlockJob *)blockList[i])->prevBlock = blockList[i-1];
+		((BaseBlockJob *)blockList[i])->nextBlock = (i<(bCount - 1))?blockList[i+1]:NULL;
+		std::cout << "Block from " << blockList[i]->start << " to " << blockList[i]->end << " has prev=" << blockList[i-1] << " and next = " << ( (i<(bCount - 1))?blockList[i+1]:NULL )<< std::endl;
 	}
 }
 
@@ -49,13 +67,10 @@ void BlockJob::enqueueDependentJobs(JobQueue &queue) {
 	}
 }
 
-void BlockJobX0::exec(CellListContainer *container, SimulationScenario *scenario) {
+void BlockJob::exec(CellListContainer *container, SimulationScenario *scenario) {
 
-//	printf("##Block from %i to %i\n", start, end);
-
-
-#pragma omp critical(dbg_io)
-	{std::cout  << "Block job from " << start << " to " << end << " executing..." << std::endl; }
+//#pragma omp critical(dbg_io)
+//	{std::cout  << "Block job from " << start << " to " << end << " executing..." << std::endl; }
 
 	int nX0 = container->nX0, nX1 = container->nX1, nX2 = container->nX2;
 	std::vector<ParticleContainer> &cells = container->cells;
@@ -113,15 +128,15 @@ void BlockJobX0::exec(CellListContainer *container, SimulationScenario *scenario
 
 
 
-void SliceJobX0::exec(CellListContainer *container, SimulationScenario *scenario) {
+void SliceJob::exec(CellListContainer *container, SimulationScenario *scenario) {
 	int nX0 = container->nX0, nX1 = container->nX1, nX2 = container->nX2;
 	int x0 = sliceIdx;
 	std::vector<ParticleContainer> &cells = container->cells;
 	double rcSquared = Settings::rCutoff*Settings::rCutoff;
 
 
-#pragma omp critical(dbg_io)
-	{std::cout  << "slice " << sliceIdx << " executing..." << std::endl; }
+//#pragma omp critical(dbg_io)
+//	{std::cout  << "slice " << sliceIdx << " executing..." << std::endl; }
 
 	for(int x1=2; x1 < nX1-2; x1++) {
 		for(int x2=2; x2 < nX2-2; x2++) {
@@ -136,4 +151,30 @@ void SliceJobX0::exec(CellListContainer *container, SimulationScenario *scenario
 			}
 		}
 	}
+}
+
+void BaseBlockJob::enqueueDependentJobs(JobQueue &queue) {
+
+	if(firstSlice) {
+//#pragma omp critical(dbg_io)
+//	{std::cout  << "Block job from " << start << " to " << end << " enqueueing firstslice..." << std::endl; }
+		firstSlice->dependencyFinished(queue);
+	}
+	if(succeedingSlice) {
+//#pragma omp critical(dbg_io)
+//		{std::cout  << "Block job from " << start << " to " << end << " enqueueing nextSlice..." << std::endl; }
+		succeedingSlice->dependencyFinished(queue);
+	}
+
+	if(prevBlock) {
+//		#pragma omp critical(dbg_io)
+//				{std::cout  << "Block job from " << start << " to " << end << " enqueueing prevBlock..." << std::endl;}
+		prevBlock->dependencyFinished(queue);
+	}
+	if(nextBlock) {
+//		#pragma omp critical(dbg_io)
+//				{std::cout  << "Block job from " << start << " to " << end << " enqueueing nextBlock..." << std::endl;}
+		nextBlock->dependencyFinished(queue);
+	}
+
 }
