@@ -69,6 +69,13 @@ static double camPosition[3] = {10, 10, 10};
 /// the rotation around the three primary axes in degrees
 static double camRotation[3] = {0,0,0};
 
+bool renderHalo = true;
+bool renderMembrane = true;
+bool renderingPaused = false;
+bool renderCells = true;
+int cellCount[3];
+double cellSizes[3];
+
 
 pthread_t RenderOutputWriter::renderingThread;
 bool RenderOutputWriter::threadIsSpawned = false;
@@ -90,6 +97,94 @@ resize(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity() ;
+}
+
+static void drawBoxAndCells() {
+		//draw the simulation domain box
+	glLineWidth(2.0);
+	glDisable(GL_LIGHTING);
+
+	glBegin(GL_LINES);
+
+	const auto d = Settings::domainSize;
+	if(renderCells) {
+		int h = renderHalo?1:0;
+		//x[0] direction
+		glColor3d(1.0, 0.0, 0.0);
+		for(int x1=-h; x1 <= cellCount[1]-4+h; x1++)
+			for(int x2=-h; x2 <= cellCount[2]-4+h; x2++){
+				glVertex3d(-cellSizes[0]*h, x1*cellSizes[1], x2*cellSizes[2]);
+				glVertex3d(d[0]+cellSizes[0]*h, x1*cellSizes[1], x2*cellSizes[2]);
+		}
+
+		//x[1] direction
+		glColor3d(0.0, 1.0, 0.0);
+		for(int x0=-h; x0 <= cellCount[0]-4+h; x0++)
+			for(int x2=-h; x2 <= cellCount[2]-4+h; x2++){
+				glVertex3d(x0*cellSizes[0], -cellSizes[1]*h, x2*cellSizes[2]);
+				glVertex3d(x0*cellSizes[0], d[1]+cellSizes[1]*h, x2*cellSizes[2]);
+		}
+
+		//x[2] direction
+		glColor3d(0.0, 0.0, 1.0);
+		for(int x0=-h; x0 <= cellCount[0]-4+h; x0++)
+			for(int x1=-h; x1 <= cellCount[1]-4+h; x1++){
+				glVertex3d(x0*cellSizes[0], x1*cellSizes[1], -cellSizes[2]*h);
+				glVertex3d(x0*cellSizes[0], x1*cellSizes[1], d[2]+cellSizes[2]*h);
+		}
+
+	}
+	else {
+
+		glColor3d(1.0, 0.0, 0.0);
+		glVertex3d(0.0,0, 0);
+		glVertex3d(d[0], 0, 0);
+
+
+		glVertex3d(0.0, d[1], 0.0);
+		glVertex3d(d[0], d[1], 0.0);
+
+		glVertex3d(0.0, 0.0, d[2]);
+		glVertex3d(d[0], 0.0, d[2]);
+
+		glVertex3d(0.0, d[1], d[2]);
+		glVertex3d(d[0], d[1], d[2]);
+		glEnd();
+		//x[1] direction
+		glColor3d(0.0, 1.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex3d(0.0, 0.0, 0.0);
+		glVertex3d(0.0, d[1], 0.0);
+
+		glVertex3d(d[0], 0.0, 0.0);
+		glVertex3d(d[0], d[1], 0.0);
+
+		glVertex3d(0.0, 0.0, d[2]);
+		glVertex3d(0.0, d[1], d[2]);
+
+		glVertex3d(d[0], 0.0, d[2]);
+		glVertex3d(d[0], d[1], d[2]);
+		glEnd();
+		//x[2] direction
+		glColor3d(0.0, 0.0, 1.0);
+		glBegin(GL_LINES);
+		glVertex3d(0.0, 0.0, 0.0);
+		glVertex3d(0.0, 0.0, d[2]);
+
+		glVertex3d(0.0, d[1], 0.0);
+		glVertex3d(0.0, d[1], d[2]);
+
+		glVertex3d(d[0], 0.0, 0.0);
+		glVertex3d(d[0], 0.0, d[2]);
+
+		glVertex3d(d[0], d[1], 0.0);
+		glVertex3d(d[0], d[1], d[2]);
+
+	}
+	glEnd();
+
+	glLineWidth(1.0);
+	glEnable(GL_LIGHTING);
 }
 
 /*!
@@ -190,55 +285,7 @@ static void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-	//draw the simulation domain box
-	glLineWidth(2.0);
-	//x[0] direction
-	glColor3d(1.0, 0.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex3d(0.0, 0.0, 0.0);
-	glVertex3d(d[0], 0.0, 0.0);
-
-	glVertex3d(0.0, d[1], 0.0);
-	glVertex3d(d[0], d[1], 0.0);
-
-	glVertex3d(0.0, 0.0, d[2]);
-	glVertex3d(d[0], 0.0, d[2]);
-
-	glVertex3d(0.0, d[1], d[2]);
-	glVertex3d(d[0], d[1], d[2]);
-	glEnd();
-	//x[1] direction
-	glColor3d(0.0, 1.0, 0.0);
-	glBegin(GL_LINES);
-	glVertex3d(0.0, 0.0, 0.0);
-	glVertex3d(0.0, d[1], 0.0);
-
-	glVertex3d(d[0], 0.0, 0.0);
-	glVertex3d(d[0], d[1], 0.0);
-
-	glVertex3d(0.0, 0.0, d[2]);
-	glVertex3d(0.0, d[1], d[2]);
-
-	glVertex3d(d[0], 0.0, d[2]);
-	glVertex3d(d[0], d[1], d[2]);
-	glEnd();
-	//x[2] direction
-	glColor3d(0.0, 0.0, 1.0);
-	glBegin(GL_LINES);
-	glVertex3d(0.0, 0.0, 0.0);
-	glVertex3d(0.0, 0.0, d[2]);
-
-	glVertex3d(0.0, d[1], 0.0);
-	glVertex3d(0.0, d[1], d[2]);
-
-	glVertex3d(d[0], 0.0, 0.0);
-	glVertex3d(d[0], 0.0, d[2]);
-
-	glVertex3d(d[0], d[1], 0.0);
-	glVertex3d(d[0], d[1], d[2]);
-	glEnd();
-
-	glLineWidth(1.0);
+	drawBoxAndCells();
 
 	double color[3];
 
@@ -263,7 +310,7 @@ static void display(void)
 			glPopMatrix();
 		}
 		//draw springs
-		if(Settings::scenarioType == ScenarioType::Membrane) {
+		if(Settings::scenarioType == ScenarioType::Membrane && renderMembrane) {
 			glDisable(GL_LIGHTING);
 			glBegin(GL_LINES);
 			for(int i=0; i < render3dParticles.size(); i++) {
@@ -331,6 +378,10 @@ key(unsigned char key, int x, int y)
 	case 'w': camPosition[1] += 1.0; break;
 	case 'q': camPosition[2] -= 1.0; break;
 	case 'e': camPosition[2] += 1.0; break;
+	case 'h': renderHalo = !renderHalo; break;
+	case 'm': renderMembrane = !renderMembrane; break;
+	case 'p': renderingPaused = !renderingPaused; break;
+	case 'c' : renderCells = !renderCells; break;
 
 	default:
 		break;
@@ -547,7 +598,6 @@ RenderOutputWriter::RenderOutputWriter() {
 void RenderOutputWriter::plotParticles(ParticleContainer & container, const std::string& filename, int iteration) {
 	currentIteration = iteration;
 
-
 	//copy particle data over
 /*	container.each([&] (Particle &p) {
 #ifdef _OPENMP
@@ -556,16 +606,27 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 		render3dParticles[i++] = p;
 	});*/
 
+	if(renderingPaused) return;
+
 	CellListContainer *cc = (CellListContainer*)&container;
 
-	render3dParticles.resize(cc->getSize(true));
+	cellCount[0] = cc->nX0;
+	cellCount[1] = cc->nX1;
+	cellCount[2] = cc->nX2;
+	cellSizes[0] = cc->edgeLength[0];
+	cellSizes[1] = cc->edgeLength[1];
+	cellSizes[2] = cc->edgeLength[2];
+
+	bool maskHalo = !renderHalo;
+
+	render3dParticles.resize(cc->getSize(!maskHalo));
 	int i = 0;
 
 	int nX0 = cc->nX0, nX1 = cc->nX1, nX2 = cc->nX2;
 
-	for(int x0=1; x0 < nX0-1; x0++)
-		for(int x1=1; x1 < nX1-1; x1++)
-			for(int x2=1; x2 < nX2-1; x2++) {
+	for(int x0=1+maskHalo; x0 < nX0-1-maskHalo; x0++)
+		for(int x1=1+maskHalo; x1 < nX1-1-maskHalo; x1++)
+			for(int x2=1+maskHalo; x2 < nX2-1-maskHalo; x2++) {
 				ParticleContainer &plist = cc->cells[x2 + x1*nX2 + x0*nX2*nX1];
 				int s = plist.getSize();
 				plist.each([&] (Particle &p) {
@@ -576,6 +637,7 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 	//signal the rendering thread to recompile display list and redraw buffer
 	redrawRequested = true;
 	recompileRequested = true;
+
 }
 
 } //namespace outputWriter
