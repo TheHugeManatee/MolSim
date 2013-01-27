@@ -173,7 +173,7 @@ void CellListContainer::afterPositionChanges(
 		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6]) {
 	int cellcount = cells.size();
 #ifdef _OPENMP
-#pragma omp parallel for
+//#pragma omp parallel for
 #endif
 	for(int x0=2; x0 < nX0-2; x0++)
 		for(int x1=2; x1 < nX1-2; x1++)

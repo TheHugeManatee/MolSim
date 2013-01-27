@@ -121,6 +121,12 @@ public:
 	static bool saveLastState;
 	static std::string lastStateFile;
 
+
+	static bool printStatistics;
+	static int statisticsInterval;
+	static std::string statisticsFile;
+	static double deltaRDF;
+
 	/*
 	 * sigma parameter for the Lennard-Jones potential
 	 */

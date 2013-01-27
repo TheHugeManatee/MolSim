@@ -19,12 +19,17 @@
 #include "utils/ThermostatDiscrete.h"
 #include "JobQueue.h"
 #include <log4cxx/logger.h>
+#include <sstream>
+#include <iostream>
+
+#define PI 3.1415926535897932384626433;
 
 class Simulator {
 private:
 
 	SimulationScenario *scenario;
 	ParticleContainer *particleContainer;
+
 #ifdef _OPENMP
 	JobQueue *simulationJobs;
 	JobQueue *apcJobs;
@@ -35,10 +40,18 @@ public:
 	virtual ~Simulator();
 	static log4cxx::LoggerPtr logger;
 
+	static double diffusion;
+	static double* radialDistribution;
+	static std::stringstream statistics;
+
 	void exportPhaseSpace(void);
 
 
-//	void printDiffusion();
+	void getDiffusion();
+	void getRadialDistribution();
+	void addStatisticsString();
+	void exportStatistics();
+
 
 	/* processed iterations*/
 	static int iterations;

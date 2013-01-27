@@ -19,6 +19,7 @@ private:
 	static log4cxx::LoggerPtr logger;
 
 public:
+	utils::Vector<double, 3> x_t0;
 	/** the position of the particle */
 	utils::Vector<double, 3> x;
 

@@ -245,6 +245,8 @@ int main(int argc, char* argsv[]) {
 
 	if(Settings::saveLastState)
 		sim->exportPhaseSpace();
+	if(Settings::printStatistics)
+		sim->exportStatistics();
 
 	LOG4CXX_INFO(rootLogger, "Simulation finished. Took " << (benchmarkEndTime - benchmarkStartTime)/1000.0 << " seconds");
 

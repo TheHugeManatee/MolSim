@@ -59,7 +59,7 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 		double initialTemperature = initialTemperature_arg.get();
 		particles->each([&] (Particle& p) {
 			double scale = sqrt( BOLTZMANN * initialTemperature / (Settings::particleTypes[p.type].mass));
-			MaxwellBoltzmannDistribution(p , scale , dimensions);
+			MaxwellBoltzmannDistribution(p , scale , Settings::dimensions);
 		});
 
 		LOG4CXX_DEBUG(logger,"Applied initial Temperature " << initialTemperature_arg.get());

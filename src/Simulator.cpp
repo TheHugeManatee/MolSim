@@ -24,6 +24,9 @@
 log4cxx::LoggerPtr Simulator::logger = log4cxx::Logger::getLogger("Simulator");
 
 int Simulator::iterations = 0 ;
+double Simulator::diffusion = 0.0;
+double *Simulator::radialDistribution = NULL;
+std::stringstream Simulator::statistics;
 
 Simulator::Simulator() {
 
@@ -66,6 +69,14 @@ Simulator::Simulator() {
 		Thermostat::scaleInitialVelocity(particleContainer);
 	}
 
+	if(Settings::printStatistics){
+		int length = ceil(Settings::rCutoff /Settings::deltaRDF);
+		Simulator::radialDistribution = new double[length];
+		for (int i = 0 ; i < ceil(Settings::rCutoff /Settings::deltaRDF) ; i++ ){
+			radialDistribution[i] = 0;
+		}
+	}
+
 	//plotParticles(0);
 }
 
@@ -102,20 +113,66 @@ void Simulator::exportPhaseSpace(void){
 	myfile.close();
 }
 
-//void Simulator::printDiffusion(){
-//	std::ostream myfile;
-//	myfile.open("Diffusion.csv");
-//	double diffusion = 0;
-//
-//	particleContainer->each([&] (Particle &p)){
-//		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared();
-//	}
-//
-//	int num = particleContainer->getSize();
-//	diffusion = diffusion / num ;
-//	myfile << diffusion  << std::endl;
-//	myfile.close();
-//}
+
+void Simulator::getDiffusion(){
+
+	particleContainer->each([&] (Particle &p){
+		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared();
+	});
+
+	if(Simulator::iterations % Settings::statisticsInterval == 0){
+		int num = particleContainer->getSize();
+		Simulator::diffusion = Simulator::diffusion/(5*num);
+	}
+}
+
+void Simulator::getRadialDistribution(){
+	int nIntervals = ceil(Settings::rCutoff /Settings::deltaRDF);
+
+	particleContainer->eachPair([&] (Particle &p1 ,Particle &p2){
+		utils::Vector <double, 3> xDif = p1.x - p2.x;
+		for(int i = 0 ; i < nIntervals; i++ ){
+			double radiusSquared = Settings::deltaRDF * Settings::deltaRDF * i * i ;
+			double radiusPlusSquared = Settings::deltaRDF * Settings::deltaRDF * (i+1) * (i+1);
+			if((radiusSquared <= xDif.LengthOptimizedR3Squared()) && (radiusPlusSquared  > xDif.LengthOptimizedR3Squared())){
+				Simulator::radialDistribution[i] ++;
+			}
+		}
+	});
+
+	if(Simulator::iterations % Settings::statisticsInterval == 0){
+		for (int i = 0 ; i < nIntervals ; i++ ){
+			double radius = sqrt(Settings::deltaRDF * Settings::deltaRDF * i) ;
+			double radiusPlus = sqrt(Settings::deltaRDF * Settings::deltaRDF * (i+1));
+			double volume = 0.2666666666666666666666666666666 / ((radiusPlus * radiusPlus * radiusPlus) - (radius * radius * radius)) * PI ;
+			radialDistribution[i] = radialDistribution[i]/ volume;
+		}
+	}
+
+}
+
+void Simulator::addStatisticsString(){
+	int position = Simulator::iterations / Settings::statisticsInterval;
+
+	statistics << Simulator::iterations <<";"<< Simulator::diffusion <<";" ;
+	Simulator::diffusion = 0;
+	int nIntervals = ceil(Settings::rCutoff /Settings::deltaRDF);
+	for (int i = 0 ; i < nIntervals ; i++ ){
+	statistics << Simulator::radialDistribution[i] <<";" ;
+
+	Simulator::radialDistribution[i] = 0;
+	}
+	statistics<<std::endl;
+}
+
+
+
+void Simulator::exportStatistics(){
+	std::ofstream myfile;
+	myfile.open (Settings::statisticsFile);
+	myfile << statistics.str();
+	myfile.close();
+}
 
 
 void Simulator::plotParticles(int iteration) {
@@ -181,6 +238,7 @@ void Simulator::nextTimeStep() {
 		ThermostatDiscrete::updateThermostate(particleContainer);
 	}
 
+
 //#ifdef _OPENMP
 //	apcJobs->executeJobsParallel((CellListContainer*)particleContainer, scenario);
 //	apcJobs->resetJobs();
@@ -189,6 +247,18 @@ void Simulator::nextTimeStep() {
 	//rearrange internal particle container structure and apply boundary handlers
 	particleContainer->afterPositionChanges(scenario->boundaryHandlers);
 //#endif
+
+	if(Settings::printStatistics){
+		if(Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-1||Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-2||Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-3||Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-4){
+			getDiffusion();
+			getRadialDistribution();
+		}else if(Simulator::iterations % Settings::statisticsInterval == 0 ){
+			getDiffusion();
+			getRadialDistribution();
+			addStatisticsString();
+		}
+	}
+
 
 	Simulator::iterations++;
 	LOG4CXX_TRACE(logger,"Iteration number " << Simulator::iterations); //This one is pretty annoying

@@ -27,6 +27,7 @@ Particle::Particle(int type_arg) {
 
 Particle::Particle(const Particle& other) {
 	x = other.x;
+	x_t0 = other.x_t0;
 	v = other.v;
 	f = other.f;
 	old_f = other.old_f;
@@ -42,6 +43,7 @@ Particle::Particle(	utils::Vector<double, 3> x_arg,
 		utils::Vector<double, 3> v_arg,
 		int type_arg
 ) : x(x_arg), v(v_arg), type(type_arg), f(0.0), old_f(0.0), id(-1) {
+	x_t0 = x;
 	LOG4CXX_TRACE(logger,"Particle generated");
 	Particle::createdInstances++;
 
@@ -55,6 +57,7 @@ Particle::Particle(	utils::Vector<double, 3> x_arg,
 		int id_arg
 ) {
 	x = x_arg;
+	x_t0 = x;
 	v = v_arg;
 	type = type_arg;
 	f = f_arg;
@@ -70,6 +73,7 @@ Particle::Particle(	utils::Vector<double, 3> x_arg,
 		int id_arg
 ) {
 	x = x_arg;
+	x_t0 = x;
 	v = v_arg;
 	type = type_arg;
 	f = 0.0;
