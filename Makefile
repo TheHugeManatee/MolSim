@@ -27,11 +27,14 @@ SOURCES=\
 	src/outputWriter/RenderOutputWriter.cpp\
 	src/utils/Thermostat.cpp\
 	src/utils/Matrix.cpp\
-	src/JobQueue.cpp
+	src/JobQueue.cpp\
+	src/utils/ThermostatDiscrete.cpp\
+	src/SimulationJobQueue.cpp\
+	src/APCJobQueue.cpp
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp
+CFLAGS=-g -fpermissive -std=gnu++0x -Wno-deprecated -fopenmp
 
 # Linker flags
 # ------------

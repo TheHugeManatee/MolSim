@@ -110,10 +110,12 @@ void ParticleGenerator::generateSphere(ParticleContainer& container,
 
 								utils::Vector<double, 3> xParticle;
 
-								xParticle[0] = center[0]
-										+ (h * height) * *diffX;
-								xParticle[1] = center[1] + (h * x1) * *diffY;
-								xParticle[2] = center[2] + (h * x2) * *diffZ;
+								xParticle[0] = (h * height) * *diffX;
+								xParticle[1] = (h * x1) * *diffY;
+								xParticle[2] = (h * x2) * *diffZ;
+
+								(utils::Matrix::translate(center[0],center[1],center[2]) * transform).transform(xParticle);
+
 								int tempRadius = radiusSphere + 1;
 								int pid = tempRadius + (*diffZ) * (x2) +
 										2*tempRadius * (tempRadius + (*diffY) * (x1)) +

@@ -111,6 +111,7 @@
 #include "UnitTests/ParticleContainerTests.h"
 #include "UnitTests/ParticleGeneratorTests.h"
 #include "UnitTests/SettingsXsdTest.h"
+#include "UnitTests/MatrixTests.h"
 
 #include "utils/Settings.h"
 #include "Simulator.h"
@@ -269,6 +270,7 @@ int main(int argc, char* argsv[]) {
 	return 0;
 }
 
+
 /**
  * execute a specific or all test cases, depending on the Settings::testCase parameter
  */
@@ -285,10 +287,12 @@ int executeTests() {
 	if(all || !Settings::testCase.compare("ParticleGenerator"))
 		 runner.addTest(ParticleGeneratorTests::suite());
 
-	if(all || !Settings::testCase.compare("Settings"))
-		 runner.addTest(SettingsXsdTest::suite());
+//	if(all || !Settings::testCase.compare("Settings"))
+//		 runner.addTest(SettingsXsdTest::suite());
 
 
+	if(all || !Settings::testCase.compare("Matrix"))
+		 runner.addTest(MatrixTests::suite());
 
 	runner.setOutputter( new CppUnit::CompilerOutputter( &runner.result(),
 													   std::cerr ) );

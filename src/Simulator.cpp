@@ -17,6 +17,9 @@
 #endif
 
 #include "CellListContainer.h"
+#include "APCJobQueue.h"
+#include "SimulationJobQueue.h"
+
 
 log4cxx::LoggerPtr Simulator::logger = log4cxx::Logger::getLogger("Simulator");
 
@@ -26,16 +29,20 @@ double *Simulator::radialDistribution = NULL;
 std::stringstream Simulator::statistics;
 
 Simulator::Simulator() {
+
+#ifdef _OPENMP
+	particleContainer = new CellListContainer();
+	simulationJobs = new SimulationJobQueue((CellListContainer*)particleContainer);
+	apcJobs = new APCJobQueue((CellListContainer*)particleContainer);
+#else
 	if(Settings::containerType == ContainerType::ParticleContainer) {
-		particleContainer = new ParticleContainer();
+			particleContainer = new ParticleContainer();
 	}
 	else {
 		particleContainer = new CellListContainer();
-
-#ifdef _OPENMP
-		queue = new JobQueue((CellListContainer*)particleContainer);
-#endif
 	}
+#endif
+
 
 	scenario = ScenarioFactory::build(Settings::scenarioType);
 
@@ -43,13 +50,7 @@ Simulator::Simulator() {
 
 	particleContainer->afterPositionChanges(scenario->boundaryHandlers);
 
-	/* std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6];
-	for(int i = 0 ; i<6 ; i++){
-	boundaryHandlers[i] = [] (ParticleContainer &container, Particle &p) {
-		return false;
-	};
-	}
-	particleContainer->afterPositionChanges(boundaryHandlers ,scenario->haloHandler); */
+
 	LOG4CXX_TRACE(logger, "Scenario set up.");
 	//pre-calculate the forces for the first update
 	particleContainer->eachPair(scenario->calculateForce);
@@ -83,15 +84,14 @@ Simulator::~Simulator() {
 	delete particleContainer;
 	delete scenario;
 #ifdef _OPENMP
-	delete queue;
+	delete simulationJobs;
+	delete apcJobs;
 #endif
 }
 
 
 inline void Simulator::addAdditionalForces(){
-
 	particleContainer->each(scenario->addAdditionalForces);
-
 }
 
 
@@ -112,6 +112,7 @@ void Simulator::exportPhaseSpace(void){
 	});
 	myfile.close();
 }
+
 
 void Simulator::getDiffusion(){
 
@@ -173,6 +174,7 @@ void Simulator::exportStatistics(){
 	myfile.close();
 }
 
+
 void Simulator::plotParticles(int iteration) {
 	outputWriter::VTKWriter vtkWriter;
 	outputWriter::XYZWriter xyzWriter;
@@ -217,17 +219,9 @@ void Simulator::nextTimeStep() {
 
 
 #ifdef _OPENMP
-#pragma omp parallel
-	{
-		Job *job;
-		while( (job = queue->dequeue()) != NULL ) {
-			(*job)((CellListContainer *)particleContainer, scenario);
+	simulationJobs->executeJobsParallel((CellListContainer*)particleContainer, scenario);
 
-			job->enqueueDependentJobs(*queue);
-		}
-	}
-
-	queue->resetJobs();
+	simulationJobs->resetJobs();
 #else
 	//Calculate all forces
 	particleContainer->eachPair(scenario->calculateForce);
@@ -245,12 +239,15 @@ void Simulator::nextTimeStep() {
 	}
 
 
-	//rearrange internal particle container structure											/*This move is ugly but necessary for periodic boundary Handling*/
-	particleContainer->afterPositionChanges(scenario->boundaryHandlers);	/*Without it we wouldn't have any way to calculate forces between */
-																					/*two opposite cells*/
-																								/*TODO:Maybe we should separate afterPostionChanges in one method
-																								*applying bounderyHandling an one to apply haloHandling and sort the cells
-																								*after force calculation*/
+//#ifdef _OPENMP
+//	apcJobs->executeJobsParallel((CellListContainer*)particleContainer, scenario);
+//	apcJobs->resetJobs();
+//	std::cout << "****************** Jobs reset ******************" << std::endl;
+//#else
+	//rearrange internal particle container structure and apply boundary handlers
+	particleContainer->afterPositionChanges(scenario->boundaryHandlers);
+//#endif
+
 	if(Settings::printStatistics){
 		if(Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-1||Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-2||Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-3||Simulator::iterations % Settings::statisticsInterval == Settings::statisticsInterval-4){
 			getDiffusion();
@@ -261,6 +258,7 @@ void Simulator::nextTimeStep() {
 			addStatisticsString();
 		}
 	}
+
 
 	Simulator::iterations++;
 	LOG4CXX_TRACE(logger,"Iteration number " << Simulator::iterations); //This one is pretty annoying

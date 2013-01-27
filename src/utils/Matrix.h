@@ -22,6 +22,7 @@ public:
 	Matrix(const double _m[16]);
 
 	Matrix operator*(const Matrix &rhs);
+	double operator[](int i);
 
 	void transform(double v[3]);
 	void transform(utils::Vector<double, 3> &v);

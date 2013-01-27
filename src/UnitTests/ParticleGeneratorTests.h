@@ -50,13 +50,16 @@ public:
 		zero[1] = 0.0;
 		zero[2] = 0.0;
 
-		ParticleGenerator::regularCuboid(pcCuboid, zero, length, width, height,1.1225,1,zero,0.1);
+		ParticleGenerator::regularCuboid(pcCuboid, zero, length, width, height,1,1,zero,0.1);
+
+		CPPUNIT_ASSERT(pcCuboid.getSize() == length*width*height);
+
 		bool ok = true;
 		pcCuboid.each([&] (Particle &p){
 			//std::cout << "length: " <<p.x[0] << ", width: " << p.x[1] << ", height: " << p.x[2] <<std::endl;
 			ok = ok && (p.x[0]<=length && p.x[1] <= width && p.x[2] <= height);
 				});
-		CPPUNIT_ASSERT(ok && (pcCuboid.getSize() == length*width*height));
+		CPPUNIT_ASSERT(ok);
 	}
 	/**
 	 * tests the following conditions:

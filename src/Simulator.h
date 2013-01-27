@@ -31,7 +31,8 @@ private:
 	ParticleContainer *particleContainer;
 
 #ifdef _OPENMP
-	JobQueue *queue;
+	JobQueue *simulationJobs;
+	JobQueue *apcJobs;
 #endif
 
 public:
@@ -44,6 +45,7 @@ public:
 	static std::stringstream statistics;
 
 	void exportPhaseSpace(void);
+
 
 	void getDiffusion();
 	void getRadialDistribution();
