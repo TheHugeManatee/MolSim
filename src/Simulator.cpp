@@ -242,7 +242,7 @@ void Simulator::nextTimeStep() {
 //#ifdef _OPENMP
 //	apcJobs->executeJobsParallel((CellListContainer*)particleContainer, scenario);
 //	apcJobs->resetJobs();
-//	std::cout << "****************** Jobs reset ******************" << std::endl;
+	std::cout << "****************** Jobs reset ******************" << std::endl;
 //#else
 	//rearrange internal particle container structure and apply boundary handlers
 	particleContainer->afterPositionChanges(scenario->boundaryHandlers);

@@ -24,7 +24,9 @@ protected:
 
 public:
 	BlockJob(int start_, int end_, SliceJob *firstSlice_, SliceJob *succeedingSlice_) :
-		start(start_), end(end_), firstSlice(firstSlice_), succeedingSlice(succeedingSlice_) {};
+		start(start_), end(end_), firstSlice(firstSlice_), succeedingSlice(succeedingSlice_) {
+		std::cout << "Block Job from " << start_ << " to " << end_ << " created." << std::endl;
+	};
 
 	void enqueueDependentJobs(JobQueue &queue);
 };
@@ -35,7 +37,9 @@ protected:
 
 public:
 
-	SliceJob(int sliceIdx_) : Job(2), sliceIdx(sliceIdx_) {};
+	SliceJob(int sliceIdx_) : Job(2), sliceIdx(sliceIdx_) {
+		std::cout << "Slice Job " << sliceIdx_ << " created." << std::endl;
+	};
 
 	void enqueueDepenedentJobs(JobQueue &queue) {	/*no follow-ups*/};
 };

@@ -10,15 +10,15 @@
 SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
 	SliceJob *slice = NULL;
 	//each job has just one slice.. this seems to be the optimal case..
-	int numBlocks = cont->nX0 - 2;
+	int numBlocks = cont->nX0 - 3;
 
 	//enqueue the blocks directly and assign the slices as successors of the blocks
 	//note: first slice does not need to be executed because it is a halo slice
 	for(int i=0; i < numBlocks; i++) {
-		int startSlice = i * (cont->nX0 - 2)/numBlocks + 1;
-		int endSlice = (i+1) * (cont->nX0 - 2)/numBlocks + 1;
+		int startSlice = i * (cont->nX0 - 3)/numBlocks + 1;
+		int endSlice = (i+1) * (cont->nX0 - 3)/numBlocks + 1;
 
-		SliceJob *nextSlice = (endSlice == cont->nX0)?NULL:(new SliceJobX0(endSlice));
+		SliceJob *nextSlice = (endSlice == cont->nX0-2)?NULL:(new SliceJobX0(endSlice));
 		BlockJob *block = new BlockJobX0(startSlice, endSlice, slice, nextSlice);
 
 		if(nextSlice) jobs.push_back(nextSlice);
@@ -32,16 +32,20 @@ SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
 
 SimulationJobQueue::~SimulationJobQueue() {
 	//move along, nothing happening here!
-	//destructino of objects happens in base class destructor
+	//destruction of objects happens in base class destructor
 }
 
 void BlockJob::enqueueDependentJobs(JobQueue &queue) {
 
 	if(firstSlice) {
+//#pragma omp critical(dbg_io)
+//	{std::cout  << "Block job from " << start << " to " << end << " enqueueing firstslice..." << std::endl; }
 		firstSlice->dependencyFinished(queue);
 	}
 	if(succeedingSlice) {
-		firstSlice->dependencyFinished(queue);
+//#pragma omp critical(dbg_io)
+//		{std::cout  << "Block job from " << start << " to " << end << " enqueueing nextSlice..." << std::endl; }
+		succeedingSlice->dependencyFinished(queue);
 	}
 }
 
@@ -49,6 +53,9 @@ void BlockJobX0::exec(CellListContainer *container, SimulationScenario *scenario
 
 //	printf("##Block from %i to %i\n", start, end);
 
+
+#pragma omp critical(dbg_io)
+	{std::cout  << "Block job from " << start << " to " << end << " executing..." << std::endl; }
 
 	int nX0 = container->nX0, nX1 = container->nX1, nX2 = container->nX2;
 	std::vector<ParticleContainer> &cells = container->cells;
@@ -112,7 +119,9 @@ void SliceJobX0::exec(CellListContainer *container, SimulationScenario *scenario
 	std::vector<ParticleContainer> &cells = container->cells;
 	double rcSquared = Settings::rCutoff*Settings::rCutoff;
 
-//	printf("||Slice %i\n", sliceIdx);
+
+#pragma omp critical(dbg_io)
+	{std::cout  << "slice " << sliceIdx << " executing..." << std::endl; }
 
 	for(int x1=2; x1 < nX1-2; x1++) {
 		for(int x2=2; x2 < nX2-2; x2++) {

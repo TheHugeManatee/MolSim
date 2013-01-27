@@ -91,6 +91,8 @@ public:
 		if(++dependenciesFinished >= requiredDependencies) {
 			queue.enqueue(this);
 		}
+//#pragma omp critical(dbg_io)
+//		{std::cout << "Job has " << dependenciesFinished << " out of " << requiredDependencies << std::endl;}
 		unlock();
 	};
 };

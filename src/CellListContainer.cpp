@@ -43,8 +43,6 @@ CellListContainer::CellListContainer() {
 
 	haloCells.reserve(2*((nX0-2)*(nX1-2) + (nX0-2)*(nX2-2) + (nX1-2)*(nX2-2)));
 
-	std::cout << "Halo cells size: " << haloCells.size();
-
 	for(int x0=1; x0 < nX0-1; x0++)
 		for(int x1=1; x1 < nX1-1; x1++)
 			for(int x2=1; x2 < nX2-1; x2++) {
