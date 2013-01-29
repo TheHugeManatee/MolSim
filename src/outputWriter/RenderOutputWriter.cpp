@@ -71,10 +71,10 @@ static double camPosition[3] = {10, 10, 10};
 /// the rotation around the three primary axes in degrees
 static double camRotation[3] = {0,0,0};
 
-bool renderHalo = true;
+bool renderHalo = false;
 bool renderMembrane = true;
 bool renderingPaused = false;
-bool renderCells = true;
+bool renderCells = false;
 int cellCount[3];
 double cellSizes[3];
 
