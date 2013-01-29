@@ -16,8 +16,8 @@
 <!-- Periodic and Reflect on opposite boundaries doesn't work due implementation -->
   <boundaryHandling						
   	top="Reflect" bottom="Reflect"					
-  	left="Reflect" right="Reflect"		
-  	front="Reflect" back="Reflect"
+  	left="Periodic" right="Periodic"		
+  	front="Periodic" back="Periodic"
   />
   
   <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
@@ -33,7 +33,8 @@
   <thermostatSwitch>ON</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
 
   <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
-	<initTemperature>-233.2</initTemperature> <!-- (o) -->
+	<initTemperature>40</initTemperature> <!-- (o) -->
+	<targetTemperature>40</targetTemperature>
   	<controlInterval>1000</controlInterval><!-- (r) the interval the thermostat is applied, it tries to reach the target temperature until the next step -->
   </thermostatSettings>
   
