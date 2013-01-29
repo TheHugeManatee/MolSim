@@ -5,6 +5,8 @@
  * @author Jakob Weiss
  */
 
+#ifndef NOGLVISUALIZER
+
 #ifndef RENDEROUTPUTWRITER_H_
 #define RENDEROUTPUTWRITER_H_
 
@@ -63,3 +65,5 @@ public:
 
 }
 #endif /* RENDEROUTPUTWRITER_H_ */
+
+#endif //#ifndef NOGLVISUALIZER

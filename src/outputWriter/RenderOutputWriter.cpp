@@ -5,6 +5,8 @@
  * @author Jakob Weiss
  */
 
+#ifndef NOGLVISUALIZER
+
 #include "RenderOutputWriter.h"
 
 #include "utils/Settings.h"
@@ -641,3 +643,5 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 }
 
 } //namespace outputWriter
+
+#endif //#ifndef NOGLVISUALIZER
