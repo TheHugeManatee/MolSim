@@ -3,11 +3,11 @@
  * @file Settings.h
  *
  * @date Oct 30, 2012
- * @author j
+ * @author Jakob Weiss
  * @class Settings
  *
  * This class manages all global parameters and constants used in the simulation.
- * Any globally availabe setting should be stored here as a public static variable,
+ * Any globally available setting should be stored here as a public static variable,
  * so it will be accessible in any part of the code.
  *
  * Most of the settings can be specified in a config file. The config file specifies
@@ -83,7 +83,7 @@ public:
 	static double deltaT;
 
 	/**
-	 * indicates how many dimensions are use
+	 * indicates how many dimensions are in use
 	 */
 
 	static int dimensions;
@@ -254,6 +254,11 @@ private:
 	 */
 	static void parseCfgFile(std::string cfgFile);
 
+
+	/**
+	 * loads config parameters from an XML file
+	 * @param xmlFile path to the config file
+	 */
 	static void parseXmlFile(std::string xmlFile);
 
 	/**
@@ -261,6 +266,11 @@ private:
 	 */
 	static log4cxx::LoggerPtr logger;
 
+
+	/**
+	 * gives a textual representation of the most important Settings parameters of the Simultation
+	 * @return textual representation of the most important Settings parameters
+	 */
 	static std::string toString();
 
 };

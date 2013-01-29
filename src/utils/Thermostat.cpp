@@ -49,9 +49,7 @@ void Thermostat::initialize(int arg_dimensions , int arg_numberOfParticles){
 
 }
 
-/**
- * Scales the particles of the given particleGenerator by the initial Temperature
- */
+
 void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 	auto initialTemperature_arg = Settings::thermostatSettings->initTemperature() ;
 	numberOfParticles = particles->getSize();
@@ -78,10 +76,7 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 //	LOG4CXX_DEBUG(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
 }
 
-/**
- * Calculates and returns the energy of the temperature to be reached
- * @return The target energy
- */
+
 void Thermostat::initTargetEnergy(){
 	auto targetTemperature_opt = Settings::thermostatSettings->targetTemperature() ;
 	auto initialTemperature_opt = Settings::thermostatSettings->initTemperature();
@@ -101,11 +96,7 @@ void Thermostat::initTargetEnergy(){
 	}
 }
 
-/**
- * Calculates and returns the energy that has to be applied to the system in one timestep
- * accoring to the remaining steps and remaining Energy to be applied
- * @return delta E_kin
- */
+
 void Thermostat::getStepEnergy(){
 	auto estimatedSteps_opt = Settings::thermostatSettings->estimatedSteps();
 	int stepsLeft;
@@ -132,13 +123,6 @@ void Thermostat::getStepEnergy(){
 }
 
 
-
-/**
- * Calculates the current energy for the given ParticleContainer
- * and stores it in the static Thermostat::currentEnergy field
- * the numberOfParticles Value is reseted
- * also beta is initialized according to current Energy
- */
 
 void Thermostat::calculateCurrentEnergy(ParticleContainer* particles){
 	Thermostat::currentEnergy = 0 ;
@@ -168,15 +152,13 @@ void Thermostat::calculateCurrentEnergy(ParticleContainer* particles){
 }
 
 
-/**
- * calculates beta for the actual timestep from the previous beta
- */
+
 inline void Thermostat::iterateBeta(){
 	beta = sqrt(2-1/(beta*beta)); /*Ask Leo if you want to know why that works he can give you a wonderful prove*/
 	LOG4CXX_TRACE(logger,"Scaling velocities by "<<beta<< "; current energy is " << currentEnergy << " at step " << Simulator::iterations);
 }
 
-/*all the thermostation work*/
+
 void Thermostat::updateThermostate(ParticleContainer* particles) {
 	if ((maxSteps == 0 )||(Simulator::iterations < maxSteps)) {
 		int iterations = Simulator::iterations + 1;

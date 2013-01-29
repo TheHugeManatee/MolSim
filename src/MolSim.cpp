@@ -123,6 +123,16 @@ extern std::vector<Particle> render3dParticles;
 #endif
 
 //Forward declarations
+
+
+ /**
+  * @brief  execute a specific or all test cases, depending on the Settings::testCase parameter
+  *
+  *         Runs all test that are specified in Settings parameter
+  *
+  * @return status code: 0 if all tests were successful
+  *
+  */
 int executeTests();
 
 /**
@@ -137,13 +147,16 @@ void initializeLogger();
  */
 void printProgressBar(int percentage, int elapsed);
 
-void exportPhaseSpace(void);
 
 
 //globals
 auto rootLogger = log4cxx::Logger::getRootLogger();
 
-
+/**
+ * gets System time in milliseconds
+ *
+ * @return System time in milliseconds
+ */
 int getMilliCount(){
 	timeb tb;
 	ftime(&tb);
@@ -151,6 +164,14 @@ int getMilliCount(){
 	return nCount;
 }
 
+/**
+ * Main method (Duh ;) ) Runs the whole simulation. Main loop runs in this method
+ *
+ * @param argc number of command line arguments
+ * @param argsv[] command line parameters. Several Config file parameters can be overriden by setting them here. "--visualize" is especially cool, as it shows an OpenGL live view
+ *
+ * @return 0 if successful
+ */
 int main(int argc, char* argsv[]) {
 	if (argc > 1 && (!strcmp(argsv[1], "-?") || !strcmp(argsv[1], "help") || !strcmp(argsv[1], "--help"))) {
 		std::cout << "This is the NUKULAR Simulator" << std::endl;
@@ -271,9 +292,6 @@ int main(int argc, char* argsv[]) {
 }
 
 
-/**
- * execute a specific or all test cases, depending on the Settings::testCase parameter
- */
 int executeTests() {
 	std::cout << "Running tests..." << std::endl;
 
@@ -370,12 +388,4 @@ void printProgressBar(int percentage, int elapsed){
 #endif
 	}
 	std::cout.flush();
-}
-
-void exportPhaseSpace(){
-	std::ofstream myfile;
-	myfile.open ("example.txt");
-
-	myfile << "Writing this to a file.\n";
-	myfile.close();
 }

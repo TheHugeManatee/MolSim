@@ -2,7 +2,7 @@
  * Matrix.cpp
  *
  *  Created on: 17.01.2013
- *      Author: j
+ *      Author: Jakob Weiss
  */
 
 #include "Matrix.h"

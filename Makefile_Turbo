@@ -1,0 +1,62 @@
+# create xsd build command lines: (to be integrated into the makefile)
+# xsd cxx-tree --disable-warning all --type-naming ucc --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/utils/ --generate-doxygen simulationConfig.xsd
+# xsd cxx-tree --disable-warning all --generate-doxygen --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/outputWriter --generate-serialization src/outputWriter/vtk-unstructured.xsd
+
+
+
+# Compiler
+# --------
+CC=g++
+#CC=icpc
+
+include files.mk
+
+# Compiler flags
+# -------------------------------------------------------------------------
+CFLAGS=-O3 -fpermissive -std=gnu++0x -Wno-deprecated -fopenmp -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp -ffast-math -finline-functions -ftree-vectorize -funroll-loops -funsafe-math-optimizations -fno-signed-zeros -LOG4CXX_=//
+
+# Linker flags
+# ------------
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp
+
+INCLUDES= -I./src -I./libxsd
+
+OBJECTS=$(SOURCES:.cpp=.o)
+EXECUTABLE=MolSim
+
+all: $(SOURCES) $(EXECUTABLE)
+
+
+$(EXECUTABLE): $(OBJECTS)
+	@echo 'Linking...'; \
+	$(CC) $(OBJECTS) $(LDFLAGS) -o $@; \
+	echo 'Done!'
+
+clean:
+	rm $(OBJECTS)
+
+.cpp.o:
+	@echo 'Compiling $<'; \
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	
+
+xsd: src/utils/SimulationConfig.cpp\
+	src/outputWriter/vtk-unstructured.cpp
+
+src/utils/SimulationConfig.cpp: SimulationConfig.xsd
+	@echo 'Building SimulationConfig.cpp from xsd...'; \
+	xsd cxx-tree --disable-warning all --type-naming ucc --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/utils/ --generate-doxygen SimulationConfig.xsd
+
+src/outputWriter/vtk-unstructured.cpp: src/outputWriter/vtk-unstructured.xsd
+	@echo 'Building vtk-unstructured.cpp...'; \
+	xsd cxx-tree --disable-warning all --generate-doxygen --hxx-suffix .h --cxx-suffix .cpp --output-dir ./src/outputWriter --generate-serialization src/outputWriter/vtk-unstructured.xsd
+
+test: all
+	./$(EXECUTABLE) -test all
+	
+gltest: gltest.o src/Particle.cpp src/outputWriter/RenderOutputWriter.o src/ParticleContainer.o
+	g++ gltest.o src/outputWriter/RenderOutputWriter.o src/ParticleContainer.o src/Particle.o -llog4cxx -lopengl32 -lglut -o gltest
+
+mptest: mptest.cpp
+	g++ mptest.cpp -fopenmp -o mptest
+

@@ -2,7 +2,7 @@
  * Matrix.h
  *
  *  Created on: 17.01.2013
- *      Author: j
+ *      Author: Jokob Weiss
  */
 
 #ifndef MATRIX_H_
@@ -14,6 +14,15 @@
 
 namespace utils {
 
+
+/**
+ * @class Matrix
+ *
+ * This class implements Matrices in order to give the user the ability to translate, scale, rotate by all dimensions etc
+ * all objects that are supported by the ParticleGenerator
+ *
+ *
+ */
 class Matrix {
 public:
 	double m[16];
