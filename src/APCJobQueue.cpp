@@ -5,6 +5,8 @@
  *      Author: j
  */
 
+#ifdef _OPENMP
+
 #include "APCJobQueue.h"
 
 #include <vector>
@@ -104,3 +106,5 @@ void APCSliceJob::exec(CellListContainer *container, SimulationScenario *scenari
 	} //for x1
 
 }
+
+#endif
