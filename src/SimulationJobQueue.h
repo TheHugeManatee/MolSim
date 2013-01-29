@@ -5,6 +5,8 @@
  *      Author: j
  */
 
+#ifdef _OPENMP
+
 #ifndef SIMULATIONJOBQUEUE_H_
 #define SIMULATIONJOBQUEUE_H_
 
@@ -70,3 +72,5 @@ public:
 };
 
 #endif /* SIMULATIONJOBQUEUE_H_ */
+
+#endif

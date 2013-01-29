@@ -5,6 +5,8 @@
  *      Author: j
  */
 
+#ifdef _OPENMP
+
 #include "SimulationJobQueue.h"
 
 SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
@@ -178,3 +180,6 @@ void BaseBlockJob::enqueueDependentJobs(JobQueue &queue) {
 	}
 
 }
+
+#endif
+
