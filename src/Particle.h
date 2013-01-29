@@ -26,8 +26,7 @@ public:
 	/** the velocity of the particle */
 	utils::Vector<double, 3> v;
 
-	/** the force effective on this particle */
-	utils::Vector<double, 3> f;
+	double f_acc[16][3];
 
 	/** the force which was effective on this particle */
 	utils::Vector<double, 3> old_f;
@@ -66,7 +65,7 @@ public:
 			utils::Vector<double, 3> x_arg,
 			utils::Vector<double, 3> v_arg,
 			int type_arg,
-			utils::Vector<double, 3> f_arg,
+			double *f_arg,
 			utils::Vector<double, 3> old_f_arg,
 			int id_arg  = -1
 	);
