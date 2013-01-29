@@ -56,8 +56,9 @@ CellListContainer::~CellListContainer() {
 }
 
 
-inline ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
+ParticleContainer * CellListContainer::getCell(int x0, int x1, int x2) {
 
+	//std::cout << "retrieving " << x0 << " , " << x2 << " , " << x2 << std::endl;
 	assert(x0 >= 1);
 	assert(x0 < nX0-1);
 	assert(x1 >= 1);
@@ -80,7 +81,7 @@ ParticleContainer * CellListContainer::getContainingCell(Particle& p) {
 	x1 = std::min(nX1 - 2, std::max(1, x1));
 	x2 = std::min(nX2 - 2, std::max(1, x2));
 
-//	std::cout << "Added Particle to Layer: " << x0 <<" " << x1 << " "<< x2  << std::endl;
+//	std::cout << "Added particle at " << p.x << " to Layer: " << x0 <<" " << x1 << " "<< x2  << std::endl;
 
 	return getCell(x0, x1, x2);
 }

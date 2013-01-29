@@ -33,7 +33,7 @@
   <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
   	<targetTemperature>0.02</targetTemperature>
   	<controlInterval>25</controlInterval>
-    <temperaturePerStep>-0.0025</temperaturePerStep>
+    <temperaturePerStep>0.0025</temperaturePerStep>
   
   </thermostatSettings>
 

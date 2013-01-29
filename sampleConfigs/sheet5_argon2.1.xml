@@ -32,7 +32,7 @@
   <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
   	<targetTemperature>0.5</targetTemperature>
   	<controlInterval>50</controlInterval><!-- (r) the interval the thermostat is applied, it tries to reach the target temperature until the next step -->
-    <temperaturePerStep>-0.00078</temperaturePerStep>
+    <temperaturePerStep>0.00078</temperaturePerStep>
   
   </thermostatSettings>
 
