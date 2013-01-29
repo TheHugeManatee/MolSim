@@ -11,7 +11,8 @@
 #include "ParticleContainer.h"
 #include <utils/Settings.h>
 
-#define BOLTZMANN 0.000000000000000000000013806503
+//#define BOLTZMANN 0.000000000000000000000013806503
+#define BOLTZMANN 1024
 
 class Thermostat{
 

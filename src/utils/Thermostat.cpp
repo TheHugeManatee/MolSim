@@ -70,12 +70,13 @@ void Thermostat::scaleInitialVelocity(ParticleContainer *particles){
 	}
 
 //	calculateCurrentEnergy(particles);
-/**	particles->each([&] (Particle& p) {
+/*	particles->each([&] (Particle& p) {
 		Thermostat::currentEnergy += Settings::particleTypes[p.type].mass * p.v.LengthOptimizedR3Squared() ;
 	});
 	Thermostat::currentEnergy = Thermostat::currentEnergy / 2;
-**/
-//	LOG4CXX_DEBUG(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
+
+	LOG4CXX_DEBUG(logger,"Initial energy is \t"<< Thermostat::currentEnergy);
+*/
 }
 
 /**

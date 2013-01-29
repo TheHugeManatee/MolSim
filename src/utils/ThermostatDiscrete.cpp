@@ -30,6 +30,8 @@ void ThermostatDiscrete::getStepEnergy(){
 //	std::cout << "energyPerStep: " << energyPerStep << std::endl;
 	}else{
 	energyPerStep = targetEnergy -currentEnergy;
+//	LOG4CXX_DEBUG(logger,"Target Energy: " << targetEnergy <<" Current Energy: " <<currentEnergy);
+
 	}
 
 }
@@ -56,7 +58,7 @@ void ThermostatDiscrete::calculateCurrentEnergy(ParticleContainer * particles){
 	LOG4CXX_TRACE(logger, "Currently there are " << numberOfParticles << " particles.");
 	double energyDif = targetEnergy - currentEnergy;
 	if(energyDif * energyPerStep > 0){
-		if(energyDif * energyDif > energyPerStep * energyPerStep){
+		if(energyDif * energyDif >= energyPerStep * energyPerStep){
 			beta = sqrt(1+(energyPerStep)/currentEnergy);
 			LOG4CXX_TRACE(logger,"ScalingVelocity by :\t" << beta << "; current energy is " << currentEnergy << " at step " << Simulator::iterations);
 		}else if(currentEnergy == 0){
