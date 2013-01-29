@@ -11,8 +11,7 @@
 #include "ParticleContainer.h"
 #include <utils/Settings.h>
 
-//we're always scaling with 10^(21) (heuristically determined ;-))
-#define BOLTZMANN 1.3806503
+#define BOLTZMANN 0.000000000000000000000013806503
 
 class Thermostat{
 

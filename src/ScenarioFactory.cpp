@@ -312,7 +312,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 					pNew.x_t0 = p.x_t0[0] + Settings::domainSize[0];
 					container.add(pNew);
 
-					if(p.x[1] < Settings::rCutoff){
+					/*if(p.x[1] < Settings::rCutoff){
 						pNew.x[1] += Settings::domainSize[1];
 						container.add(pNew);
 						if(p.x[2] < Settings::rCutoff){
@@ -337,7 +337,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 							container.add(pNew);
 							pNew.x= positionInHalo;
 						}
-					}
+					}*/
 
 					if(p.x[2] < Settings::rCutoff){
 						pNew.x[2] += Settings::domainSize[2];
@@ -346,6 +346,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 						pNew.x[2] -= Settings::domainSize[2];
 						container.add(pNew);
 				    }
+
 					return false;
 
 
@@ -364,7 +365,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 
 					container.add(pNew);
 
-					if(p.x[1] < Settings::rCutoff){
+					/*if(p.x[1] < Settings::rCutoff){
 						pNew.x[1] += Settings::domainSize[1];
 						container.add(pNew);
 						if(p.x[2] < Settings::rCutoff){
@@ -388,7 +389,7 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 							container.add(pNew);
 							pNew.x= positionInHalo;
 						}
-					}
+					}*/
 
 					if(p.x[2] < Settings::rCutoff){
 						pNew.x[2] += Settings::domainSize[2];
@@ -423,6 +424,32 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 						pNew.x[0] = positionInHalo[0];
 					}*/
 
+					if(p.x[0] < Settings::rCutoff){
+						pNew.x[0] += Settings::domainSize[0];
+						container.add(pNew);
+						if(p.x[2] < Settings::rCutoff){
+							pNew.x[2] += Settings::domainSize[2];
+							container.add(pNew);
+							pNew.x= positionInHalo;
+						}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
+							pNew.x[2] -= Settings::domainSize[2];
+							container.add(pNew);
+							pNew.x= positionInHalo;
+						}
+					}else if(p.x[0] > Settings::domainSize[0] - Settings::rCutoff){
+						pNew.x[0] -= Settings::domainSize[0];
+						container.add(pNew);
+						if(p.x[2] < Settings::rCutoff){
+							pNew.x[2] += Settings::domainSize[2];
+							container.add(pNew);
+							pNew.x= positionInHalo;
+						}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
+							pNew.x[2] -= Settings::domainSize[2];
+							container.add(pNew);
+							pNew.x= positionInHalo;
+						}
+					}
+
 					if(p.x[2] < Settings::rCutoff){
 						pNew.x[2] += Settings::domainSize[2];
 						container.add(pNew);
@@ -454,6 +481,32 @@ std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicH
 						container.add(pNew);
 						pNew.x[0] = positionInHalo[0];
 					}*/
+
+					if(p.x[0] < Settings::rCutoff){
+							pNew.x[0] += Settings::domainSize[0];
+							container.add(pNew);
+							if(p.x[2] < Settings::rCutoff){
+								pNew.x[2] += Settings::domainSize[2];
+								container.add(pNew);
+								pNew.x= positionInHalo;
+							}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
+								pNew.x[2] -= Settings::domainSize[2];
+								container.add(pNew);
+								pNew.x= positionInHalo;
+							}
+						}else if(p.x[0] > Settings::domainSize[0] - Settings::rCutoff){
+							pNew.x[0] -= Settings::domainSize[0];
+							container.add(pNew);
+							if(p.x[2] < Settings::rCutoff){
+								pNew.x[2] += Settings::domainSize[2];
+								container.add(pNew);
+								pNew.x= positionInHalo;
+							}else if(p.x[2] > Settings::domainSize[2] - Settings::rCutoff){
+								pNew.x[2] -= Settings::domainSize[2];
+								container.add(pNew);
+								pNew.x= positionInHalo;
+							}
+						}
 
 					if(p.x[2] < Settings::rCutoff){
 						pNew.x[2] += Settings::domainSize[2];

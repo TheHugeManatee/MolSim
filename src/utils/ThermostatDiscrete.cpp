@@ -6,7 +6,6 @@
  */
 
 #include "ThermostatDiscrete.h"
-#include "utils/Thermostat.h"
 #include "Simulator.h"
 
 
@@ -23,11 +22,15 @@ ThermostatDiscrete::ThermostatDiscrete() {
 }
 
 void ThermostatDiscrete::getStepEnergy(){
-	double temperaturePerStep = Settings::thermostatSettings->temperaturePerStep().get();
+	auto temperaturePerStep_opt = Settings::thermostatSettings->temperaturePerStep();
+	if(temperaturePerStep_opt.present()){
 //	std::cout << "numberOfParticles: " << numberOfParticles << std::endl;
 //	std::cout << "temperaturePerStep: " << temperaturePerStep << std::endl;
-	energyPerStep = Settings::dimensions / 2.0 * numberOfParticles * (temperaturePerStep) * BOLTZMANN;
+	energyPerStep = Settings::dimensions / 2.0 * numberOfParticles * (temperaturePerStep_opt.get()) * BOLTZMANN;
 //	std::cout << "energyPerStep: " << energyPerStep << std::endl;
+	}else{
+	energyPerStep = targetEnergy -currentEnergy;
+	}
 
 }
 

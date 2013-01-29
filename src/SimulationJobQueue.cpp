@@ -5,6 +5,8 @@
  *      Author: j
  */
 
+#ifdef _OPENMP
+
 #include "SimulationJobQueue.h"
 
 SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
@@ -35,3 +37,4 @@ SimulationJobQueue::~SimulationJobQueue() {
 	//destructino of objects happens in base class destructor
 }
 
+#endif

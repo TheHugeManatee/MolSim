@@ -9,15 +9,15 @@
   <endTime>100</endTime>
   <dimensions>3</dimensions> <!-- (o) Standrat is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
   <scenarioType>Lennard-Jones</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Lennard-Jones-Gravitational -->
-  <domainSize x0="60" x1="24" x2="51" /><!-- (m) -->
+  <domainSize x0="57.6" x1="24" x2="50.4" /><!-- (m) -->
   <cutoffRadius scaled="1" radius="2.5" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
 
 <!-- (m) Possible: Outflow, Reflect ,Periodic -->
 <!-- Periodic and Reflect on opposite boundaries doesn't work due implementation -->
   <boundaryHandling						
   	top="Reflect" bottom="Reflect"					
-  	left="Reflect" right="Reflect"		
-  	front="Reflect" back="Reflect"
+  	left="Periodic" right="Periodic"		
+  	front="Periodic" back="Periodic"
   />
   
   <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
@@ -33,7 +33,8 @@
   <thermostatSwitch>ON</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
 
   <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
-	<initTemperature>-233.2</initTemperature> <!-- (o) -->
+	<initTemperature>40</initTemperature> <!-- (o) -->
+	<targetTemperature>40</targetTemperature>
   	<controlInterval>1000</controlInterval><!-- (r) the interval the thermostat is applied, it tries to reach the target temperature until the next step -->
   </thermostatSettings>
   

@@ -5,6 +5,8 @@
  *      Author: j
  */
 
+#ifdef _OPENMP
+
 #ifndef APCJOBQUEUE_H_
 #define APCJOBQUEUE_H_
 
@@ -119,3 +121,5 @@ public:
 };
 
 #endif /* APCJOBQUEUE_H_ */
+
+#endif
