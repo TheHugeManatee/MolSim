@@ -9,7 +9,7 @@
   <endTime>100</endTime>
   <dimensions>3</dimensions> <!-- (o) Standrat is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
   <scenarioType>Lennard-Jones</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Lennard-Jones-Gravitational -->
-  <domainSize x0="60" x1="24" x2="51" /><!-- (m) -->
+  <domainSize x0="57.6" x1="24" x2="50.4" /><!-- (m) -->
   <cutoffRadius scaled="1" radius="2.5" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
 
 <!-- (m) Possible: Outflow, Reflect ,Periodic -->
