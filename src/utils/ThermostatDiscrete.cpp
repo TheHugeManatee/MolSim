@@ -6,7 +6,6 @@
  */
 
 #include "ThermostatDiscrete.h"
-#include "utils/Thermostat.h"
 #include "Simulator.h"
 
 
