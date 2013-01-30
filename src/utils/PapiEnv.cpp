@@ -4,7 +4,7 @@
  *  Created on: 27.01.2013
  *      Author: Leo
  */
-
+#ifdef PAPI_BENCH
 #include "PapiEnv.h"
 
 PapiEnv::PapiEnv(std::string name_arg) {
@@ -48,4 +48,4 @@ void PapiEnv::createResultFile(){
 	myfile << result.str();
 	myfile.close();
 }
-
+#endif
