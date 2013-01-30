@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+  <deltaT>0.005</deltaT>
+  <endTime>20</endTime>
+  <dimensions>3</dimensions>
+  <scenarioType>Membrane</scenarioType>
+  <domainSize x0="80.0" x1="80.0" x2="80" />
+  <cutoffRadius scaled="1" radius="3.0"/>
+
+  <boundaryHandling
+  	top="Reflect" bottom="Reflect"
+  	left="Reflect" right="Reflect"
+  	front="Reflect" back="Reflect"
+  />
+  
+  <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
+  <gravitation x0="0" x1="0" x2="0" /> <!-- (o) used in Lennard-Jones-Gravitational, is set to -9.89 if left out -->
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/Meteor</outputFilePrefix>
+  <outputFileType>vtk</outputFileType> 
+  <saveLastState></saveLastState> <!--(o) for a given filePath the last state of the particles is saved (can be used as inputFile afterwards) -->
+  <inputFile></inputFile> <!-- (o)  -->
+  
+  <thermostatSwitch>OFF</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
+
+  <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
+	<initTemperature>40</initTemperature> <!-- (o) -->
+	<targetTemperature>40</targetTemperature>
+  	<controlInterval>1000</controlInterval><!-- (r) the interval the thermostat is applied, it tries to reach the target temperature until the next step -->
+  </thermostatSettings>
+  
+ <typeList> <!-- (o) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
+ <particleType mass="1.0" sigma="1.0" epsilon ="1.0" isMolecule="true"  averageBondLength="1.1225" stiffness="1"/><!-- (o)  -->
+ <particleType mass="1.0" sigma="1.0" epsilon ="1.0" isMolecule="true"  averageBondLength="1.1225" stiffness="3000"/><!-- (o)  -->
+ 
+ </typeList>  
+ 
+ <generator>
+	<sphere>
+      <center x0="25" x1="25" x2="40" />
+      <radius>16</radius>
+      <stepWidth>1.1225</stepWidth>
+      <type>0</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+	</sphere>
+	<sphere>
+      <center x0="70" x1="70" x2="70" />
+      <radius>4</radius>
+      <stepWidth>1.1225</stepWidth>
+      <type>1</type>
+      <initialVelocity x0="-10" x1="-10" x2="-10"/>
+	</sphere>
+  </generator>
+  
+
+</simulationConfig>
