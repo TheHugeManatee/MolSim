@@ -158,7 +158,7 @@ void Simulator::getRadialDistribution(){
 void Simulator::addStatisticsString(){
 	int position = Simulator::iterations / Settings::statisticsInterval;
 
-	statistics << Simulator::iterations <<";"<< Simulator::diffusion <<";" ;
+	statistics << Simulator::iterations <<";" << ThermostatDiscrete::currentTemperature << ";" << Simulator::diffusion <<";" ;
 	Simulator::diffusion = 0;
 	particleContainer->each([](Particle &p) {
 		p.x_t0 = p.x;
