@@ -2,7 +2,7 @@
  * SimulationJobQueue.h
  *
  *  Created on: 26.01.2013
- *      Author: j
+ *      Author: Jakob Weiss
  */
 
 #ifdef _OPENMP

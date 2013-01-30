@@ -2,7 +2,7 @@
  * @file ScenarioFactory.h
  *
  * @date Nov 6, 2012
- * @author j
+ * @author Jakob Weiss
  */
 
 #ifndef SCENARIOFACTORY_H_
@@ -120,6 +120,13 @@ public:
 	 */
 	static std::function<void (Particle&, Particle&)> calculateLennardJonesPotentialForce;
 
+
+	/**
+	 * force calculation based on a smoothed Lennard-Jones potential. It basically weighs the
+	 * standard Lennard Jones Potential in such a way with a sigmoid function to eliminate the
+	 * sharp edge at the jump discontinuity at the cutoff point as it is already at the toe of
+	 * the sigmoid function and therefore weighted with zero in this place.
+	 */
 	static std::function<void (Particle&, Particle&)> calculateSmoothLJ;
 
 	/**
@@ -144,9 +151,16 @@ public:
 	 */
 	static std::function<void (ParticleContainer &container)> LennardJonesSetup;
 
-
+	/**
+	 * These are the handlers for a periodic boundaryHandling
+	 * Particles in boundary cells have to be copied to the opposite halo cell for forceCalculations on relying cells
+	 */
 	static std::function<bool (ParticleContainer &container, Particle &p)> periodicHandlers[6];
 
+	/**
+	 * adds all additional forces to the force-vector of the particle. These additional forces are
+	 * Force fields and gravitation.
+	 */
 	static std::function<void (Particle &p)> addAdditionalForces;
 };
 

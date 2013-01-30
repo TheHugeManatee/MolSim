@@ -2,7 +2,7 @@
  * SimulationJobQueue.cpp
  *
  *  Created on: 26.01.2013
- *      Author: j
+ *      Author: Jakob Weiss
  */
 
 #ifdef _OPENMP
@@ -33,8 +33,8 @@ SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
 }
 
 SimulationJobQueue::~SimulationJobQueue() {
-	//move along, nothing happening here!
-	//destructino of objects happens in base class destructor
+	//move along, nothing to see here!
+	//destruction of objects happens in base class destructor
 }
 
 #endif

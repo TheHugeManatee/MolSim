@@ -50,7 +50,7 @@ void ThermostatDiscrete::calculateCurrentEnergy(ParticleContainer * particles){
 
 	ThermostatDiscrete::setCurrentTemperature();
 
-	LOG4CXX_TRACE(logger,"Actual Energy is :\t"<<ThermostatDiscrete::currentEnergy <<"\t after: " << Simulator::iterations << "\t iterations");
+	LOG4CXX_TRACE(logger,"Current Energy is :\t"<<ThermostatDiscrete::currentEnergy <<"\t after: " << Simulator::iterations << "\t iterations");
 
 	//	initTargetEnergy();  //has to be initialized again if number of particles changes !!
 	getStepEnergy();

@@ -173,10 +173,30 @@ public:
      * @override
      */
     void eachPair(std::function<void (Particle&, Particle&)> fn);
+
+    /**
+     * Adds a particle to the correct Cell within the CelllistContainer
+     * @param p The particle to be added
+     */
     void add(Particle& p);
+
+    /**
+     * Calculates how many particles are in the CelllistContainer
+     * @param withHalo boolean value to specify if Particles in the halo are to be counted or not
+     *
+     */
     int getSize(bool withHalo);
+
+    /**
+     * Calculates how many particles are in the CelllistContainer omitting Particles in the halo
+     * The same as calling getSize(false)
+     *
+     */
     int getSize(void) {return getSize(false);};
 
+    /**
+     * deletes all particles in the halo region
+     */
     void clearHalo();
 
 };

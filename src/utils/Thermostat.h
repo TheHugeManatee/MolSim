@@ -11,9 +11,15 @@
 #include "ParticleContainer.h"
 #include <utils/Settings.h>
 
-//#define BOLTZMANN 0.000000000000000000000013806503
 #define BOLTZMANN 1
 
+/**
+ * @class Thermostat
+ *
+ * This class implements a Thermostat that changes the velocities according to a temperature that is to be reached
+ * or held.
+ *
+ */
 class Thermostat{
 
 private:
@@ -31,7 +37,9 @@ private:
 	static void initTargetEnergy();
 
 	/**
-	 * calculates beta for the next timestep from the previous beta
+	 * calculates beta for the next timestep from the previous beta in an iterative manner.
+	 * It's actually a pretty elegant formula and prevents multiple looping over all particles
+	 * that would be necessary in the naive implementation.
 	 */
 	static void iterateBeta();
 
@@ -55,10 +63,18 @@ private:
 
 public:
 
+	/**
+	 * Initializes the thermostat with parameters from the Settings file and calls the function
+	 * to calculate the target energy
+	 */
 	static void initialize(int arg_dimensions , int arg_numberOfParticles);
 
 
-	/*all the thermostation work*/
+	/**
+	 * Calculates current energy if change of the rate at which the thermostat works is necessary (by time step).
+	 * Moreover it also calls iterateBeta() so that the calculation of velocites heats up or cools down the particles.
+	 * Setting the velocities of the particles happens in Scenario::updateVerletPositionThermostate
+	 */
 	static void updateThermostate(ParticleContainer *particles);
 
 	/**
@@ -66,7 +82,9 @@ public:
 	 */
 	static void scaleInitialVelocity(ParticleContainer *particles);
 
-
+	/**
+	 * Calculates current energy
+	 */
 	static void setCurrentTemperature(ParticleContainer* particles);
 
 	static double currentEnergy;

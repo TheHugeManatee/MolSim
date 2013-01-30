@@ -27,7 +27,7 @@ class JobQueue;
  *
  * this class manages jobs that can be distributed over different threads
  * the enqueue and dequeue operations are protected by locks to prevent race conditions
- * between threads accessing the queue simultaneously
+ * between threads accessing the queue simultaneously.
  *
  *
  */
@@ -54,12 +54,26 @@ public:
 };
 
 /**
- * a basic job object
+ * @class Job
  *
- * this can be locked and unlocked witht the lock() and unlock() methods respectively for thread safety
+ * A basic job object that can be stored in the JobQueue.
+ *
+ * This can be locked and unlocked with the lock() and unlock() methods respectively for thread safety
  *
  * the operator() can be overwritten to implement the functionality of the job
  *
+ * There are two kinds of Jobs that inherit from this class: BlockJob and SliceJob.
+ * First the computation domain is divided into several BlockJobs that are always one cell apart. The remaining
+ * cells are then pooled into SliceJobs.
+ * First BlockJobs are performed in parallel. As soon as two adjacent Blocks are done the intermediary SliceJob
+ * can be executed.
+ *
+ * This rather complicated approach was taken because with blocks the workload can be distributed better across
+ * the threads the processor offers, but Blocks cannot be perfectly adjacent to each other because particles
+ * at the border region could be calculated by multiple threads at the same time due to Newton's Third Law.
+ * Locking each particle wouldn't yield good performance as the overhead is pretty high. But this approach takes
+ * these Problems into consideration as first the BlockJobs can be executed in parallel and as soon two neighbouring
+ * BlockJobs are done the intermediary SliceJobs can safely be executed.
  *
  */
 class Job {
@@ -80,6 +94,15 @@ public:
 };
 
 
+/**
+ * @class BlockJob
+ *
+ * BlockJob that inherits from the general Job
+ *
+ * BlockJobs are jobs that perform the calculations in blocks of adjacent cells
+ *
+ *
+ */
 class BlockJob : public Job {
 protected:
 	const int start, end;
@@ -93,6 +116,18 @@ public:
 	void enqueueDependentJobs(JobQueue &queue);
 };
 
+
+/**
+ * @class SliceJob
+ *
+ * SliceJob that inherits from the general Job
+ *
+ * SliceJobs are jobs that perform the calculations in slices of the computation domain.
+ * In contrast to BlockJobs their width is only one cell. SliceJobs are found between two neighbouring
+ * BlockJobs and are executed after both their adjacent BlockJobs are done.
+ *
+ *
+ */
 class SliceJob : public Job {
 protected:
 	const int sliceIdx;
