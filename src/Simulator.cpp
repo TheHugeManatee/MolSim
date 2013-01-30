@@ -121,7 +121,7 @@ void Simulator::getDiffusion(){
 	});
 
 	if(Simulator::iterations % Settings::statisticsInterval == 0){
-		int num = particleContainer->getSize();
+		double num = particleContainer->getSize();
 		Simulator::diffusion = Simulator::diffusion/(5*num);
 	}
 }
@@ -144,7 +144,7 @@ void Simulator::getRadialDistribution(){
 		for (int i = 0 ; i < nIntervals ; i++ ){
 			double radius = Settings::deltaRDF * i ;
 			double radiusPlus = Settings::deltaRDF * (i+1);
-			double volume = 0.2666666666666666666666666666666 / ((radiusPlus * radiusPlus * radiusPlus) - (radius * radius * radius)) * PI ;
+			double volume = (4*M_PI/3) * ((radiusPlus * radiusPlus * radiusPlus) - (radius * radius * radius));
 			radialDistribution[i] = radialDistribution[i]/ volume;
 		}
 	}
@@ -154,8 +154,11 @@ void Simulator::getRadialDistribution(){
 void Simulator::addStatisticsString(){
 	int position = Simulator::iterations / Settings::statisticsInterval;
 
-	statistics << Simulator::iterations <<";"<< Simulator::diffusion <<";" ;
+	statistics << Simulator::iterations <<";" << ThermostatDiscrete::currentTemperature << ";" << Simulator::diffusion <<";" ;
 	Simulator::diffusion = 0;
+	particleContainer->each([] (Particle &p) {
+		p.x_t0 = p.x;
+	});
 	int nIntervals = ceil(Settings::rCutoff /Settings::deltaRDF);
 	for (int i = 0 ; i < nIntervals ; i++ ){
 	statistics << Simulator::radialDistribution[i] <<";" ;
