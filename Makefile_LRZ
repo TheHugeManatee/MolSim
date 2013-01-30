@@ -17,11 +17,11 @@ include files.mk
 	
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS= -g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER 
+CFLAGS= -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER -fopenmp -DPAPI_BENCH -lpapi
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit -fopenmp -lpapi
 
 INCLUDES= -I./src -I./libxsd
 

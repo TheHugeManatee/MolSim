@@ -122,7 +122,22 @@ extern std::vector<Particle> render3dParticles;
 }
 #endif
 
+#ifdef PAPI_BENCH
+#include "utils/PapiEnv.h"
+PapiEnv *papiCalcFCounters[8];
+PapiEnv *papiCalcXCounters[8];
+#endif
 //Forward declarations
+
+
+ /**
+  * @brief  execute a specific or all test cases, depending on the Settings::testCase parameter
+  *
+  *         Runs all test that are specified in Settings parameter
+  *
+  * @return status code: 0 if all tests were successful
+  *
+  */
 int executeTests();
 
 /**
@@ -137,13 +152,16 @@ void initializeLogger();
  */
 void printProgressBar(int percentage, int elapsed);
 
-void exportPhaseSpace(void);
 
 
 //globals
 auto rootLogger = log4cxx::Logger::getRootLogger();
 
-
+/**
+ * gets System time in milliseconds
+ *
+ * @return System time in milliseconds
+ */
 int getMilliCount(){
 	timeb tb;
 	ftime(&tb);
@@ -151,6 +169,14 @@ int getMilliCount(){
 	return nCount;
 }
 
+/**
+ * Main method (Duh ;) ) Runs the whole simulation. Main loop runs in this method
+ *
+ * @param argc number of command line arguments
+ * @param argsv[] command line parameters. Several Config file parameters can be overriden by setting them here. "--visualize" is especially cool, as it shows an OpenGL live view
+ *
+ * @return 0 if successful
+ */
 int main(int argc, char* argsv[]) {
 	if (argc > 1 && (!strcmp(argsv[1], "-?") || !strcmp(argsv[1], "help") || !strcmp(argsv[1], "--help"))) {
 		std::cout << "This is the NUKULAR Simulator" << std::endl;
@@ -188,11 +214,19 @@ int main(int argc, char* argsv[]) {
 	}
 	else {
 		LOG4CXX_INFO(rootLogger, "Running on " << omp_get_max_threads() << " threads");
+		Settings::numThreads = omp_get_max_threads();
 	}
 #else
+	Settings::numThreads = 1;
 	LOG4CXX_INFO(rootLogger, "Running serial version!");
 #endif
 
+#ifdef PAPI_BENCH
+	for(int i=0; i < Settings::numThreads; i++) {
+		papiCalcFCounters[i] = new PapiEnv(std::string("CalcF #") + i + ".txt");
+		papiCalcXCounters[i] = new PapiEnv(std::string("CalcX #") + i + ".txt");
+	}	
+#endif
 	//Check if we should be executing some unit tests
 	if(!Settings::testCase.empty()) {
 		return executeTests();
@@ -238,6 +272,14 @@ int main(int argc, char* argsv[]) {
 		timeForOneIteration = ((double)(benchmarkStartTime - getMilliCount()))/iteration;
 		//if(iteration % 100 == 0)
 		//std::cout << "timeforoneiteration: " << timeForOneIteration<<std::endl;
+#ifdef PAPI_BENCH
+		for(int i=0; i < Settings::numThreads; i++) {
+			papiCalcFCounters[i]->printResults();
+			papiCalcXCounters[i]->printResults();
+			papiCalcFCounters[i]->reset();
+			papiCalcXCounters[i]->reset();
+		}
+#endif
 	}
 
 
@@ -256,6 +298,16 @@ int main(int argc, char* argsv[]) {
 	LOG4CXX_DEBUG(rootLogger, "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)");
 	LOG4CXX_DEBUG(rootLogger, "Destroyed " << Particle::destroyedInstances << " Particle instances");
 
+#ifdef PAPI_BENCH
+	
+	for(int i=0; i < Settings::numThreads; i++) {
+		std::cout << "Writing PAPI output for thread " << i << std::endl;
+		papiCalcFCounters[i]->createResultFile();
+		papiCalcXCounters[i]->createResultFile();
+		delete 	papiCalcFCounters[i];
+		delete papiCalcXCounters[i];
+	}	
+#endif
 	//10 is arbitrarily chosen. there will always be some stray particles because of
 	//static instances that will be destroyed at program exit
 #ifndef NOGLVISUALIZER
@@ -271,9 +323,6 @@ int main(int argc, char* argsv[]) {
 }
 
 
-/**
- * execute a specific or all test cases, depending on the Settings::testCase parameter
- */
 int executeTests() {
 	std::cout << "Running tests..." << std::endl;
 
@@ -370,12 +419,4 @@ void printProgressBar(int percentage, int elapsed){
 #endif
 	}
 	std::cout.flush();
-}
-
-void exportPhaseSpace(){
-	std::ofstream myfile;
-	myfile.open ("example.txt");
-
-	myfile << "Writing this to a file.\n";
-	myfile.close();
 }

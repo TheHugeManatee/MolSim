@@ -5,9 +5,6 @@
  *
  * @author Jakob Weiss, Alexander Winkler, Leonhard Rannabauer
  * @date 01.11.2012
- *
- * container class for all particles in the simulation
- * offering methods to apply a function to all particles or particle pairs
  */
 
 
@@ -21,6 +18,22 @@
 
 
 
+/**
+ * @class ParticleContainer
+ *
+ * This class implements a naive container for Particles and methods to apply functions on all particles
+ * or all pairs of particles
+ *
+ * As there are O(n^2) pairs of particles this implementation has a complexity of O(n^2). Whenever possible
+ * the CellistContainer should be used instead that inherits from this class and by a good approximation of
+ * reality offers a complexity of O(n)
+ *
+ * The graph illustrates the benefit the CelllistContainer yields compared to the naive implementation in a simulation of 10 seconds
+ *
+ * \image html https://dl.dropbox.com/u/16135288/MolSim/ComputationTimeCelllistcontainer.png
+ *
+ *
+ */
 class ParticleContainer {
 	friend class CellListContainer;
 	friend class Job;
@@ -74,15 +87,6 @@ class ParticleContainer {
          *  	- param ParticleContainer &container: the container instance we are working on
          *  	- param Particle &p: reference to the particle in question
          *  	- return bool: whether the particle should be removed (deleted) from the container
-         *
-         *  @param haloHandler the handler function that will be called when a particle is in the halo,
-         *  	i.e. out of the simulation domain. This MAY be called for all particles, but "smart"
-         *  	containers will sort out particles in the inner areas of the domain
-         *  	- param ParticleContainer &container: the container instance we are working on
-         *  	- param Particle &p: reference to the particle in question
-         *  	- return bool: whether the particle should be removed (deleted) from the container
-         *
-         *  @param haloHandler
          *
          *  @warning The boundaryHandler and haloHandler functionals may be called more than once for
          *  	one unique particle due to the internal restructuring of the particle container

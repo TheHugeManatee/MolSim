@@ -2,7 +2,7 @@
  * Particle.h
  *
  *  Created on: 23.02.2010
- *      Author: eckhardw
+ *      Author: Jakob Weiss, Leo Rannabauer
  */
 
 #ifndef PARTICLE_H_
@@ -95,9 +95,22 @@ public:
 	std::string toStringForExport();
 	std::string toString();
 
-
+	/**
+	 * checks if current Particle is directly adjacent to passed Particle in the membrane
+	 * @param mol the other Particle, that is compared
+	 */
 	bool isNeighbour(Particle &mol);
+
+	/**
+	 * checks if current Particle is diagonally adjacent in a 2D plane to passed Particle in the membrane
+	 * @param mol the other Particle, that is compared
+	 */
 	bool isFaceDiagonal(Particle &mol);
+
+	/**
+	 * checks if current Particle is diagonally adjacent in a 3D cuboid to passed Particle in the membrane (Yes, we can have threedimensional membrane forces)
+	 * @param mol the other Particle, that is compared
+	 */
 	bool isSpaceDiagonal(Particle &mol);
 };
 
