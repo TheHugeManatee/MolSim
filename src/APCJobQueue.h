@@ -15,6 +15,17 @@
 class APCSliceJob;
 class APCSliceBaseJob;
 
+/**
+ * @class APCJobQueue
+ *
+ * As the afterPositionChanges can also be parallelized but have to be calculated after all
+ * other Jobs are completed there is an extra queue for them.
+ *
+ * The idea is basically the same as the "normal" JobQueue, but some extra precautions have to be taken as
+ * some of these jobs may have different prerequisites than others.
+ *
+ *
+ */
 class APCJobQueue: public JobQueue {
 public:
 	APCJobQueue(CellListContainer *cont);
