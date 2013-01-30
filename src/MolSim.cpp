@@ -224,9 +224,9 @@ int main(int argc, char* argsv[]) {
 #ifdef PAPI_BENCH
 	for(int i=0; i < Settings::numThreads; i++) {
 		char fileName[200];
-		sprintf("CalcF #%i.txt", fileName, i);
+		sprintf(fileName, "CalcF #%i.txt", i);
 		papiCalcFCounters[i] = new PapiEnv(fileName);
-		sprintf("CalcX #%i.txt", fileName, i);
+		sprintf(fileName, "CalcX #%i.txt", i);
 		papiCalcXCounters[i] = new PapiEnv(fileName);
 	}	
 #endif
