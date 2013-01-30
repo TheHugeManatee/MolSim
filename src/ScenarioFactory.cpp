@@ -2,7 +2,7 @@
  * ScenarioFactory.cpp
  *
  *  Created on: Nov 6, 2012
- *      Author: j
+ *      Author: Jakob Weiss
  */
 
 #include "ScenarioFactory.h"
@@ -294,8 +294,7 @@ std::function<void(ParticleContainer &container)> ScenarioFactory::LennardJonesS
 			ParticleGenerator::performGeneration(container);
 		};
 
-/*These are the handlers for a periodic boundaryHandling
- * Particles in boundary cells have to be copied to the opposite halo cell for forceCalculations on relying cells  */
+
 
 std::function<bool(ParticleContainer &, Particle &p)> ScenarioFactory::periodicHandlers[] =
 		{

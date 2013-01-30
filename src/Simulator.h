@@ -1,10 +1,9 @@
 /**
  * @file Simulator.h
  *
- * a simulator offering methods to calculate force, postition and velocitiy for a given list of particles.
  *
  * @date Oct 30, 2012
- * @author j
+ * @author Jakob Weiss
  */
 
 #ifndef SIMULATOR_H_
@@ -23,6 +22,11 @@
 #include <iostream>
 
 #define PI 3.1415926535897932384626433;
+
+/**
+ * @class Simulator
+ *  a simulator offering methods to calculate force, position and velocity for a given list of particles.
+ */
 
 class Simulator {
 private:
@@ -44,12 +48,33 @@ public:
 	static double* radialDistribution;
 	static std::stringstream statistics;
 
+	/**
+	 * exports all important information of every particle in the simulation domain to a Text File
+	 * that can be reimported in order to resume a simulation either with the same other settings
+	 * (like gravitation or boundary conditions) or different settings for example to first equilibriate
+	 * a liquid and then throw something into it.
+	 *
+	 */
 	void exportPhaseSpace(void);
 
-
+	/**
+	 * Implements the calculation of diffusion for thermodynamical statistics
+	 */
 	void getDiffusion();
+
+	/**
+	 * Implements the calculation of the Radial Distribution Function (RDF) for thermodynamical statistics
+	 */
 	void getRadialDistribution();
+
+	/**
+	 * Writes all statistic data to the statistics variable
+	 */
 	void addStatisticsString();
+
+	/**
+	 * Writes all statistic data to a file that is defined in Settings::statisticsFile
+	 */
 	void exportStatistics();
 
 
@@ -59,7 +84,6 @@ public:
 	/**
 	 * applies given force fields and gravity
 	 */
-
 	void addAdditionalForces();
 
 	/**
