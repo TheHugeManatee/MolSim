@@ -223,8 +223,11 @@ int main(int argc, char* argsv[]) {
 
 #ifdef PAPI_BENCH
 	for(int i=0; i < Settings::numThreads; i++) {
-		papiCalcFCounters[i] = new PapiEnv(std::string("CalcF #") + i + ".txt");
-		papiCalcXCounters[i] = new PapiEnv(std::string("CalcX #") + i + ".txt");
+		char fileName[200];
+		sprintf(fileName, "CalcF #%i.txt", i);
+		papiCalcFCounters[i] = new PapiEnv(fileName);
+		sprintf(fileName, "CalcX #%i.txt", i);
+		papiCalcXCounters[i] = new PapiEnv(fileName);
 	}	
 #endif
 	//Check if we should be executing some unit tests
