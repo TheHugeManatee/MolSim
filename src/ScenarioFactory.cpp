@@ -23,6 +23,12 @@
 #define SQRTTWO 		1.41421356237309504880168872420969
 #define SQRTTHREE 		1.73205080756887729352744634150587
 
+#ifdef PAPI_BENCH
+#include "utils/PapiEnv.h"
+extern PapiEnv *papiCalcXCounters[8];
+extern PapiEnv *papiCalcFCounters[8];
+#endif
+
 log4cxx::LoggerPtr ScenarioFactory::logger = log4cxx::Logger::getLogger(
 		"ScenarioFactory");
 
@@ -159,6 +165,9 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJones
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 [] (Particle& p1, Particle& p2) {
 	int tid = omp_get_thread_num();
+#ifdef PAPI_BENCH
+	papiCalcFCounters[tid]->flopsStart();
+#endif
 
 	utils::Vector<double, 3> xDif = p2.x - p1.x;
 	double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
@@ -190,6 +199,10 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 	p2.f_acc[tid][1] -= resultForce[1];
 	p2.f_acc[tid][2] -= resultForce[2];
 
+#ifdef PAPI_BENCH
+	papiCalcFCounters[tid]->flopsEnd();
+#endif
+	
 };
 
 #define NEIGHBOR(id, otherId, breadth, length) ((otherId - 1 == id) || (otherId + 1 == id) || (otherId - breadth == id) || (otherId + breadth == id) || (otherId - breadth * length == id) || (otherId + breadth * length == id))

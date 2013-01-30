@@ -14,21 +14,31 @@ PapiEnv::PapiEnv(std::string name_arg) {
 	procTime = 0;
 	flpins = 0;
 	mflops = 0;
+	totalRealTime = 0;
+	totalProcTime = 0;
 }
 
-
-void PapiEnv::papiFlops(){
+void PapiEnv::flopsStart(){
 	int retval;
-	std::cout << "starting Papi Flops "<< std::endl;
+	PAPI_flops( &realTime, &procTime, &flpins, &mflops);
+}
+
+void PapiEnv::flopsEnd(){
+	int retval;
+	//std::cout << "starting Papi Flops "<< std::endl;
 	if((retval=PAPI_flops( &realTime, &procTime, &flpins, &mflops))<PAPI_OK){
-	std::cout << "ending Papi Flops "<< std::endl;
+		totalRealTime += realTime;
+		totalProcTime += procTime;
 	}
 
 }
 
+void PapiEnv::reset() {
+	totalRealTime = 0;
+	totalProcTime = 0;
+}
 void PapiEnv::printResults(){
-	result << realTime << ";" << procTime <<";" << flpins <<";"<< mflops<< ";" << std::endl;
-	PAPI_shutdown();
+	result << totalRealTime << ";" << totalProcTime <<";" << flpins <<";"<< mflops<< ";" << std::endl;
 }
 
 void PapiEnv::createResultFile(){

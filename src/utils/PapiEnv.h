@@ -21,13 +21,17 @@ public:
 	int* eventSet;
 	float realTime;
 	float procTime;
+	float totalRealTime;
+	float totalProcTime;
 	long long int flpins;
 	float mflops;
 	std::string name;
 	std::stringstream result;
 
 	PapiEnv(std::string name_arg);
-	void papiFlops();
+	void flopsStart();
+	void flopsEnd();
+	void reset();
 	void printResults();
 	void createResultFile();
 };

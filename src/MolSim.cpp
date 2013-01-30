@@ -122,6 +122,11 @@ extern std::vector<Particle> render3dParticles;
 }
 #endif
 
+#ifdef PAPI_BENCH
+#include "utils/PapiEnv.h"
+PapiEnv *papiCalcFCounters[8];
+PapiEnv *papiCalcXCounters[8];
+#endif
 //Forward declarations
 
 
@@ -209,11 +214,19 @@ int main(int argc, char* argsv[]) {
 	}
 	else {
 		LOG4CXX_INFO(rootLogger, "Running on " << omp_get_max_threads() << " threads");
+		Settings::numThreads = omp_get_max_threads();
 	}
 #else
+	Settings::numThreads = 1;
 	LOG4CXX_INFO(rootLogger, "Running serial version!");
 #endif
 
+#ifdef PAPI_BENCH
+	for(int i=0; i < Settings::numThreads; i++) {
+		papiCalcFCounters[i] = new PapiEnv(std::string("CalcF #") + i + ".txt");
+		papiCalcXCounters[i] = new PapiEnv(std::string("CalcX #") + i + ".txt");
+	}	
+#endif
 	//Check if we should be executing some unit tests
 	if(!Settings::testCase.empty()) {
 		return executeTests();
@@ -259,6 +272,14 @@ int main(int argc, char* argsv[]) {
 		timeForOneIteration = ((double)(benchmarkStartTime - getMilliCount()))/iteration;
 		//if(iteration % 100 == 0)
 		//std::cout << "timeforoneiteration: " << timeForOneIteration<<std::endl;
+#ifdef PAPI_BENCH
+		for(int i=0; i < Settings::numThreads; i++) {
+			papiCalcFCounters[i]->printResults();
+			papiCalcXCounters[i]->printResults();
+			papiCalcFCounters[i]->reset();
+			papiCalcXCounters[i]->reset();
+		}
+#endif
 	}
 
 
@@ -277,6 +298,16 @@ int main(int argc, char* argsv[]) {
 	LOG4CXX_DEBUG(rootLogger, "Created " << Particle::createdInstances << " Particle instances (" << Particle::createdByCopy << " by copy)");
 	LOG4CXX_DEBUG(rootLogger, "Destroyed " << Particle::destroyedInstances << " Particle instances");
 
+#ifdef PAPI_BENCH
+	
+	for(int i=0; i < Settings::numThreads; i++) {
+		std::cout << "Writing PAPI output for thread " << i << std::endl;
+		papiCalcFCounters[i]->createResultFile();
+		papiCalcXCounters[i]->createResultFile();
+		delete 	papiCalcFCounters[i];
+		delete papiCalcXCounters[i];
+	}	
+#endif
 	//10 is arbitrarily chosen. there will always be some stray particles because of
 	//static instances that will be destroyed at program exit
 #ifndef NOGLVISUALIZER
