@@ -19,4 +19,5 @@ SOURCES=\
 	src/JobQueue.cpp\
 	src/utils/ThermostatDiscrete.cpp\
 	src/SimulationJobQueue.cpp\
-	src/APCJobQueue.cpp
+	src/APCJobQueue.cpp\
+	src/utils/PapiEnv.cpp

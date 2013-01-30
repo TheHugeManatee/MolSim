@@ -17,7 +17,7 @@ include files.mk
 	
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS= -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER -fopenmp -DPAPI_BENCH -lpapi
+CFLAGS= -fpermissive -std=gnu++0x -O3 -Wno-deprecated -DNOGLVISUALIZER -fopenmp -lpapi
 
 # Linker flags
 # ------------
