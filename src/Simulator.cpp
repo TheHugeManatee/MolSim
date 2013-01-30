@@ -115,15 +115,24 @@ void Simulator::exportPhaseSpace(void){
 
 
 void Simulator::getDiffusion(){
+	static double num = particleContainer->getSize();
 
+	std::cout << "Current diffusion before " << diffusion << std::endl;
+	std::cout << "Num is " << num << std::endl;
 	particleContainer->each([&] (Particle &p){
-		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared();
+		std::cout << "##Current diffusion before " << diffusion;
+		std::cout << " LOS is " << (p.x - p.x_t0).LengthOptimizedR3Squared() << std::endl;
+		std::cout << "x is " << p.x;
+		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared() / num;
+		std::cout << "##Current diffusion after " << diffusion << std::endl;
 	});
 
-	if(Simulator::iterations % Settings::statisticsInterval == 0){
-		int num = particleContainer->getSize();
-		Simulator::diffusion = Simulator::diffusion/(5*num);
-	}
+	std::cout << "Current diffusion after " << diffusion << std::endl;
+
+	/*if(Simulator::iterations % Settings::statisticsInterval == 0){
+
+		Simulator::diffusion = Simulator::diffusion/;
+	}*/
 }
 
 void Simulator::getRadialDistribution(){
@@ -144,8 +153,8 @@ void Simulator::getRadialDistribution(){
 		for (int i = 0 ; i < nIntervals ; i++ ){
 			double radius = Settings::deltaRDF * i ;
 			double radiusPlus = Settings::deltaRDF * (i+1);
-			double volume = 0.2666666666666666666666666666666 / ((radiusPlus * radiusPlus * radiusPlus) - (radius * radius * radius)) * PI ;
-			radialDistribution[i] = radialDistribution[i]/ volume;
+			double volume = (4*M_PI/3 )*((radiusPlus * radiusPlus * radiusPlus) - (radius * radius * radius));
+			radialDistribution[i] = radialDistribution[i] / volume;
 		}
 	}
 

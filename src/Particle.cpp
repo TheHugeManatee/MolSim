@@ -106,6 +106,8 @@ Particle::Particle(std::string importString) {
 	lstream >> type;
 	lstream >> id;
 
+	x_t0 = 0;
+
 	memset(f_acc, 0, sizeof(f_acc) - 3*sizeof(double));
 
 	//std::cout << importString << std::endl << toStringForExport() << std::endl << std::endl;
