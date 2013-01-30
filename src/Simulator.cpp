@@ -156,6 +156,9 @@ void Simulator::addStatisticsString(){
 
 	statistics << Simulator::iterations <<";"<< Simulator::diffusion <<";" ;
 	Simulator::diffusion = 0;
+	particleContainer->each([](Particle &p) {
+		p.x_t0 = p.x;
+	});
 	int nIntervals = ceil(Settings::rCutoff /Settings::deltaRDF);
 	for (int i = 0 ; i < nIntervals ; i++ ){
 	statistics << Simulator::radialDistribution[i] <<";" ;
