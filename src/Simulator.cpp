@@ -115,19 +115,14 @@ void Simulator::exportPhaseSpace(void){
 
 
 void Simulator::getDiffusion(){
-	static double num = particleContainer->getSize();
+	static double num = 5*particleContainer->getSize();
 
-	std::cout << "Current diffusion before " << diffusion << std::endl;
-	std::cout << "Num is " << num << std::endl;
+
 	particleContainer->each([&] (Particle &p){
-		std::cout << "##Current diffusion before " << diffusion;
-		std::cout << " LOS is " << (p.x - p.x_t0).LengthOptimizedR3Squared() << std::endl;
-		std::cout << "x is " << p.x;
 		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared() / num;
-		std::cout << "##Current diffusion after " << diffusion << std::endl;
+
 	});
 
-	std::cout << "Current diffusion after " << diffusion << std::endl;
 
 	/*if(Simulator::iterations % Settings::statisticsInterval == 0){
 
