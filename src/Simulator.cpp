@@ -115,19 +115,19 @@ void Simulator::exportPhaseSpace(void){
 
 
 void Simulator::getDiffusion(){
-	static double num = 5*particleContainer->getSize();
+	double num = particleContainer->getSize();
 
 
 	particleContainer->each([&] (Particle &p){
-		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared() / num;
+		diffusion += (p.x - p.x_t0).LengthOptimizedR3Squared();
 
 	});
 
 
-	/*if(Simulator::iterations % Settings::statisticsInterval == 0){
+	if(Simulator::iterations % Settings::statisticsInterval == 0){
 
-		Simulator::diffusion = Simulator::diffusion/;
-	}*/
+		Simulator::diffusion = Simulator::diffusion/(5*num);
+	}
 }
 
 void Simulator::getRadialDistribution(){
@@ -160,6 +160,9 @@ void Simulator::addStatisticsString(){
 
 	statistics << Simulator::iterations <<";"<< Simulator::diffusion <<";" ;
 	Simulator::diffusion = 0;
+	particleContainer->each([](Particle &p) {
+		p.x_t0 = p.x;
+	});
 	int nIntervals = ceil(Settings::rCutoff /Settings::deltaRDF);
 	for (int i = 0 ; i < nIntervals ; i++ ){
 	statistics << Simulator::radialDistribution[i] <<";" ;
