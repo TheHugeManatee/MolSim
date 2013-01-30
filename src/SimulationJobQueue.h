@@ -64,7 +64,7 @@ protected:
 public:
 
 	SliceJob(int sliceIdx_) : Job(2), sliceIdx(sliceIdx_) {
-		std::cout << "Slice Job " << sliceIdx_ << " created." << std::endl;
+//		std::cout << "Slice Job " << sliceIdx_ << " created." << std::endl;
 	};
 
 	void enqueueDepenedentJobs(JobQueue &queue) {	/*no follow-ups*/};

@@ -86,8 +86,8 @@ public:
 		pcEach.eachPair([&] (Particle& p1, Particle& p2) {
 			callCount ++;
 
-			p1.f_acc[0][0] = p1.f_acc[0][0] + 1;
-			p2.f_acc[0][0] = p2.f_acc[0][0] + 1;
+			p1.f[0] = p1.f[0] + 1;
+			p2.f[0] = p2.f[0] + 1;
 
 			CPPUNIT_ASSERT(!(p1 == p2));
 
@@ -102,7 +102,7 @@ public:
 		});
 
 		CPPUNIT_ASSERT(callCount == 45);
-		CPPUNIT_ASSERT(pListEach[0].f_acc[0][0] == 9);
+		CPPUNIT_ASSERT(pListEach[0].f[0] == 9);
 	}
 
 	/**

@@ -46,7 +46,7 @@ SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
 	for(int i=1; i < bCount; i+=2) {
 		((BaseBlockJob *)blockList[i])->prevBlock = blockList[i-1];
 		((BaseBlockJob *)blockList[i])->nextBlock = (i<(bCount - 1))?blockList[i+1]:NULL;
-		std::cout << "Block from " << blockList[i]->start << " to " << blockList[i]->end << " has prev=" << blockList[i-1] << " and next = " << ( (i<(bCount - 1))?blockList[i+1]:NULL )<< std::endl;
+//		std::cout << "Block from " << blockList[i]->start << " to " << blockList[i]->end << " has prev=" << blockList[i-1] << " and next = " << ( (i<(bCount - 1))?blockList[i+1]:NULL )<< std::endl;
 	}
 }
 
