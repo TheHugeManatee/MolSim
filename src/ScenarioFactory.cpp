@@ -11,7 +11,7 @@
 
 #include "utils/Settings.h"
 #include "utils/Vector.h"
-#include "utils/Thermostat.h"
+#include "utils/ThermostatDiscrete.h"
 #include "Simulator.h"
 #include <cstdlib>
 #include <cassert>
@@ -36,77 +36,59 @@ std::function<void(Particle&)> ScenarioFactory::verletUpdatePosition =
 		[] (Particle& p) {
 			double dt = Settings::deltaT;
 
-			utils::Vector<double, 3> f;
-
-			f[0] = p.f_acc[0][0] + p.f_acc[1][0] + p.f_acc[2][0] + p.f_acc[3][0] + p.f_acc[4][0] + p.f_acc[5][0] + p.f_acc[6][0] + p.f_acc[7][0];
-			f[1] = p.f_acc[0][1] + p.f_acc[1][1] + p.f_acc[2][1] + p.f_acc[3][1] + p.f_acc[4][1] + p.f_acc[5][1] + p.f_acc[6][1] + p.f_acc[7][1];
-			f[2] = p.f_acc[0][2] + p.f_acc[1][2] + p.f_acc[2][2] + p.f_acc[3][2] + p.f_acc[4][2] + p.f_acc[5][2] + p.f_acc[6][2] + p.f_acc[7][2];
-
 			//new velocity
 			utils::Vector<double, 3> resultV;
-			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + f);
+			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + p.f);
 			p.v = resultV;
 
 			//new position
 			utils::Vector<double, 3> resultX;
-			resultX= p.x + dt * p.v + dt * dt / (2 * Settings::particleTypes[p.type].mass) * f;
+			resultX= p.x + dt * p.v + dt * dt / (2 * Settings::particleTypes[p.type].mass) * p.f;
 			p.x = resultX;
 
 			//reset force accumulator
-			p.old_f[0] = f[0];
-			p.old_f[1] = f[1];
-			p.old_f[2] = f[2];
-			memset(p.f_acc, 0, sizeof(p.f_acc));
+			p.old_f[0] = p.f[0];
+			p.old_f[1] = p.f[1];
+			p.old_f[2] = p.f[2];
+			p.f = 0;
 		};
 
 std::function<void(Particle&)> ScenarioFactory::verletUpdatePositionThermostate =
 		[] (Particle& p) {
 			double dt = Settings::deltaT;
 
-			utils::Vector<double, 3> f;
-
-			f[0] = p.f_acc[0][0] + p.f_acc[1][0] + p.f_acc[2][0] + p.f_acc[3][0] + p.f_acc[4][0] + p.f_acc[5][0] + p.f_acc[6][0] + p.f_acc[7][0];
-			f[1] = p.f_acc[0][1] + p.f_acc[1][1] + p.f_acc[2][1] + p.f_acc[3][1] + p.f_acc[4][1] + p.f_acc[5][1] + p.f_acc[6][1] + p.f_acc[7][1];
-			f[2] = p.f_acc[0][2] + p.f_acc[1][2] + p.f_acc[2][2] + p.f_acc[3][2] + p.f_acc[4][2] + p.f_acc[5][2] + p.f_acc[6][2] + p.f_acc[7][2];
-
 			//new velocity
 			utils::Vector<double, 3> resultV;
-			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + f);
+			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + p.f);
 			//apply thermostate
 			if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-				if(Simulator::iterations % Settings::thermostatSettings->controlInterval() == 0 )
+				if(Simulator::iterations % ThermostatDiscrete::controlInterval == 0 )
 					p.v = resultV*ThermostatDiscrete::beta;
 			}
 
 			//new position
 			utils::Vector<double, 3> resultX;
-			resultX= p.x + dt * p.v + dt * dt / (2 * Settings::particleTypes[p.type].mass) * f;
+			resultX= p.x + dt * p.v + dt * dt / (2 * Settings::particleTypes[p.type].mass) * p.f;
 			p.x = resultX;
 
 			//reset force accumulator
-			p.old_f[0] = f[0];
-			p.old_f[1] = f[1];
-			p.old_f[2] = f[2];
-			memset(p.f_acc, 0, sizeof(p.f_acc));
+			p.old_f[0] = p.f[0];
+			p.old_f[1] = p.f[1];
+			p.old_f[2] = p.f[2];
+			p.f = 0;
 		};
 
 std::function<void(Particle&)> ScenarioFactory::verletUpdateVelocity =
 		[] (Particle& p) {
 
-			utils::Vector<double, 3> f;
-
-			f[0] = p.f_acc[0][0] + p.f_acc[1][0] + p.f_acc[2][0] + p.f_acc[3][0] + p.f_acc[4][0] + p.f_acc[5][0] + p.f_acc[6][0] + p.f_acc[7][0];
-			f[1] = p.f_acc[0][1] + p.f_acc[1][1] + p.f_acc[2][1] + p.f_acc[3][1] + p.f_acc[4][1] + p.f_acc[5][1] + p.f_acc[6][1] + p.f_acc[7][1];
-			f[2] = p.f_acc[0][2] + p.f_acc[1][2] + p.f_acc[2][2] + p.f_acc[3][2] + p.f_acc[4][2] + p.f_acc[5][2] + p.f_acc[6][2] + p.f_acc[7][2];
-
 			utils::Vector<double, 3> resultV;
-			resultV = p.v + Settings::deltaT / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + f);
+			resultV = p.v + Settings::deltaT / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + p.f);
 			p.v = resultV;
 		};
 
 std::function<void(Particle &)> ScenarioFactory::addAdditionalForces =
 		[] (Particle &p) {
-		int tid = omp_get_thread_num();
+
 			for(int i = 0 ; i< Settings::forceFields.size() ; i++){
 				if(p.type == Settings::forceFields[i].type()){
 					int nX2 = Settings::particleTypes[p.type].membraneDescriptor.nX2+2;
@@ -117,9 +99,9 @@ std::function<void(Particle &)> ScenarioFactory::addAdditionalForces =
 					if(x2 >= Settings::forceFields[i].from().x2() && x1 >= Settings::forceFields[i].from().x1() &&
 						x0 >= Settings::forceFields[i].from().x0() && x2 <= Settings::forceFields[i].to().x2() &&
 						x1 <= Settings::forceFields[i].to().x1() && x0 <= Settings::forceFields[i].to().x0()){
-						p.f_acc[0][0] += Settings::forceFields[i].force().x0();
-						p.f_acc[0][1] += Settings::forceFields[i].force().x1();
-						p.f_acc[0][2] += Settings::forceFields[i].force().x2();
+						p.f[0] += Settings::forceFields[i].force().x0();
+						p.f[1] += Settings::forceFields[i].force().x1();
+						p.f[2] += Settings::forceFields[i].force().x2();
 
 					}
 				}
@@ -127,15 +109,14 @@ std::function<void(Particle &)> ScenarioFactory::addAdditionalForces =
 
 			utils::Vector<double, 3> gravitationalForce;
 			gravitationalForce= Settings::particleTypes[p.type].mass * Settings::gravitation;
-			p.f_acc[tid][0] += Settings::particleTypes[p.type].mass * Settings::gravitation[0];
-			p.f_acc[tid][1] += Settings::particleTypes[p.type].mass * Settings::gravitation[1];
-			p.f_acc[tid][2] += Settings::particleTypes[p.type].mass * Settings::gravitation[2];
+			p.f[0] += Settings::particleTypes[p.type].mass * Settings::gravitation[0];
+			p.f[1] += Settings::particleTypes[p.type].mass * Settings::gravitation[1];
+			p.f[2] += Settings::particleTypes[p.type].mass * Settings::gravitation[2];
 
 };
 
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce =
 		[] (Particle& p1, Particle& p2) {
-			int tid = omp_get_thread_num();
 
 			utils::Vector<double, 3> xDif = p2.x - p1.x;
 			double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
@@ -151,21 +132,22 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJones
 
 
 			//p1.f = p1.f + resultForce;
-			p1.f_acc[tid][0] += magnitude * xDif[0];
-			p1.f_acc[tid][1] += magnitude * xDif[1];
-			p1.f_acc[tid][2] += magnitude * xDif[2];
+			p1.f[0] += magnitude * xDif[0];
+			p1.f[1] += magnitude * xDif[1];
+			p1.f[2] += magnitude * xDif[2];
 
 			//resultForce = resultForce * -1;
 			//p2.f = p2.f - resultForce;
-			p2.f_acc[tid][0] -= magnitude * xDif[0];
-			p2.f_acc[tid][1] -= magnitude * xDif[1];
-			p2.f_acc[tid][2] -= magnitude * xDif[2];
+			p2.f[0] -= magnitude * xDif[0];
+			p2.f[1] -= magnitude * xDif[1];
+			p2.f[2] -= magnitude * xDif[2];
 		};
 
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 [] (Particle& p1, Particle& p2) {
-	int tid = omp_get_thread_num();
+
 #ifdef PAPI_BENCH
+	int tid = omp_get_thread_num();
 	papiCalcFCounters[tid]->flopsStart();
 #endif
 
@@ -190,14 +172,14 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 		resultForce = lennardJonesForce;
 		}
 	}
-	p1.f_acc[tid][0] += resultForce[0];
-	p1.f_acc[tid][1] += resultForce[1];
-	p1.f_acc[tid][2] += resultForce[2];
+	p1.f[0] += resultForce[0];
+	p1.f[1] += resultForce[1];
+	p1.f[2] += resultForce[2];
 
 	//resultForce = resultForce * -1;
-	p2.f_acc[tid][0] -= resultForce[0];
-	p2.f_acc[tid][1] -= resultForce[1];
-	p2.f_acc[tid][2] -= resultForce[2];
+	p2.f[0] -= resultForce[0];
+	p2.f[1] -= resultForce[1];
+	p2.f[2] -= resultForce[2];
 
 #ifdef PAPI_BENCH
 	papiCalcFCounters[tid]->flopsEnd();
@@ -211,8 +193,8 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForce =
 		[] (Particle& p1, Particle& p2) {
-	int tid = omp_get_thread_num();
-			utils::Vector<double, 3> xDif = p2.x - p1.x;
+
+	utils::Vector<double, 3> xDif = p2.x - p1.x;
 
 			double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
 
@@ -259,33 +241,32 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 
 			resultForce = forceMagnitude * xDif;
 
-			p1.f_acc[tid][0] += resultForce[0];
-			p1.f_acc[tid][1] += resultForce[1];
-			p1.f_acc[tid][2] += resultForce[2];
+			p1.f[0] += resultForce[0];
+			p1.f[1] += resultForce[1];
+			p1.f[2] += resultForce[2];
 
 			//resultForce = resultForce * -1;
-			p2.f_acc[tid][0] -= resultForce[0];
-			p2.f_acc[tid][1] -= resultForce[1];
-			p2.f_acc[tid][2] -= resultForce[2];
+			p2.f[0] -= resultForce[0];
+			p2.f[1] -= resultForce[1];
+			p2.f[2] -= resultForce[2];
 	};
 
 
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateGravityForce =
 		[] (Particle& p1, Particle& p2) {
-			int tid = omp_get_thread_num();
 
 			utils::Vector<double, 3> xDif = p2.x - p1.x;
 			double normRaised3 = xDif.L2Norm() * xDif.L2Norm() * xDif.L2Norm();
 			utils::Vector<double, 3> resultForce = ((Settings::particleTypes[p1.type].mass * Settings::particleTypes[p2.type].mass) / normRaised3) * (xDif);
 
-			p1.f_acc[tid][0] += resultForce[0];
-			p1.f_acc[tid][1] += resultForce[1];
-			p1.f_acc[tid][2] += resultForce[2];
+			p1.f[0] += resultForce[0];
+			p1.f[1] += resultForce[1];
+			p1.f[2] += resultForce[2];
 
 			//resultForce = resultForce * -1;
-			p2.f_acc[tid][0] -= resultForce[0];
-			p2.f_acc[tid][1] -= resultForce[1];
-			p2.f_acc[tid][2] -= resultForce[2];
+			p2.f[0] -= resultForce[0];
+			p2.f[1] -= resultForce[1];
+			p2.f[2] -= resultForce[2];
 		};
 
 std::function<void(ParticleContainer &container)> ScenarioFactory::basicFileReaderSetup =
@@ -601,9 +582,9 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 
 	scenario->addAdditionalForces = ScenarioFactory::addAdditionalForces;
 
-	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON)
+	/*if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON)
 		scenario->updatePosition = ScenarioFactory::verletUpdatePositionThermostate;
-	else
+	else*/
 		scenario->updatePosition = ScenarioFactory::verletUpdatePosition;
 
 	if (type == ScenarioType::Gravity) {

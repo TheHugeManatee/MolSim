@@ -5,6 +5,8 @@
  *      Author: Leo
  */
 
+#ifdef CONTINUOUS_THERMOSTAT
+
 #include "utils/Thermostat.h"
 #include "Simulator.h"
 #include "utils/MaxwellBoltzmannDistribution.h"
@@ -176,4 +178,4 @@ void Thermostat::setCurrentTemperature(ParticleContainer* particles){
 	currentTemperature = currentTemperature_arg;
 	LOG4CXX_TRACE(logger,"Temperature : " << Thermostat::currentTemperature << " degrees");
 }
-
+#endif

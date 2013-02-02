@@ -40,6 +40,8 @@ const GLfloat mat_diffuse[]    = { 0.8f, 0.8f, 0.8f, 1.0f };
 const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat mat_shininess[] = { 10.0f };
 
+CellListContainer *theContainer;
+
 /**
  * global list containing the particles in the rendering
  */
@@ -75,6 +77,7 @@ bool renderHalo = false;
 bool renderMembrane = true;
 bool renderingPaused = false;
 bool renderCells = false;
+bool renderFilledCells = false;
 int cellCount[3];
 double cellSizes[3];
 
@@ -99,6 +102,52 @@ resize(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity() ;
+}
+
+static void drawBox(double *c1, double *c2) {
+	glColor3d(1.0, 0.0, 0.0);
+	glVertex3d(c2[0], c1[1], c1[2]);
+	glVertex3d(c1[0], c1[1], c1[2]);
+
+
+	glVertex3d(c2[0], c1[1], c2[2]);
+	glVertex3d(c1[0], c1[1], c2[2]);
+
+	glVertex3d(c2[0], c2[1], c1[2]);
+	glVertex3d(c1[0], c2[1], c1[2]);
+
+	glVertex3d(c2[0], c2[1], c2[2]);
+	glVertex3d(c1[0], c2[1], c2[2]);
+	glEnd();
+	//x[1] direction
+	glColor3d(0, 1.0, 0);
+	glBegin(GL_LINES);
+	glVertex3d(c2[0], c2[1], c2[2]);
+	glVertex3d(c2[0], c1[1], c2[2]);
+
+	glVertex3d(c1[0], c2[1], c2[2]);
+	glVertex3d(c1[0], c1[1], c2[2]);
+
+	glVertex3d(c2[0], c2[1], c1[2]);
+	glVertex3d(c2[0], c1[1], c1[2]);
+
+	glVertex3d(c1[0], c2[1], c1[2]);
+	glVertex3d(c1[0], c1[1], c1[2]);
+	glEnd();
+	//x[2] direction
+	glColor3d(0, 0, 1.0);
+	glBegin(GL_LINES);
+	glVertex3d(c2[0], c2[1], c2[2]);
+	glVertex3d(c2[0], c2[1], c1[2]);
+
+	glVertex3d(c2[0], c1[1], c2[2]);
+	glVertex3d(c2[0], c1[1], c1[2]);
+
+	glVertex3d(c1[0], c2[1], c2[2]);
+	glVertex3d(c1[0], c2[1], c1[2]);
+
+	glVertex3d(c1[0], c1[1], c2[2]);
+	glVertex3d(c1[0], c1[1], c1[2]);
 }
 
 static void drawBoxAndCells() {
@@ -137,50 +186,10 @@ static void drawBoxAndCells() {
 
 	}
 	else {
+		double c1[] = {0, 0, 0};
+		double c2[] = {Settings::domainSize[0], Settings::domainSize[1], Settings::domainSize[2]};
 
-		glColor3d(1.0, 0.0, 0.0);
-		glVertex3d(0.0,0, 0);
-		glVertex3d(d[0], 0, 0);
-
-
-		glVertex3d(0.0, d[1], 0.0);
-		glVertex3d(d[0], d[1], 0.0);
-
-		glVertex3d(0.0, 0.0, d[2]);
-		glVertex3d(d[0], 0.0, d[2]);
-
-		glVertex3d(0.0, d[1], d[2]);
-		glVertex3d(d[0], d[1], d[2]);
-		glEnd();
-		//x[1] direction
-		glColor3d(0.0, 1.0, 0.0);
-		glBegin(GL_LINES);
-		glVertex3d(0.0, 0.0, 0.0);
-		glVertex3d(0.0, d[1], 0.0);
-
-		glVertex3d(d[0], 0.0, 0.0);
-		glVertex3d(d[0], d[1], 0.0);
-
-		glVertex3d(0.0, 0.0, d[2]);
-		glVertex3d(0.0, d[1], d[2]);
-
-		glVertex3d(d[0], 0.0, d[2]);
-		glVertex3d(d[0], d[1], d[2]);
-		glEnd();
-		//x[2] direction
-		glColor3d(0.0, 0.0, 1.0);
-		glBegin(GL_LINES);
-		glVertex3d(0.0, 0.0, 0.0);
-		glVertex3d(0.0, 0.0, d[2]);
-
-		glVertex3d(0.0, d[1], 0.0);
-		glVertex3d(0.0, d[1], d[2]);
-
-		glVertex3d(d[0], 0.0, 0.0);
-		glVertex3d(d[0], 0.0, d[2]);
-
-		glVertex3d(d[0], d[1], 0.0);
-		glVertex3d(d[0], d[1], d[2]);
+		drawBox(c1, c2);
 
 	}
 	glEnd();
@@ -258,7 +267,7 @@ const int typeColorCount = sizeof(typeColors)/sizeof(typeColors[0]);
  * the glut rendering function callback
  * drawing of the particles happens here
  */
-static void display(void)
+static void RenderOutputWriter::display(void)
 {
 	const double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 	const double a = t*90.0;
@@ -311,6 +320,30 @@ static void display(void)
 			glCallList(particleGeoList);
 			glPopMatrix();
 		}
+
+
+		if(renderFilledCells) {
+			glDisable(GL_LIGHTING);
+			bool maskHalo = !renderHalo;
+
+			CellListContainer *cc = theContainer;
+
+			int nX0 = cc->nX0, nX1 = cc->nX1, nX2 = cc->nX2;
+
+			for(int x0=1+maskHalo; x0 < nX0-1-maskHalo; x0++)
+				for(int x1=1+maskHalo; x1 < nX1-1-maskHalo; x1++)
+					for(int x2=1+maskHalo; x2 < nX2-1-maskHalo; x2++) {
+						int s = cc->cells[x2 + x1*nX2 + x0*nX2*nX1].getSize();
+						if(s) {
+							double c1[] = {(x0-2)*cellSizes[0], (x1-2)*cellSizes[1], (x2-2)*cellSizes[2]};
+							double c2[] = {(x0-1)*cellSizes[0], (x1-1)*cellSizes[1], (x2-1)*cellSizes[2]};
+							drawBox(c1, c2);
+						}
+					}
+
+			glEnable(GL_LIGHTING);
+		}
+
 		//draw springs
 		if(Settings::scenarioType == ScenarioType::Membrane && renderMembrane) {
 			glDisable(GL_LIGHTING);
@@ -384,6 +417,7 @@ key(unsigned char key, int x, int y)
 	case 'm': renderMembrane = !renderMembrane; break;
 	case 'p': renderingPaused = !renderingPaused; break;
 	case 'c' : renderCells = !renderCells; break;
+	case 'f': renderFilledCells = !renderFilledCells; break;
 
 	default:
 		break;
@@ -533,7 +567,7 @@ void * renderFunction(void* arg) {
 	glutCreateWindow("Molecular Dynamics Rendering");
 
 	glutReshapeFunc(resize);
-	glutDisplayFunc(display);
+	glutDisplayFunc(RenderOutputWriter::display);
 	glutKeyboardFunc(key);
 	glutSpecialFunc(special);
 	glutMouseFunc(mouse);
@@ -620,6 +654,8 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 	cellSizes[2] = cc->edgeLength[2];
 
 	bool maskHalo = !renderHalo;
+
+	theContainer = cc;
 
 	render3dParticles.resize(cc->getSize(!maskHalo));
 	int i = 0;

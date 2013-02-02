@@ -5,6 +5,8 @@
  *      Author: Leo
  */
 
+
+#ifdef CONTINUOUS_THERMOSTAT
 #ifndef THERMOSTAT_H_
 #define THERMOSTAT_H_
 
@@ -96,3 +98,6 @@ public:
 
 
 #endif /* THERMOSTAT_H_ */
+#else
+#error "Thermostat.h still included!"
+#endif

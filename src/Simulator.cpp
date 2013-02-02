@@ -19,6 +19,7 @@
 #include "CellListContainer.h"
 #include "APCJobQueue.h"
 #include "SimulationJobQueue.h"
+#include "utils/ThermostatDiscrete.h"
 
 
 log4cxx::LoggerPtr Simulator::logger = log4cxx::Logger::getLogger("Simulator");
@@ -65,8 +66,8 @@ Simulator::Simulator() {
 	LOG4CXX_INFO(logger, "World has " << particleContainerSize << "particles");
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		Thermostat::initialize(Settings::dimensions, particleContainerSize);
-		Thermostat::scaleInitialVelocity(particleContainer);
+		ThermostatDiscrete::initialize(Settings::dimensions, particleContainerSize);
+		//ThermostatDiscrete::scaleInitialVelocity(particleContainer);
 	}
 
 	if(Settings::printStatistics){
@@ -243,6 +244,8 @@ void Simulator::nextTimeStep() {
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
 		ThermostatDiscrete::updateThermostate(particleContainer);
+		if(Simulator::iterations % ThermostatDiscrete::controlInterval == 0 )
+			ThermostatDiscrete::scaleVelocities(particleContainer);
 	}
 
 

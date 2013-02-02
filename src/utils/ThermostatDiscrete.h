@@ -22,8 +22,11 @@
  */
 class ThermostatDiscrete {
 public:
-	ThermostatDiscrete();
 	static void updateThermostate(ParticleContainer *particles);
+
+	static void initialize(int dimensions, int numberOfParticles);
+
+	static void scaleVelocities(ParticleContainer *container);
 
 	static double beta;
 	static double currentEnergy;
@@ -31,9 +34,12 @@ public:
 	static double numberOfParticles;
 	static double currentTemperature;
 	static double targetEnergy;
+	static int controlInterval;
 
 private:
 	static log4cxx::LoggerPtr logger;
+
+
 
 	/**
 	 * Calculates and returns the energy that has to be applied to the system in one timestep

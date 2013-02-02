@@ -58,8 +58,8 @@ class CellListContainer: public ParticleContainer {
 	friend class Job;
 	friend class SimulationJobQueue;
 	friend class APCJobQueue;
-	friend class SliceJobX0;
-	friend class BlockJobX0;
+	friend class SliceJob;
+	friend class BlockJob;
 	friend class APCSliceJob;
 
 	//this is needed to display internal structures of the container

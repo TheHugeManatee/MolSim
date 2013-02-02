@@ -21,7 +21,7 @@ Particle::Particle(int type_arg) {
 	LOG4CXX_TRACE(logger, "Particle generated!");
 	Particle::createdInstances++;
 
-	memset(f_acc, 0, sizeof(f_acc));
+	f = 0;
 
 	old_f = 0.0;
 	id = -1;
@@ -38,7 +38,7 @@ Particle::Particle(const Particle& other) {
 	Particle::createdInstances++;
 	Particle::createdByCopy++;
 	id = other.id;
-	memset(f_acc, 0, sizeof(f_acc));
+	f = 0;
 }
 
 Particle::Particle(	utils::Vector<double, 3> x_arg,
@@ -49,13 +49,14 @@ Particle::Particle(	utils::Vector<double, 3> x_arg,
 	LOG4CXX_TRACE(logger,"Particle generated");
 	Particle::createdInstances++;
 
-	memset(f_acc, 0, sizeof(f_acc));
+	f = 0;
 }
+
 
 Particle::Particle(	utils::Vector<double, 3> x_arg,
 		utils::Vector<double, 3> v_arg,
 		int type_arg,
-		double *f_arg,
+		utils::Vector<double, 3> f_arg,
 		utils::Vector<double, 3> old_f_arg,
 		int id_arg
 ) {
@@ -64,7 +65,7 @@ Particle::Particle(	utils::Vector<double, 3> x_arg,
 	v = v_arg;
 	type = type_arg;
 
-	memcpy(f_acc, f_arg, sizeof(f_acc));
+	f = f_arg;
 
 	old_f = old_f_arg;
 	LOG4CXX_TRACE(logger,"Particle generated");
@@ -79,7 +80,7 @@ Particle::Particle(	utils::Vector<double, 3> x_arg,
 ) : x(x_arg), x_t0(x_arg), v(v_arg), type(type_arg), id(id_arg) {
 
 
-	memset(f_acc, 0, sizeof(f_acc));
+	f = 0;
 
 	old_f = 0.0;
 	LOG4CXX_TRACE(logger,"Particle generated");
@@ -97,18 +98,15 @@ Particle::Particle(std::string importString) {
 	lstream >> v[0];
 	lstream >> v[1];
 	lstream >> v[2];
-	lstream >> f_acc[0][0];
-	lstream >> f_acc[0][1];
-	lstream >> f_acc[2][2];
+	lstream >> f[0];
+	lstream >> f[1];
+	lstream >> f[2];
 	lstream >> old_f[0];
 	lstream >> old_f[1];
 	lstream >> old_f[2];
 	lstream >> type;
 	lstream >> id;
 
-	x_t0 = 0;
-
-	memset(f_acc, 0, sizeof(f_acc) - 3*sizeof(double));
 
 	//std::cout << importString << std::endl << toStringForExport() << std::endl << std::endl;
 

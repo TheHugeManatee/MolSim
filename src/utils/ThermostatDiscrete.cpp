@@ -15,22 +15,29 @@ double ThermostatDiscrete::energyPerStep = 0;
 double ThermostatDiscrete::numberOfParticles = 0;
 double ThermostatDiscrete::currentTemperature = 0;
 double ThermostatDiscrete::targetEnergy=0;
+int ThermostatDiscrete::controlInterval = 1000;
 log4cxx::LoggerPtr ThermostatDiscrete::logger = log4cxx::Logger::getLogger("ThermostatDiscrete");
 
+void ThermostatDiscrete::initialize(int dimensions, int numberOfParticles) {
+	controlInterval = Settings::thermostatSettings->controlInterval();
+}
 
-ThermostatDiscrete::ThermostatDiscrete() {
+void ThermostatDiscrete::scaleVelocities(ParticleContainer *p) {
+	p->each([](Particle &p) {
+		p.v = beta * p.v;
+	});
 }
 
 void ThermostatDiscrete::getStepEnergy(){
 	auto temperaturePerStep_opt = Settings::thermostatSettings->temperaturePerStep();
 	if(temperaturePerStep_opt.present()){
-//	std::cout << "numberOfParticles: " << numberOfParticles << std::endl;
-//	std::cout << "temperaturePerStep: " << temperaturePerStep << std::endl;
-	energyPerStep = Settings::dimensions / 2.0 * numberOfParticles * (temperaturePerStep_opt.get()) * BOLTZMANN;
-//	std::cout << "energyPerStep: " << energyPerStep << std::endl;
+	//	std::cout << "numberOfParticles: " << numberOfParticles << std::endl;
+	//	std::cout << "temperaturePerStep: " << temperaturePerStep << std::endl;
+		energyPerStep = Settings::dimensions / 2.0 * numberOfParticles * (temperaturePerStep_opt.get()) * BOLTZMANN;
+	//	std::cout << "energyPerStep: " << energyPerStep << std::endl;
 	}else{
-	energyPerStep = targetEnergy -currentEnergy;
-//	LOG4CXX_DEBUG(logger,"Target Energy: " << targetEnergy <<" Current Energy: " <<currentEnergy);
+		energyPerStep = targetEnergy -currentEnergy;
+	//	LOG4CXX_DEBUG(logger,"Target Energy: " << targetEnergy <<" Current Energy: " <<currentEnergy);
 
 	}
 

@@ -115,6 +115,7 @@
 
 #include "utils/Settings.h"
 #include "Simulator.h"
+#include "utils/ThermostatDiscrete.h"
 
 #ifndef NOGLVISUALIZER
 namespace outputWriter {

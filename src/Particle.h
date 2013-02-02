@@ -26,10 +26,10 @@ public:
 	/** the velocity of the particle */
 	utils::Vector<double, 3> v;
 
-	double f_acc[16][3];
-
 	/** the force which was effective on this particle */
 	utils::Vector<double, 3> old_f;
+
+	utils::Vector<double, 3> f;
 
 	/** type of the particle. Use it for whatever you want (e.g. to seperate
 	 * molecules belonging to different bodies, matters, and so on)
@@ -65,7 +65,7 @@ public:
 			utils::Vector<double, 3> x_arg,
 			utils::Vector<double, 3> v_arg,
 			int type_arg,
-			double *f_arg,
+			utils::Vector<double, 3> f_arg,
 			utils::Vector<double, 3> old_f_arg,
 			int id_arg  = -1
 	);

@@ -53,7 +53,10 @@ private:
 	static bool threadIsSpawned;
 
 public:
+
+	static void display(void);
 	RenderOutputWriter();
+
 
 	static log4cxx::LoggerPtr logger;
 
