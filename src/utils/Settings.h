@@ -50,6 +50,17 @@ typedef struct {
 	} membraneDescriptor;
 } typeDescriptor;
 
+
+/**
+ * the signum function
+ * returns -1, 0 or 1
+ * branchless and typesafe
+ */
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
+
 class Settings {
 public:
 

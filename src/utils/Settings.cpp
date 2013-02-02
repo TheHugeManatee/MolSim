@@ -75,17 +75,6 @@ SimulationConfig::ThermostatSettingsType *Settings::thermostatSettings = new The
 
 log4cxx::LoggerPtr Settings::logger = log4cxx::Logger::getLogger("Settings");
 
-//TODO:implement an dimension settings parameter
-
-/**
- * the signum function
- * returns -1, 0 or 1
- * branchless and typesafe
- */
-template <typename T> int sgn(T val) {
-    return (T(0) < val) - (val < T(0));
-}
-
 /**
  * static class containing all global settings relevant to simulation and
  * material etc.

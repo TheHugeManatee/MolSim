@@ -24,29 +24,27 @@ class ThermostatDiscrete {
 public:
 	static void updateThermostate(ParticleContainer *particles);
 
-	static void initialize(int dimensions, int numberOfParticles);
+	static void initialize(int dimensions, int numberOfParticles, ParticleContainer *container);
 
 	static void scaleVelocities(ParticleContainer *container);
 
+	static double getTemperature(ParticleContainer *container);
+
 	static double beta;
 	static double currentEnergy;
-	static double energyPerStep;
+	static double temperaturePerStep;
 	static double numberOfParticles;
 	static double currentTemperature;
-	static double targetEnergy;
+	static double targetTemperature;
+	static double initialTemperature;
+	static int dimensions;
 	static int controlInterval;
 
 private:
 	static log4cxx::LoggerPtr logger;
 
+	static void setInitialTemperature(ParticleContainer *container);
 
-
-	/**
-	 * Calculates and returns the energy that has to be applied to the system in one timestep
-	 * accoring to the remaining steps and remaining Energy to be applied
-	 * @return delta E_kin
-	 */
-	static void getStepEnergy();
 
 	/**
 	 * Calculates the current energy for the given ParticleContainer
@@ -58,10 +56,6 @@ private:
 	 */
 	static void calculateCurrentEnergy(ParticleContainer* particles);
 
-	/**
-	 * Calculates current energy
-	 */
-	static void setCurrentTemperature();
 
 };
 

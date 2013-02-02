@@ -66,17 +66,19 @@ Simulator::Simulator() {
 	LOG4CXX_INFO(logger, "World has " << particleContainerSize << "particles");
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		ThermostatDiscrete::initialize(Settings::dimensions, particleContainerSize);
-		//ThermostatDiscrete::scaleInitialVelocity(particleContainer);
+		ThermostatDiscrete::initialize(Settings::dimensions, particleContainerSize, particleContainer);
 	}
-
+	Simulator::statistics << "Iteration;Time;Temperature;Diffusion;";
 	if(Settings::printStatistics){
 		int length = ceil(Settings::rCutoff /Settings::deltaRDF);
 		Simulator::radialDistribution = new double[length];
 		for (int i = 0 ; i < ceil(Settings::rCutoff /Settings::deltaRDF) ; i++ ){
 			radialDistribution[i] = 0;
+			Simulator::statistics << i*Settings::deltaRDF << ";";
 		}
+
 	}
+	Simulator::statistics << std::endl;
 
 	//plotParticles(0);
 }
@@ -159,7 +161,7 @@ void Simulator::getRadialDistribution(){
 void Simulator::addStatisticsString(){
 	int position = Simulator::iterations / Settings::statisticsInterval;
 
-	statistics << Simulator::iterations <<";" << ThermostatDiscrete::currentTemperature << ";" << Simulator::diffusion <<";" ;
+	statistics << Simulator::iterations <<";" <<  Simulator::iterations*Settings::deltaT << ";" << ThermostatDiscrete::currentTemperature << ";" << Simulator::diffusion <<";" ;
 	Simulator::diffusion = 0;
 	particleContainer->each([](Particle &p) {
 		p.x_t0 = p.x;
@@ -187,6 +189,8 @@ void Simulator::plotParticles(int iteration) {
 	outputWriter::VTKWriter vtkWriter;
 	outputWriter::XYZWriter xyzWriter;
 
+
+	std::cout << "T = " << ThermostatDiscrete::getTemperature(particleContainer) << " K" << std::endl;
 
 #ifndef NOGLVISUALIZER
 	if(Settings::show3DVisual) {
@@ -216,15 +220,6 @@ void Simulator::plotParticles(int iteration) {
 
 
 void Simulator::nextTimeStep() {
-	static std::function<bool (ParticleContainer &container, Particle &p)> boundaryHandlers[6] = {
-			[] (ParticleContainer &container, Particle &p) {return false;},
-			[] (ParticleContainer &container, Particle &p) {return false;},
-			[] (ParticleContainer &container, Particle &p) {return false;},
-			[] (ParticleContainer &container, Particle &p) {return false;},
-			[] (ParticleContainer &container, Particle &p) {return false;},
-			[] (ParticleContainer &container, Particle &p) {return false;}
-	};
-
 
 #ifdef _OPENMP
 	simulationJobs->executeJobsParallel((CellListContainer*)particleContainer, scenario);
@@ -243,9 +238,10 @@ void Simulator::nextTimeStep() {
 
 
 	if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
-		ThermostatDiscrete::updateThermostate(particleContainer);
-		if(Simulator::iterations % ThermostatDiscrete::controlInterval == 0 )
+		if((Simulator::iterations+1) % ThermostatDiscrete::controlInterval == 0 ) {
+			ThermostatDiscrete::updateThermostate(particleContainer);
 			ThermostatDiscrete::scaleVelocities(particleContainer);
+		}
 	}
 
 

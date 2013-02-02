@@ -50,7 +50,9 @@ std::vector<Particle> render3dParticles;
 /**
  * OpenGL display list ID for the particle "primitive", normally a sphere
  */
-int particleGeoList;
+#define NUMPRIMITIVES 5
+int particleGeoLists;
+int curPrimitiveIdx = 0;
 /**
  * OpenGL display list ID for the complete collection of particles currently in the view
  * the particles are rendered into a display list whenever the particles change, which greatly improves
@@ -118,10 +120,10 @@ static void drawBox(double *c1, double *c2) {
 
 	glVertex3d(c2[0], c2[1], c2[2]);
 	glVertex3d(c1[0], c2[1], c2[2]);
-	glEnd();
+
 	//x[1] direction
 	glColor3d(0, 1.0, 0);
-	glBegin(GL_LINES);
+
 	glVertex3d(c2[0], c2[1], c2[2]);
 	glVertex3d(c2[0], c1[1], c2[2]);
 
@@ -133,10 +135,10 @@ static void drawBox(double *c1, double *c2) {
 
 	glVertex3d(c1[0], c2[1], c1[2]);
 	glVertex3d(c1[0], c1[1], c1[2]);
-	glEnd();
+
 	//x[2] direction
 	glColor3d(0, 0, 1.0);
-	glBegin(GL_LINES);
+
 	glVertex3d(c2[0], c2[1], c2[2]);
 	glVertex3d(c2[0], c2[1], c1[2]);
 
@@ -267,7 +269,7 @@ const int typeColorCount = sizeof(typeColors)/sizeof(typeColors[0]);
  * the glut rendering function callback
  * drawing of the particles happens here
  */
-static void RenderOutputWriter::display(void)
+void RenderOutputWriter::display(void)
 {
 	const double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
 	const double a = t*90.0;
@@ -317,13 +319,14 @@ static void RenderOutputWriter::display(void)
 			glScaled(Settings::particleTypes[render3dParticles[i].type].sigma,
 					Settings::particleTypes[render3dParticles[i].type].sigma,
 					Settings::particleTypes[render3dParticles[i].type].sigma);
-			glCallList(particleGeoList);
+			glCallList(particleGeoLists + curPrimitiveIdx);
 			glPopMatrix();
 		}
 
 
 		if(renderFilledCells) {
 			glDisable(GL_LIGHTING);
+			glBegin(GL_LINES);
 			bool maskHalo = !renderHalo;
 
 			CellListContainer *cc = theContainer;
@@ -341,6 +344,7 @@ static void RenderOutputWriter::display(void)
 						}
 					}
 
+			glEnd();
 			glEnable(GL_LIGHTING);
 		}
 
@@ -368,9 +372,10 @@ static void RenderOutputWriter::display(void)
 						//	glColor3d(0.6, 0.6, 0.6);
 
 					}
-			}
+				}
 			}
 			glEnd();
+			glEnable(GL_LIGHTING);
 		}
 		glEndList();
 		//reset the flag
@@ -413,11 +418,29 @@ key(unsigned char key, int x, int y)
 	case 'w': camPosition[1] += 1.0; break;
 	case 'q': camPosition[2] -= 1.0; break;
 	case 'e': camPosition[2] += 1.0; break;
+
+	default:
+		break;
+	}
+
+	glutPostRedisplay();
+}
+
+static void
+keyup(unsigned char key, int x, int y)
+{
+
+	switch (key)
+	{
+#ifndef NOFREEGLUT
+	case 27 : glutLeaveMainLoop () ;      break;
+#endif
 	case 'h': renderHalo = !renderHalo; break;
 	case 'm': renderMembrane = !renderMembrane; break;
 	case 'p': renderingPaused = !renderingPaused; break;
 	case 'c' : renderCells = !renderCells; break;
 	case 'f': renderFilledCells = !renderFilledCells; break;
+	case '.': curPrimitiveIdx = (curPrimitiveIdx+1)%NUMPRIMITIVES; break;
 
 	default:
 		break;
@@ -569,6 +592,7 @@ void * renderFunction(void* arg) {
 	glutReshapeFunc(resize);
 	glutDisplayFunc(RenderOutputWriter::display);
 	glutKeyboardFunc(key);
+	glutKeyboardUpFunc(keyup);
 	glutSpecialFunc(special);
 	glutMouseFunc(mouse);
 	glutIdleFunc(idle);
@@ -599,16 +623,36 @@ void * renderFunction(void* arg) {
 	glMaterialfv(GL_FRONT, GL_SPECULAR,  mat_specular);
 	glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
-	particleGeoList = glGenLists(2);
-	particlesTotalList = particleGeoList + 1;
+	particleGeoLists = glGenLists(NUMPRIMITIVES+1);
+	particlesTotalList = particleGeoLists + NUMPRIMITIVES;
+
+
+	glNewList(particleGeoLists, GL_COMPILE);
+		glutSolidSphere(0.5, 8, 8);
+	glEndList();
+
+	glNewList(particleGeoLists+1, GL_COMPILE);
+		glutWireSphere(0.5, 8, 8);
+	glEndList();
+
+	glNewList(particleGeoLists+2, GL_COMPILE);
+		glutSolidSphere(0.5, 8, 2);
+	glEndList();
+
+	glNewList(particleGeoLists+3, GL_COMPILE);
+		glutSolidCube(1);
+	glEndList();
 
 	glPointSize(5.0);
-	glNewList(particleGeoList, GL_COMPILE);
-	//glBegin(GL_POINTS);
-	//glVertex3d(0,0,0);
-	glutSolidSphere(0.5, 8, 8);
-	//glEnd();
+	glNewList(particleGeoLists+4, GL_COMPILE);
+			glBegin(GL_POINTS);
+			glVertex3d(0,0,0);
+			glEnd();
 	glEndList();
+
+
+
+
 
 
 	LOG4CXX_DEBUG(RenderOutputWriter::logger, "Entering rendering loop...");

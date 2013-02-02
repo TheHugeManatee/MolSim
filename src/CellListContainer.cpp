@@ -97,11 +97,7 @@ void CellListContainer::add(Particle & p) {
 
 void CellListContainer::each(std::function<void (Particle &)> fn) {
 	int s = cells.size();
-#ifdef _OPENMP
-#ifdef FOR_PARALLEL
-#pragma omp parallel for
-#endif
-#endif
+
 	for(int x0=2; x0 < nX0-2; x0++)
 		for(int x1=2; x1 < nX1-2; x1++)
 			for(int x2=2; x2 < nX2-2; x2++) {
@@ -130,11 +126,7 @@ void CellListContainer::each(std::function<void (Particle &)> fn) {
 
 void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn) {
 	double rcSquared = Settings::rCutoff*Settings::rCutoff;
-#ifdef _OPENMP
-#ifdef FOR_PARALLEL
-#pragma omp parallel for
-#endif
-#endif
+
 	for(int x0=1; x0 < nX0-1; x0++) {
 		for(int x1=1; x1 < nX1-1; x1++) {
 			for(int x2=1; x2 < nX2-1; x2++) {
@@ -171,9 +163,7 @@ void CellListContainer::eachPair(std::function<void (Particle &, Particle&)> fn)
 void CellListContainer::afterPositionChanges(
 		std::function<bool (ParticleContainer &container, Particle &)> boundaryHandlers[6]) {
 	int cellcount = cells.size();
-#ifdef _OPENMP
-//#pragma omp parallel for
-#endif
+
 	for(int x0=2; x0 < nX0-2; x0++)
 		for(int x1=2; x1 < nX1-2; x1++)
 			for(int x2=2; x2 < nX2-2; x2++) {

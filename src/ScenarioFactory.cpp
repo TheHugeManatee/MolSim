@@ -61,10 +61,10 @@ std::function<void(Particle&)> ScenarioFactory::verletUpdatePositionThermostate 
 			utils::Vector<double, 3> resultV;
 			resultV = p.v + dt / (2 * Settings::particleTypes[p.type].mass) * (p.old_f + p.f);
 			//apply thermostate
-			if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
+			/*if(Settings::thermostatSwitch == SimulationConfig::ThermostatSwitchType::ON){
 				if(Simulator::iterations % ThermostatDiscrete::controlInterval == 0 )
 					p.v = resultV*ThermostatDiscrete::beta;
-			}
+			}*/
 
 			//new position
 			utils::Vector<double, 3> resultX;
