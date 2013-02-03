@@ -11,10 +11,12 @@
 #include <iostream>
 
 class ColorCoder {
-protected:
-	double min, max, maxminusmin;
 
 public:
+	static void HSVToRGB(double h, double s, double v, double *c);
+
+	double min, max, maxminusmin;
+
 	ColorCoder();
 	virtual ~ColorCoder();
 

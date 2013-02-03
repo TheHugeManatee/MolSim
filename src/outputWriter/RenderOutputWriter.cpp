@@ -14,6 +14,7 @@
 #include "utils/ColorCoding/Grayscale.h"
 #include "utils/ColorCoding/HeatedObjectScale.h"
 #include "utils/ColorCoding/MagentaScale.h"
+#include "utils/ColorCoding/RainbowScale.h"
 
 #include "CellListContainer.h"
 #include "Simulator.h"
@@ -105,6 +106,26 @@ bool RenderOutputWriter::threadIsSpawned = false;
 log4cxx::LoggerPtr RenderOutputWriter::logger = log4cxx::Logger::getLogger("RenderOutputWriter");
 
 void markSelectedParticle(Particle &p);
+
+
+void computeParticleDensities() {
+	theContainer->each([](Particle &p) {p.extra = 0;});
+	theContainer->eachPair([](Particle &p1, Particle &p2) {
+		double d = (p1.x - p2.x).L2Norm();
+		if(d != 0) {
+			p1.extra += Settings::particleTypes[p2.type].mass/d;
+			p2.extra += Settings::particleTypes[p1.type].mass/d;
+		}
+	});
+}
+
+void computeParticleLocalTemperatures() {
+	theContainer->each([](Particle &p) {p.extra = Settings::particleTypes[p.type].mass*p.v.LengthOptimizedR3Squared();});
+	theContainer->eachPair([](Particle &p1, Particle &p2) {
+		p1.extra += Settings::particleTypes[p2.type].mass*p2.v.LengthOptimizedR3Squared();
+		p2.extra += Settings::particleTypes[p1.type].mass*p1.v.LengthOptimizedR3Squared();
+	});
+}
 
 /**
  * onResize glut callback
@@ -324,18 +345,28 @@ void GetOGLPos(int x, int y, double *pos)
     return;
 }
 
-enum ParticleColoring  {PC_TYPE, PC_FORCE, PC_FORCE_ABS, PC_VELOCITY, PC_VELOCITY_ABS, PC_POSITION, PC_X0, PC_X1, PC_X2, PC_DENSITY};
-const char* coloringNames[] = {"Type", "Force", "Force Magn.", "Velocity", "Velocity Magn.", "Position", "X0", "X1", "X2", "Density"};
+enum ParticleColoring  {PC_TYPE, PC_FORCE, PC_FORCE_ABS, PC_VELOCITY, PC_VELOCITY_ABS, PC_POSITION, PC_X0, PC_X1, PC_X2, PC_TEMPERATURE, PC_DENSITY};
+const char* coloringNames[] = {"Type", "Force", "Force Magn.", "Velocity", "Velocity Magn.", "Position", "X0", "X1", "X2", "Temp", "Density"};
 ParticleColoring currentColoring = PC_X2;
-ColorCoder *colorScale = new HeatedObjectScale();
+
 double pc_min[3], pc_max[3], pc_min_old[3], pc_max_old[3];
+int currentScale = 1;
+#define NUM_SCALES 4
+const char* scaleNames[] = {"Gray", "Heated Object", "Magenta", "Rainbow"};
+ColorCoder *colorScales[] = {
+		new Grayscale(),
+		new HeatedObjectScale(),
+		new MagentaScale(),
+		new RainbowScale()
+};
+
 
 void setupColoring() {
 	//reset the min and max values for particle coloring
 	pc_min[0] = pc_min[1] = pc_min[2] = std::numeric_limits<double>::max();
 	pc_max[0] = pc_max[1] = pc_max[2] = std::numeric_limits<double>::lowest();
-	colorScale->setMin(pc_min_old[0]);
-	colorScale->setMax(pc_max_old[0]);
+	colorScales[currentScale]->setMin(pc_min_old[0]);
+	colorScales[currentScale]->setMax(pc_max_old[0]);
 }
 
 void updateColoring() {
@@ -358,7 +389,7 @@ void colorParticle(Particle &p, double *c) {
 		break;
 	case PC_FORCE_ABS:
 		v[0] = p.old_f.L2Norm();
-		colorScale->getColor(v[0], c);
+		colorScales[currentScale]->getColor(v[0], c);
 		pc_min[0] = std::min(pc_min[0], v[0]);
 		pc_max[0] = std::max(pc_max[0], v[0]);
 		break;
@@ -375,7 +406,7 @@ void colorParticle(Particle &p, double *c) {
 		break;
 	case PC_VELOCITY_ABS:
 		v[0] = p.v.L2Norm();
-		colorScale->getColor(v[0], c);
+		colorScales[currentScale]->getColor(v[0], c);
 		pc_min[0] = std::min(pc_min[0], v[0]);
 		pc_max[0] = std::max(pc_max[0], v[0]);
 		break;
@@ -403,28 +434,29 @@ void colorParticle(Particle &p, double *c) {
 		break;
 	case PC_X0:
 		v[0] = p.x[0];
-		colorScale->getColor(v[0], c);
+		colorScales[currentScale]->getColor(v[0], c);
 		pc_min[0] = std::min(pc_min[0], v[0]);
 		pc_max[0] = std::max(pc_max[0], v[0]);
 		break;
 	case PC_X1:
 		v[0] = p.x[1];
-		colorScale->getColor(v[0], c);
+		colorScales[currentScale]->getColor(v[0], c);
 		pc_min[0] = std::min(pc_min[0], v[0]);
 		pc_max[0] = std::max(pc_max[0], v[0]);
 		break;
 	case PC_X2:
 		v[0] = p.x[2];
-		colorScale->getColor(v[0], c);
+		colorScales[currentScale]->getColor(v[0], c);
 		pc_min[0] = std::min(pc_min[0], v[0]);
 		pc_max[0] = std::max(pc_max[0], v[0]);
 		break;
 	case PC_DENSITY:
-		/*v[0] = p.extra;
-		colorScale->getColor(v[0], c);
+	case PC_TEMPERATURE:
+		v[0] = p.extra;
+		colorScales[currentScale]->getColor(v[0], c);
 		pc_min[0] = std::min(pc_min[0], v[0]);
 		pc_max[0] = std::max(pc_max[0], v[0]);
-		break;*/
+		break;
 	default:
 		c[0] = 0;
 		c[1] = 0;
@@ -569,7 +601,7 @@ void RenderOutputWriter::display(void)
 	shapesPrintf(5, 3, "OCells %s", renderFilledCells?"ON":"OFF");
 	shapesPrintf(6, 3, "Membrane Links %s", renderMembrane?"ON":"OFF");
 	shapesPrintf(7, 3, "Halo %s", renderHalo?"ON":"OFF");
-	shapesPrintf(8, 3, "Colors: %s", coloringNames[currentColoring]);
+	shapesPrintf(8, 3, "%s | %s", coloringNames[currentColoring], scaleNames[currentScale]);
 	if(renderingPaused) shapesPrintf(9, 3, "---PAUSED---");
 
 #endif
@@ -593,6 +625,14 @@ void pickParticle() {
 		if(d_squared <= Settings::particleTypes[p.type].sigma*Settings::particleTypes[p.type].sigma) {
 			selectedParticle = &p;
 			redrawRequested = true;
+			std::cout << "Selected particle:" << std::endl;
+			std::cout << "\ttype:\t\t" << p.type << std::endl;
+			std::cout << "\tposition:\t" << p.x << std::endl;
+			std::cout << "\tforce:\t\t" << p.old_f << " |" << p.old_f.L2Norm() << "|" <<  std::endl;
+			std::cout << "\tvelocity:\t" << p.v << " |" << p.v.L2Norm() << "|" << std::endl;
+			std::cout << "\tx0:\t\t" << p.x_t0 << std::endl;
+			std::cout << "\tsigma:\t\t" << Settings::particleTypes[p.type].sigma << std::endl;
+			std::cout << "\tepsilon:\t" << Settings::particleTypes[p.type].epsilon << std::endl;
 		}
 	});
 }
@@ -625,8 +665,7 @@ void moveAllByType(int type, double dx0, double dx1, double dx2) {
 void RenderOutputWriter::key(unsigned char key, int x, int y)
 {
 	if(editMode && (selectedParticle || selectedType != -1)) {
-		switch (key)
-		{
+		switch (key) {
 		#ifndef NOFREEGLUT
 			case 27 : glutLeaveMainLoop () ;      break;
 		#endif
@@ -661,8 +700,8 @@ void RenderOutputWriter::key(unsigned char key, int x, int y)
 #ifndef NOFREEGLUT
 	case 27 : glutLeaveMainLoop () ;      break;
 #endif
-	case '+': primitiveScaling += 0.05; recompileRequested = true;break;
-	case '-': primitiveScaling -= 0.05; recompileRequested = true;break;
+	case '+': primitiveScaling += 0.1; recompileRequested = true;break;
+	case '-': primitiveScaling -= 0.1; recompileRequested = true;break;
 	default:
 		break;
 	}
@@ -705,11 +744,20 @@ void RenderOutputWriter::keyup(unsigned char key, int x, int y)
 		break;
 	case ',':
 		currentColoring  = (currentColoring + 1)%(PC_DENSITY+1);
-		determineColorScale();
 		if(currentColoring == PC_DENSITY)
-			updateRenderer(*theContainer, Simulator::iterations);
-		else
-			recompileRequested = true;
+			computeParticleDensities();
+		else if(currentColoring == PC_TEMPERATURE)
+			computeParticleLocalTemperatures();
+
+		determineColorScale();
+		recompileRequested = true;
+
+		break;
+	case 'k':
+		colorScales[(currentScale + 1)%NUM_SCALES]->setMin(colorScales[currentScale]->min);
+		colorScales[(currentScale + 1)%NUM_SCALES]->setMax(colorScales[currentScale]->max);
+		currentScale = (currentScale + 1)%NUM_SCALES;
+		recompileRequested = true;
 		break;
 	case 'p':
 		editMode = !editMode;
@@ -944,10 +992,10 @@ void * renderFunction(void* arg) {
 	glEndList();
 
 	glNewList(particleGeoLists+3, GL_COMPILE);
-		glutSolidCube(1);
+		glutSolidOctahedron();
 	glEndList();
 
-	glPointSize(5.0);
+	glPointSize(8.0);
 	glNewList(particleGeoLists+4, GL_COMPILE);
 			glBegin(GL_POINTS);
 			glVertex3d(0,0,0);
@@ -1001,18 +1049,11 @@ void RenderOutputWriter::updateRenderer(ParticleContainer & container, int itera
 	int nX0 = cc->nX0, nX1 = cc->nX1, nX2 = cc->nX2;
 
 	currentEnergy = 0;
-/*
-	if(currentColoring == PC_DENSITY) {
-		theContainer->each([](Particle &p) {p.extra = 0;});
-		theContainer->eachPair([](Particle &p1, Particle &p2) {
-			double d = (p1.x - p2.x).L2Norm();
-			if(d != 0) {
-				p1.extra += 1/d;
-				p2.extra += 1/d;
-			}
-		});
-		std::cout << "Density calculated for all particles!" << std::endl;
-	}*/
+
+	if(currentColoring == PC_DENSITY)
+		computeParticleDensities();
+	else if(currentColoring == PC_TEMPERATURE)
+		computeParticleLocalTemperatures();
 
 	for(int x0=1+maskHalo; x0 < nX0-1-maskHalo; x0++)
 		for(int x1=1+maskHalo; x1 < nX1-1-maskHalo; x1++)

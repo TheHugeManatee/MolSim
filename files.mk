@@ -23,4 +23,5 @@ SOURCES=\
 	src/utils/ColorCoding/ColorCoder.cpp\
 	src/utils/ColorCoding/Grayscale.cpp\
 	src/utils/ColorCoding/HeatedObjectScale.cpp\
-	src/utils/ColorCoding/MagentaScale.cpp
+	src/utils/ColorCoding/MagentaScale.cpp\
+	src/utils/ColorCoding/RainbowScale.cpp

@@ -9,17 +9,17 @@
   <endTime>150</endTime>
   <dimensions>3</dimensions> <!-- (o) Standard is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
   <scenarioType>Membrane</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Membrane  -->
-  <domainSize x0="148" x1="148" x2="148" /><!-- (m) -->
+  <domainSize x0="148" x1="70" x2="148" /><!-- (m) -->
   <cutoffRadius scaled="1" radius="4.0" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
 
   <boundaryHandling
-  	top="Periodic" bottom="Periodic"					
-  	left="Periodic" right="Periodic"		
+  	top="Reflect" bottom="Reflect"					
+  	left="Reflect" right="Reflect"		
   	front="Reflect" back="Reflect"
   />
   
   <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CelllistContainer -->
-  <gravitation x0="0" x1="0" x2="-0.001" /> <!-- (o) -->
+  <gravitation x0="0" x1="-0.001" x2="0" /> <!-- (o) -->
   <outputFrequency>100</outputFrequency>
   <disableOutput>0</disableOutput>
   <loggerConfigFile>Logger.properties</loggerConfigFile>
@@ -44,15 +44,15 @@
  </typeList>  
  <forceField>
    <type>0</type> 
-   <from x0="17" x1="24" x2="0" />
-   <to x0="18" x1="25" x2="0" />
-   <force x0="0" x1="0" x2="0.8" />
+   <from x0="17" x1="0" x2="24" />
+   <to x0="18" x1="0" x2="25" />
+   <force x0="0" x1="0.8" x2="0" />
  </forceField>
  
  <generator>
   <cuboid><!-- (o)  -->
-    <bottomLeft x0="15" x1="15" x2="1.5" />
-    <nX x0="50" x1="50" x2="1" />
+    <bottomLeft x0="15" x1="1.5" x2="15" />
+    <nX x0="50" x1="1" x2="50" />
     <stepWidth>2.2</stepWidth>
     <type>0</type>
     <initialVelocity x0="0" x1="0" x2="0"/>
