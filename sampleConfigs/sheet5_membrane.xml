@@ -6,7 +6,7 @@
 <!--(m): mandatory (o): optional-->     
   
   <deltaT>0.01</deltaT>
-  <endTime>150</endTime>
+  <endTime>650</endTime>
   <dimensions>3</dimensions> <!-- (o) Standard is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
   <scenarioType>Membrane</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Membrane  -->
   <domainSize x0="148" x1="70" x2="148" /><!-- (m) -->
@@ -47,6 +47,7 @@
    <from x0="17" x1="0" x2="24" />
    <to x0="18" x1="0" x2="25" />
    <force x0="0" x1="0.8" x2="0" />
+   <endTime>150</endTime>
  </forceField>
  
  <generator>

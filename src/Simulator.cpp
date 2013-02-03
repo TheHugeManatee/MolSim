@@ -263,6 +263,17 @@ void Simulator::nextTimeStep() {
 		}
 	}
 
+	//remove old force fields
+	for(int i=0; i < Settings::forceFields.size(); i++) {
+		ForceFieldDescriptor &ff = Settings::forceFields[i];
+		if(ff.endTime < iterations * Settings::deltaT) {
+			Settings::forceFields[i] = Settings::forceFields[Settings::forceFields.size()-1];
+			Settings::forceFields.pop_back();
+			i--;
+			LOG4CXX_DEBUG(logger, "Force field on " << ff.type << " with force [" << ff.force[0] << " " << ff.force[1] << " " << ff.force[2] << "] ended!");
+		}
+	}
+
 
 	Simulator::iterations++;
 	LOG4CXX_TRACE(logger,"Iteration number " << Simulator::iterations); //This one is pretty annoying

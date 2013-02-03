@@ -90,25 +90,25 @@ std::function<void(Particle &)> ScenarioFactory::addAdditionalForces =
 		[] (Particle &p) {
 
 			for(int i = 0 ; i< Settings::forceFields.size() ; i++){
-				if(p.type == Settings::forceFields[i].type()){
+				if(p.type == Settings::forceFields[i].type
+						&& Settings::forceFields[i].startTime < Simulator::iterations * Settings::deltaT) {
 					int nX2 = Settings::particleTypes[p.type].membraneDescriptor.nX2+2;
 					int nX1 = Settings::particleTypes[p.type].membraneDescriptor.nX1+2;
 					int x2 = p.id % nX2 -1;
 					int x1 = (p.id/nX2) % (nX1) -1 ; //int pid = x2 + x1*nX2 + x0*nX2*nX1
 					int x0 = p.id / (nX2*nX1) -1;
-					if(x2 >= Settings::forceFields[i].from().x2() && x1 >= Settings::forceFields[i].from().x1() &&
-						x0 >= Settings::forceFields[i].from().x0() && x2 <= Settings::forceFields[i].to().x2() &&
-						x1 <= Settings::forceFields[i].to().x1() && x0 <= Settings::forceFields[i].to().x0()){
-						p.f[0] += Settings::forceFields[i].force().x0();
-						p.f[1] += Settings::forceFields[i].force().x1();
-						p.f[2] += Settings::forceFields[i].force().x2();
+					if(x2 >= Settings::forceFields[i].from[2] && x1 >= Settings::forceFields[i].from[1] &&
+						x0 >= Settings::forceFields[i].from[0] && x2 <= Settings::forceFields[i].to[2] &&
+						x1 <= Settings::forceFields[i].to[1] && x0 <= Settings::forceFields[i].to[0]){
+						p.f[0] += Settings::forceFields[i].force[0];
+						p.f[1] += Settings::forceFields[i].force[1];
+						p.f[2] += Settings::forceFields[i].force[2];
 
 					}
 				}
 			}
 
-			utils::Vector<double, 3> gravitationalForce;
-			gravitationalForce= Settings::particleTypes[p.type].mass * Settings::gravitation;
+			//apply gravitation
 			p.f[0] += Settings::particleTypes[p.type].mass * Settings::gravitation[0];
 			p.f[1] += Settings::particleTypes[p.type].mass * Settings::gravitation[1];
 			p.f[2] += Settings::particleTypes[p.type].mass * Settings::gravitation[2];

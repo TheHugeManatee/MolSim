@@ -84,7 +84,7 @@ static double camRotation[3] = {0,0,0};
 double primitiveScaling = 1.0;
 
 bool renderHalo = false;
-bool renderMembrane = true;
+bool renderMembrane = false;
 bool renderingPaused = false;
 bool renderCells = false;
 bool renderFilledCells = false;
@@ -120,6 +120,7 @@ void computeParticleDensities() {
 }
 
 void computeParticleLocalTemperatures() {
+	std::cout << "Local temperatures..." << std::endl;
 	theContainer->each([](Particle &p) {p.extra = Settings::particleTypes[p.type].mass*p.v.LengthOptimizedR3Squared();});
 	theContainer->eachPair([](Particle &p1, Particle &p2) {
 		p1.extra += Settings::particleTypes[p2.type].mass*p2.v.LengthOptimizedR3Squared();
@@ -347,7 +348,7 @@ void GetOGLPos(int x, int y, double *pos)
 
 enum ParticleColoring  {PC_TYPE, PC_FORCE, PC_FORCE_ABS, PC_VELOCITY, PC_VELOCITY_ABS, PC_POSITION, PC_X0, PC_X1, PC_X2, PC_TEMPERATURE, PC_DENSITY};
 const char* coloringNames[] = {"Type", "Force", "Force Magn.", "Velocity", "Velocity Magn.", "Position", "X0", "X1", "X2", "Temp", "Density"};
-ParticleColoring currentColoring = PC_X2;
+ParticleColoring currentColoring = PC_TYPE;
 
 double pc_min[3], pc_max[3], pc_min_old[3], pc_max_old[3];
 int currentScale = 1;
@@ -367,6 +368,7 @@ void setupColoring() {
 	pc_max[0] = pc_max[1] = pc_max[2] = std::numeric_limits<double>::lowest();
 	colorScales[currentScale]->setMin(pc_min_old[0]);
 	colorScales[currentScale]->setMax(pc_max_old[0]);
+	//std::cout << "Setup color coding: " << pc_min_old[0] << " " << pc_max_old[0]  << std::endl;
 }
 
 void updateColoring() {
@@ -467,12 +469,14 @@ void colorParticle(Particle &p, double *c) {
 }
 
 void determineColorScale() {
+	//std::cout << "Dermine new color scale.." << std::endl;
 	setupColoring();
 	double c[3];
 	theContainer->each([&](Particle &p){
 		colorParticle(p, c);
 	});
 	updateColoring();
+	//std::cout << "New color scale ready!" << std::endl;
 }
 
 /**
@@ -508,10 +512,9 @@ void RenderOutputWriter::display(void)
 			glPushMatrix();
 			colorParticle(render3dParticles[i], color);
 			glColor3dv(color);
-			//palette->getColor(render3dParticles[i].x.L2Norm(), color);
-			//glColor3dv(color);
+
 			glTranslated(render3dParticles[i].x[0], render3dParticles[i].x[1], render3dParticles[i].x[2]);
-			//glutSolidSphere(0.5, 16, 16);
+
 			glScaled(primitiveScaling*Settings::particleTypes[render3dParticles[i].type].sigma,
 					primitiveScaling*Settings::particleTypes[render3dParticles[i].type].sigma,
 					primitiveScaling*Settings::particleTypes[render3dParticles[i].type].sigma);
@@ -633,6 +636,8 @@ void pickParticle() {
 			std::cout << "\tx0:\t\t" << p.x_t0 << std::endl;
 			std::cout << "\tsigma:\t\t" << Settings::particleTypes[p.type].sigma << std::endl;
 			std::cout << "\tepsilon:\t" << Settings::particleTypes[p.type].epsilon << std::endl;
+			std::cout << "\tmembrane:\t" << (Settings::particleTypes[p.type].isMolecule?"TRUE":"FALSE") << std::endl;
+			std::cout << "\tid:\t\t" << p.id << std::endl;
 		}
 	});
 }
@@ -744,10 +749,8 @@ void RenderOutputWriter::keyup(unsigned char key, int x, int y)
 		break;
 	case ',':
 		currentColoring  = (currentColoring + 1)%(PC_DENSITY+1);
-		if(currentColoring == PC_DENSITY)
-			computeParticleDensities();
-		else if(currentColoring == PC_TEMPERATURE)
-			computeParticleLocalTemperatures();
+		if(currentColoring == PC_DENSITY || currentColoring == PC_TEMPERATURE)
+			updateRenderer(*theContainer, Simulator::iterations);
 
 		determineColorScale();
 		recompileRequested = true;
@@ -1077,6 +1080,7 @@ void RenderOutputWriter::updateRenderer(ParticleContainer & container, int itera
 
 void RenderOutputWriter::plotParticles(ParticleContainer &container, const std::string &filename, int iteration) {
 	updateRenderer(container, iteration);
+	//logger->setLevel(log4cxx::Level::getTrace());
 }
 
 } //namespace outputWriter

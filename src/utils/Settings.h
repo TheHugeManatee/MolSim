@@ -52,6 +52,15 @@ typedef struct {
 } typeDescriptor;
 
 
+typedef struct {
+	int type;
+	int from[3];
+	int to[3];
+	double force[3];
+	double startTime;
+	double endTime;
+} ForceFieldDescriptor;
+
 /**
  * the signum function
  * returns -1, 0 or 1
@@ -154,7 +163,7 @@ public:
 	 */
 	static utils::Vector<double,3> gravitation;
 
-	static SimulationConfig::ForceFieldSequence forceFields;
+	static std::vector<ForceFieldDescriptor> forceFields;
 	/**
 	 * the test case to be executed
 	 */

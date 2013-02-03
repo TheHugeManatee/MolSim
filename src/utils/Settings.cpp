@@ -32,7 +32,7 @@ bool Settings::disableOutput = false;
 
 utils::Vector<double,3> Settings::gravitation = 0.0;
 
-SimulationConfig::ForceFieldSequence Settings::forceFields;
+std::vector<ForceFieldDescriptor> Settings::forceFields;
 ScenarioType Settings::scenarioType = ScenarioType::Gravity;
 std::string Settings::configFile = "simulationConfig.xml";
 std::string Settings::inputFile = "";
@@ -251,7 +251,25 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    	Settings::gravitation[2] = gravationalConstant_opt.get().x2();
 	    }
 
-	    Settings::forceFields = xmlCfg->forceField();
+	    //Settings::forceFields = xmlCfg->forceField();
+	    ForceFieldDescriptor field;
+	    for(int i = 0 ; i< xmlCfg->forceField().size() ; i++){
+	    	auto f = xmlCfg->forceField()[i];
+
+	    	field.type = f.type();
+	    	field.from[0] = f.from().x0();
+	    	field.from[1] = f.from().x1();
+	    	field.from[2] = f.from().x2();
+	    	field.to[0] = f.to().x0();
+	    	field.to[1] = f.to().x1();
+	    	field.to[2] = f.to().x2();
+	    	field.force[0] = f.force().x0();
+	    	field.force[1] = f.force().x1();
+	    	field.force[2] = f.force().x2();
+	    	field.startTime = f.startTime().present()?f.startTime().get():0;
+	    	field.endTime = f.endTime().present()?f.endTime().get():Settings::endTime;
+	    	Settings::forceFields.push_back(field);
+		}
 	  }
 	  catch (const xml_schema::Exception &e)
 	  {

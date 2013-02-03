@@ -21,6 +21,17 @@ void ColorCoder::getColor(double d, double *c) {
 	c[0] = c[1] = c[2] = 0.0;
 }
 
+void ColorCoder::setMax(double max)  {
+	this->max = max;
+	maxminusmin = max - min;
+	//std::cout << "max: " << max << " min: " << min << std::endl;
+}
+
+void ColorCoder::setMin(double min)   {
+	this->min = min;
+	maxminusmin = max - min;
+	//std::cout << "max: " << max << " min: " << min << std::endl;
+}
 
 void ColorCoder::HSVToRGB(double h, double s, double v, double *c) {
     int i;

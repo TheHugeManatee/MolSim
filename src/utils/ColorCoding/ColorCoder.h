@@ -22,15 +22,8 @@ public:
 
 	virtual void getColor(double d, double *c);
 
-	void setMin(double min) {
-		this->min = min;
-		maxminusmin = max - min;
-	}
-
-	void setMax(double max)  {
-		this->max = max;
-		maxminusmin = max - min;
-	}
+	void setMin(double min);
+	void setMax(double max);
 };
 
 #endif /* COLORCODER_H_ */
