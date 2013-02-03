@@ -190,8 +190,6 @@ void Simulator::plotParticles(int iteration) {
 	outputWriter::XYZWriter xyzWriter;
 
 
-	std::cout << "T = " << ThermostatDiscrete::getTemperature(particleContainer) << " K" << std::endl;
-
 #ifndef NOGLVISUALIZER
 	if(Settings::show3DVisual) {
 		outputWriter::RenderOutputWriter openglView;

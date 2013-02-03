@@ -8,6 +8,7 @@
 #include "Grayscale.h"
 
 #include <math.h>
+#include <iostream>
 
 Grayscale::Grayscale() {
 	// TODO Auto-generated constructor stub
@@ -19,9 +20,10 @@ Grayscale::~Grayscale() {
 }
 
 void Grayscale::getColor(double d, double *c) {
-    d = 1.0 - fabs(d);
+    double k = (d-min)/(maxminusmin);
 
-    c[0] = d;
-    c[1] = d;
-    c[2] = d;
+    c[0] = k;
+    c[1] = k;
+    c[2] = k;
+
 }

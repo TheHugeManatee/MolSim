@@ -142,7 +142,6 @@ void ThermostatDiscrete::calculateCurrentEnergy(ParticleContainer * particles){
 
 		LOG4CXX_TRACE(logger, "New target temperature is " << stepTargetTemp);
 
-		std::cout << "initial temperature was " << initialTemperature << std::endl;
 		if(sgn(targetTemperature - initialTemperature) != sgn(targetTemperature - currentTemperature)) {
 			temperaturePerStep = 0.0;
 			std::cout << "*******************************Temperature reached!*********************************" << std::endl;

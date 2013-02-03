@@ -12,8 +12,12 @@
 #include "utils/Settings.h"
 
 #include "utils/ColorCoding/Grayscale.h"
+#include "utils/ColorCoding/HeatedObjectScale.h"
+#include "utils/ColorCoding/MagentaScale.h"
 
-#include "../CellListContainer.h"
+#include "CellListContainer.h"
+#include "Simulator.h"
+#include "utils/ThermostatDiscrete.h"
 
 #include <signal.h>
 #include <iostream>
@@ -32,7 +36,7 @@ namespace outputWriter {
 
 const GLfloat light_ambient[]  = { 0.0f, 0.0f, 0.0f, 1.0f };
 const GLfloat light_diffuse[]  = { 1.0f, 1.0f, 1.0f, 1.0f };
-const GLfloat light_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+const GLfloat light_specular[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 const GLfloat light_position[] = { 2.0f, 5.0f, 5.0f, 0.0f };
 
 const GLfloat mat_ambient[]    = { 0.7f, 0.7f, 0.7f, 1.0f };
@@ -41,6 +45,7 @@ const GLfloat mat_specular[]   = { 1.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat mat_shininess[] = { 10.0f };
 
 CellListContainer *theContainer;
+Simulator *theSimulator;
 
 /**
  * global list containing the particles in the rendering
@@ -75,18 +80,31 @@ static double camPosition[3] = {10, 10, 10};
 /// the rotation around the three primary axes in degrees
 static double camRotation[3] = {0,0,0};
 
+double primitiveScaling = 1.0;
+
 bool renderHalo = false;
 bool renderMembrane = true;
 bool renderingPaused = false;
 bool renderCells = false;
 bool renderFilledCells = false;
+bool editMode = true;
 int cellCount[3];
 double cellSizes[3];
 
+int mousePosition[2];
+double mouseCoords[3];
+int selectedType = -1;
+
+Particle * selectedParticle = NULL;
+
+double currentTemperature = 0.0;
+double currentEnergy = 0.0;
 
 pthread_t RenderOutputWriter::renderingThread;
 bool RenderOutputWriter::threadIsSpawned = false;
 log4cxx::LoggerPtr RenderOutputWriter::logger = log4cxx::Logger::getLogger("RenderOutputWriter");
+
+void markSelectedParticle(Particle &p);
 
 /**
  * onResize glut callback
@@ -110,7 +128,6 @@ static void drawBox(double *c1, double *c2) {
 	glColor3d(1.0, 0.0, 0.0);
 	glVertex3d(c2[0], c1[1], c1[2]);
 	glVertex3d(c1[0], c1[1], c1[2]);
-
 
 	glVertex3d(c2[0], c1[1], c2[2]);
 	glVertex3d(c1[0], c1[1], c2[2]);
@@ -226,6 +243,8 @@ static void shapesPrintf (int row, int col, const char *fmt, ...)
 #endif
     va_end(args);
 
+    glDisable(GL_LIGHTING);
+
     glGetIntegerv(GL_VIEWPORT,viewport);
 
     glPushMatrix();
@@ -247,6 +266,8 @@ static void shapesPrintf (int row, int col, const char *fmt, ...)
     glPopMatrix();
     glMatrixMode(GL_MODELVIEW);
     glPopMatrix();
+
+    glEnable(GL_LIGHTING);
 }
 #endif
 
@@ -255,30 +276,17 @@ static void shapesPrintf (int row, int col, const char *fmt, ...)
  */
 const double typeColors[][3] = {
 		{1, 0, 0},
-		{0, 1, 0},
 		{0, 0, 1},
-		{0, 0, 0},
 		{1, 1, 0},
-		{1, 0, 1},
 		{0, 1, 1},
+		{1, 0, 1},
+		{0, 0, 0},
+		{0, 1, 0},
 		{1, 1, 1}
 };
 const int typeColorCount = sizeof(typeColors)/sizeof(typeColors[0]);
 
-/**
- * the glut rendering function callback
- * drawing of the particles happens here
- */
-void RenderOutputWriter::display(void)
-{
-	const double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
-	const double a = t*90.0;
-	//ColorCoder *palette = new Grayscale();
-	//palette->setMin(0);
-	//palette->setMax(100);
-
-	glPushMatrix();
-
+void setView() {
 	//set the current viewing position
 	glTranslated(-camPosition[0], -camPosition[1], -camPosition[2]);
 
@@ -293,6 +301,160 @@ void RenderOutputWriter::display(void)
 	glRotated(camRotation[2], 0, 0, 1);
 	//translate back
 	glTranslated(-d[0]/2, -d[1]/2, -d[2]/2);
+}
+
+void GetOGLPos(int x, int y, double *pos)
+{
+    GLint viewport[4];
+    GLdouble modelview[16];
+    GLdouble projection[16];
+    GLfloat winX, winY, winZ;
+    GLdouble posX, posY, posZ;
+
+    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+    glGetDoublev( GL_PROJECTION_MATRIX, projection );
+    glGetIntegerv( GL_VIEWPORT, viewport );
+
+    winX = (float)x;
+    winY = (float)viewport[3] - (float)y;
+    glReadPixels( x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+
+    gluUnProject( winX, winY, winZ, modelview, projection, viewport, &pos[0], &pos[1], &pos[2]);
+
+    return;
+}
+
+enum ParticleColoring  {PC_TYPE, PC_FORCE, PC_FORCE_ABS, PC_VELOCITY, PC_VELOCITY_ABS, PC_POSITION, PC_X0, PC_X1, PC_X2, PC_DENSITY};
+const char* coloringNames[] = {"Type", "Force", "Force Magn.", "Velocity", "Velocity Magn.", "Position", "X0", "X1", "X2", "Density"};
+ParticleColoring currentColoring = PC_X2;
+ColorCoder *colorScale = new HeatedObjectScale();
+double pc_min[3], pc_max[3], pc_min_old[3], pc_max_old[3];
+
+void setupColoring() {
+	//reset the min and max values for particle coloring
+	pc_min[0] = pc_min[1] = pc_min[2] = std::numeric_limits<double>::max();
+	pc_max[0] = pc_max[1] = pc_max[2] = std::numeric_limits<double>::lowest();
+	colorScale->setMin(pc_min_old[0]);
+	colorScale->setMax(pc_max_old[0]);
+}
+
+void updateColoring() {
+	//copy the min and max values for parcle coloring
+	pc_min_old[0] = pc_min[0];
+	pc_min_old[1] = pc_min[1];
+	pc_min_old[2] = pc_min[2];
+	pc_max_old[0] = pc_max[0];
+	pc_max_old[1] = pc_max[1];
+	pc_max_old[2] = pc_max[2];
+}
+
+void colorParticle(Particle &p, double *c) {
+	double v[3];
+	switch (currentColoring) {
+	case PC_TYPE:
+		c[0] = typeColors[p.type % typeColorCount][0];
+		c[1] = typeColors[p.type % typeColorCount][1];
+		c[2] = typeColors[p.type % typeColorCount][2];
+		break;
+	case PC_FORCE_ABS:
+		v[0] = p.old_f.L2Norm();
+		colorScale->getColor(v[0], c);
+		pc_min[0] = std::min(pc_min[0], v[0]);
+		pc_max[0] = std::max(pc_max[0], v[0]);
+		break;
+	case PC_FORCE:
+		c[0] = (p.old_f[0] - pc_min_old[0])/(pc_max_old[0] - pc_min_old[0]);
+		c[1] = (p.old_f[1] - pc_min_old[1])/(pc_max_old[1] - pc_min_old[1]);
+		c[2] = (p.old_f[2] - pc_min_old[2])/(pc_max_old[2] - pc_min_old[2]);
+		pc_min[0] = std::min(pc_min[0], p.old_f[0]);
+		pc_max[0] = std::max(pc_max[0], p.old_f[0]);
+		pc_min[1] = std::min(pc_min[1], p.old_f[1]);
+		pc_max[1] = std::max(pc_max[1], p.old_f[1]);
+		pc_min[2] = std::min(pc_min[2], p.old_f[2]);
+		pc_max[2] = std::max(pc_max[2], p.old_f[2]);
+		break;
+	case PC_VELOCITY_ABS:
+		v[0] = p.v.L2Norm();
+		colorScale->getColor(v[0], c);
+		pc_min[0] = std::min(pc_min[0], v[0]);
+		pc_max[0] = std::max(pc_max[0], v[0]);
+		break;
+	case PC_VELOCITY:
+		c[0] = (p.v[0] - pc_min_old[0])/(pc_max_old[0] - pc_min_old[0]);
+		c[1] = (p.v[1] - pc_min_old[1])/(pc_max_old[1] - pc_min_old[1]);
+		c[2] = (p.v[2] - pc_min_old[2])/(pc_max_old[2] - pc_min_old[2]);
+		pc_min[0] = std::min(pc_min[0], p.v[0]);
+		pc_max[0] = std::max(pc_max[0], p.v[0]);
+		pc_min[1] = std::min(pc_min[1], p.v[1]);
+		pc_max[1] = std::max(pc_max[1], p.v[1]);
+		pc_min[2] = std::min(pc_min[2], p.v[2]);
+		pc_max[2] = std::max(pc_max[2], p.v[2]);
+		break;
+	case PC_POSITION:
+		c[0] = (p.x[0] - pc_min_old[0])/(pc_max_old[0] - pc_min_old[0]);
+		c[1] = (p.x[1] - pc_min_old[1])/(pc_max_old[1] - pc_min_old[1]);
+		c[2] = (p.x[2] - pc_min_old[2])/(pc_max_old[2] - pc_min_old[2]);
+		pc_min[0] = std::min(pc_min[0], p.x[0]);
+		pc_max[0] = std::max(pc_max[0], p.x[0]);
+		pc_min[1] = std::min(pc_min[1], p.x[1]);
+		pc_max[1] = std::max(pc_max[1], p.x[1]);
+		pc_min[2] = std::min(pc_min[2], p.x[2]);
+		pc_max[2] = std::max(pc_max[2], p.x[2]);
+		break;
+	case PC_X0:
+		v[0] = p.x[0];
+		colorScale->getColor(v[0], c);
+		pc_min[0] = std::min(pc_min[0], v[0]);
+		pc_max[0] = std::max(pc_max[0], v[0]);
+		break;
+	case PC_X1:
+		v[0] = p.x[1];
+		colorScale->getColor(v[0], c);
+		pc_min[0] = std::min(pc_min[0], v[0]);
+		pc_max[0] = std::max(pc_max[0], v[0]);
+		break;
+	case PC_X2:
+		v[0] = p.x[2];
+		colorScale->getColor(v[0], c);
+		pc_min[0] = std::min(pc_min[0], v[0]);
+		pc_max[0] = std::max(pc_max[0], v[0]);
+		break;
+	case PC_DENSITY:
+		/*v[0] = p.extra;
+		colorScale->getColor(v[0], c);
+		pc_min[0] = std::min(pc_min[0], v[0]);
+		pc_max[0] = std::max(pc_max[0], v[0]);
+		break;*/
+	default:
+		c[0] = 0;
+		c[1] = 0;
+		c[2] = 0;
+		break;
+	}
+
+}
+
+void determineColorScale() {
+	setupColoring();
+	double c[3];
+	theContainer->each([&](Particle &p){
+		colorParticle(p, c);
+	});
+	updateColoring();
+}
+
+/**
+ * the glut rendering function callback
+ * drawing of the particles happens here
+ */
+void RenderOutputWriter::display(void)
+{
+	const double t = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+	const double a = t*90.0;
+
+	glPushMatrix();
+	setView();
+
 
 	//clear the buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -304,23 +466,29 @@ void RenderOutputWriter::display(void)
 
 	//draw the particles
 	if(recompileRequested) {
-		LOG4CXX_TRACE(RenderOutputWriter::logger, "Redrawing display lists...");
+		setupColoring();
 
+		LOG4CXX_TRACE(RenderOutputWriter::logger, "Redrawing display lists...");
 		glNewList(particlesTotalList, GL_COMPILE_AND_EXECUTE);
 		glEnable(GL_LIGHTING);
 		int s = render3dParticles.size();
 		for(int i=0; i < s; i++) {
 			glPushMatrix();
-			glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
+			colorParticle(render3dParticles[i], color);
+			glColor3dv(color);
 			//palette->getColor(render3dParticles[i].x.L2Norm(), color);
 			//glColor3dv(color);
 			glTranslated(render3dParticles[i].x[0], render3dParticles[i].x[1], render3dParticles[i].x[2]);
 			//glutSolidSphere(0.5, 16, 16);
-			glScaled(Settings::particleTypes[render3dParticles[i].type].sigma,
-					Settings::particleTypes[render3dParticles[i].type].sigma,
-					Settings::particleTypes[render3dParticles[i].type].sigma);
+			glScaled(primitiveScaling*Settings::particleTypes[render3dParticles[i].type].sigma,
+					primitiveScaling*Settings::particleTypes[render3dParticles[i].type].sigma,
+					primitiveScaling*Settings::particleTypes[render3dParticles[i].type].sigma);
 			glCallList(particleGeoLists + curPrimitiveIdx);
 			glPopMatrix();
+
+			if(selectedType == render3dParticles[i].type) {
+				markSelectedParticle(render3dParticles[i]);
+			}
 		}
 
 
@@ -354,7 +522,7 @@ void RenderOutputWriter::display(void)
 			glBegin(GL_LINES);
 			for(int i=0; i < render3dParticles.size(); i++) {
 				//glColor3dv(typeColors[render3dParticles[i].type % typeColorCount]);
-				glColor3d(0.7, 0.7, 0.7);
+				glColor3d(0.4, 0.4, 0.4);
 				for(int j = i + 1; j < s; j++) {
 					if(	Settings::particleTypes[render3dParticles[i].type].isMolecule &&
 						render3dParticles[i].type == render3dParticles[j].type && (
@@ -380,45 +548,121 @@ void RenderOutputWriter::display(void)
 		glEndList();
 		//reset the flag
 		recompileRequested = false;
+
+		updateColoring();
 	}
 	else {
 		glCallList(particlesTotalList);
 	}
 
-
+	if(renderingPaused && editMode && selectedParticle) {
+		markSelectedParticle(*selectedParticle);
+	}
 
 	glColor3d(0.1,0.1,0.4);
 #ifndef NOFREEGLUT
 	shapesPrintf(1, 3, "%i particles", render3dParticles.size());
 	shapesPrintf(2, 3, "Iteration %i", currentIteration);
 	shapesPrintf(3, 3, "Time %f", currentIteration*Settings::deltaT);
+	shapesPrintf(4, 3, "Temperature: %f", currentTemperature);
+
+	shapesPrintf(5, 3, "OCells %s", renderFilledCells?"ON":"OFF");
+	shapesPrintf(6, 3, "Membrane Links %s", renderMembrane?"ON":"OFF");
+	shapesPrintf(7, 3, "Halo %s", renderHalo?"ON":"OFF");
+	shapesPrintf(8, 3, "Colors: %s", coloringNames[currentColoring]);
+	if(renderingPaused) shapesPrintf(9, 3, "---PAUSED---");
+
 #endif
 	glutSwapBuffers();
+
 
 	glPopMatrix();
 
 	//delete palette;
 }
 
+void pickParticle() {
+	glPushMatrix();
+	setView();
+	GetOGLPos(mousePosition[0], mousePosition[1], mouseCoords);
+	glPopMatrix();
+
+	selectedParticle = NULL;
+	theContainer->each([&](Particle &p) {
+		double d_squared = (p.x[0]-mouseCoords[0])*(p.x[0]-mouseCoords[0]) + (p.x[1]-mouseCoords[1])*(p.x[1]-mouseCoords[1]) + (p.x[2]-mouseCoords[2])*(p.x[2]-mouseCoords[2]);
+		if(d_squared <= Settings::particleTypes[p.type].sigma*Settings::particleTypes[p.type].sigma) {
+			selectedParticle = &p;
+			redrawRequested = true;
+		}
+	});
+}
+
+void markSelectedParticle(Particle &p) {
+	glPushMatrix();
+	glColor3f(1, 0, 1);
+
+	glTranslated(p.x[0], p.x[1], p.x[2]);
+	//glTranslated(mouseCoords[0], mouseCoords[1], mouseCoords[2]);
+	glScaled(primitiveScaling*Settings::particleTypes[p.type].sigma*1.1, primitiveScaling*Settings::particleTypes[p.type].sigma*1.1, primitiveScaling*Settings::particleTypes[p.type].sigma*1.1);
+
+	glCallList(particleGeoLists+1);
+	glPopMatrix();
+}
+
+void moveAllByType(int type, double dx0, double dx1, double dx2) {
+	theContainer->each([&](Particle &p){
+		if(p.type == selectedType) {
+			p.x[0] += dx0;
+			p.x[1] += dx1;
+			p.x[2] += dx2;
+		}
+	});
+}
+
 /**
  * glut keydown handler - used for movement of the camera position
  */
-static void
-key(unsigned char key, int x, int y)
+void RenderOutputWriter::key(unsigned char key, int x, int y)
 {
+	if(editMode && (selectedParticle || selectedType != -1)) {
+		switch (key)
+		{
+		#ifndef NOFREEGLUT
+			case 27 : glutLeaveMainLoop () ;      break;
+		#endif
+
+		case 'a':
+			if(selectedType != -1) moveAllByType(selectedType, -1, 0, 0);
+			else selectedParticle->x[0] -= 1.0; break;
+		case 'd':
+			if(selectedType != -1) moveAllByType(selectedType, +1, 0, 0);
+			else  selectedParticle->x[0] += 1.0; break;
+		case 's':
+			if(selectedType != -1) moveAllByType(selectedType, 0, -1, 0);
+			else  selectedParticle->x[1] -= 1.0; break;
+		case 'w':
+			if(selectedType != -1) moveAllByType(selectedType, 0, +1, 0);
+			else  selectedParticle->x[1] += 1.0; break;
+		case 'q':
+			if(selectedType != -1) moveAllByType(selectedType, 0, 0, -1);
+			else  selectedParticle->x[2] -= 1.0; break;
+		case 'e':
+			if(selectedType != -1) moveAllByType(selectedType, 0, 0, 1);
+			else  selectedParticle->x[2] += 1.0; break;
+
+		default:
+			break;
+		}
+		updateRenderer(*theContainer, Simulator::iterations);
+	}
 
 	switch (key)
 	{
 #ifndef NOFREEGLUT
 	case 27 : glutLeaveMainLoop () ;      break;
 #endif
-	case 'a': camPosition[0] -= 1.0; break;
-	case 'd': camPosition[0] += 1.0; break;
-	case 's': camPosition[1] -= 1.0; break;
-	case 'w': camPosition[1] += 1.0; break;
-	case 'q': camPosition[2] -= 1.0; break;
-	case 'e': camPosition[2] += 1.0; break;
-
+	case '+': primitiveScaling += 0.05; recompileRequested = true;break;
+	case '-': primitiveScaling -= 0.05; recompileRequested = true;break;
 	default:
 		break;
 	}
@@ -426,8 +670,7 @@ key(unsigned char key, int x, int y)
 	glutPostRedisplay();
 }
 
-static void
-keyup(unsigned char key, int x, int y)
+void RenderOutputWriter::keyup(unsigned char key, int x, int y)
 {
 
 	switch (key)
@@ -435,13 +678,48 @@ keyup(unsigned char key, int x, int y)
 #ifndef NOFREEGLUT
 	case 27 : glutLeaveMainLoop () ;      break;
 #endif
-	case 'h': renderHalo = !renderHalo; break;
-	case 'm': renderMembrane = !renderMembrane; break;
-	case 'p': renderingPaused = !renderingPaused; break;
+	case 'h':
+		renderHalo = !renderHalo;
+		if(renderingPaused) updateRenderer(*theContainer, Simulator::iterations);
+		break;
+	case 'm':
+		renderMembrane = !renderMembrane;
+		if(renderingPaused) updateRenderer(*theContainer, Simulator::iterations);
+		break;
+	case ' ':
+		renderingPaused = !renderingPaused;
+		if(renderingPaused) updateRenderer(*theContainer, Simulator::iterations);
+		else {
+			theSimulator->particleContainer->afterPositionChanges(theSimulator->scenario->boundaryHandlers);
+		}
+		break;
+	break;
 	case 'c' : renderCells = !renderCells; break;
-	case 'f': renderFilledCells = !renderFilledCells; break;
-	case '.': curPrimitiveIdx = (curPrimitiveIdx+1)%NUMPRIMITIVES; break;
-
+	case 'f':
+		renderFilledCells = !renderFilledCells;
+		if(renderingPaused) updateRenderer(*theContainer, Simulator::iterations);
+		break;
+	case '.':
+		curPrimitiveIdx = (curPrimitiveIdx+1)%NUMPRIMITIVES;
+		recompileRequested = true;
+		break;
+	case ',':
+		currentColoring  = (currentColoring + 1)%(PC_DENSITY+1);
+		determineColorScale();
+		if(currentColoring == PC_DENSITY)
+			updateRenderer(*theContainer, Simulator::iterations);
+		else
+			recompileRequested = true;
+		break;
+	case 'p':
+		editMode = !editMode;
+		break;
+	case 't':
+		if(selectedParticle) {
+			selectedType = selectedParticle->type;
+			recompileRequested = true;
+		}
+		break;
 	default:
 		break;
 	}
@@ -474,7 +752,7 @@ static void special (int key, int x, int y)
  * available mouse action types
  */
 enum MouseAction {
-	 NONE, ROTATE, MOVE, ZOOM
+	 NONE, ROTATE, MOVE, ZOOM, EDIT
 };
 /**
  * the current mouse state (determined by the mouse button handler)
@@ -497,22 +775,44 @@ static void mouse(int button, int state, int x, int y) {
 	else {
 		lastMouseX = x;
 		lastMouseY = y;
-		switch (button) {
-		case GLUT_LEFT_BUTTON:
-			currentMouseState = ROTATE;
-			break;
-		case GLUT_RIGHT_BUTTON:
-			currentMouseState = MOVE;
-			break;
-		case GLUT_MIDDLE_BUTTON:
-			currentMouseState = ZOOM;
-			break;
-		default:
-			currentMouseState = NONE;
-			break;
+
+		if(renderingPaused && editMode){
+			pickParticle();
+		}
+		else {
+			selectedParticle = NULL;
+			selectedType = -1;
+		}
+
+		/*if(selectedParticle)
+			currentMouseState = EDIT;
+		else */{
+
+			switch (button) {
+			case GLUT_LEFT_BUTTON:
+				currentMouseState = ROTATE;
+				break;
+			case GLUT_RIGHT_BUTTON:
+				currentMouseState = MOVE;
+				break;
+			case GLUT_MIDDLE_BUTTON:
+				currentMouseState = ZOOM;
+				break;
+			default:
+				currentMouseState = NONE;
+				break;
+			}
 		}
 	}
+
 }
+
+
+void mousemove(int x, int y) {
+	mousePosition[0] = x;
+	mousePosition[1] = y;
+}
+
 
 #define ROTATION_SPEED 1
 #define MOVE_SPEED -0.05
@@ -540,6 +840,9 @@ static void mouseactivemove(int x, int y) {
 	case ZOOM:
 		camPosition[2] += dy * ZOOM_SPEED;
 		glutPostRedisplay();
+		break;
+	case EDIT:
+
 		break;
 	}
 	lastMouseX = x;
@@ -574,7 +877,7 @@ static void idle() {
  */
 void * renderFunction(void* arg) {
 	int argc = 1;
-	char* argv[] = {"MolSim"};
+	char *argv[1] = {"MolSim"};
 
 	//intialize camera position to match current simulation domain
 	camPosition[0] = Settings::domainSize[0]/2.0;
@@ -591,10 +894,11 @@ void * renderFunction(void* arg) {
 
 	glutReshapeFunc(resize);
 	glutDisplayFunc(RenderOutputWriter::display);
-	glutKeyboardFunc(key);
-	glutKeyboardUpFunc(keyup);
+	glutKeyboardFunc(RenderOutputWriter::key);
+	glutKeyboardUpFunc(RenderOutputWriter::keyup);
 	glutSpecialFunc(special);
 	glutMouseFunc(mouse);
+	glutPassiveMotionFunc(mousemove);
 	glutIdleFunc(idle);
 #ifndef NOFREEGLUT
 	glutMouseWheelFunc(mousewheel);
@@ -603,7 +907,7 @@ void * renderFunction(void* arg) {
 	glutMotionFunc(mouseactivemove);
 
 
-	glClearColor(1,1,1,1);
+	glClearColor(0.8,0.8,0.8,1);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
@@ -652,11 +956,9 @@ void * renderFunction(void* arg) {
 
 
 
-
-
-
 	LOG4CXX_DEBUG(RenderOutputWriter::logger, "Entering rendering loop...");
 	glutMainLoop();
+	renderingPaused = false;
 	LOG4CXX_DEBUG(RenderOutputWriter::logger, "Rendering finished!");
 
 	return NULL;
@@ -675,18 +977,8 @@ RenderOutputWriter::RenderOutputWriter() {
 
 }
 
-void RenderOutputWriter::plotParticles(ParticleContainer & container, const std::string& filename, int iteration) {
+void RenderOutputWriter::updateRenderer(ParticleContainer & container, int iteration) {
 	currentIteration = iteration;
-
-	//copy particle data over
-/*	container.each([&] (Particle &p) {
-#ifdef _OPENMP
-#pragma omp critical
-#endif
-		render3dParticles[i++] = p;
-	});*/
-
-	if(renderingPaused) return;
 
 	CellListContainer *cc = (CellListContainer*)&container;
 
@@ -701,10 +993,26 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 
 	theContainer = cc;
 
-	render3dParticles.resize(cc->getSize(!maskHalo));
+	int numParticles = cc->getSize(!maskHalo);
+
+	render3dParticles.resize(numParticles);
 	int i = 0;
 
 	int nX0 = cc->nX0, nX1 = cc->nX1, nX2 = cc->nX2;
+
+	currentEnergy = 0;
+/*
+	if(currentColoring == PC_DENSITY) {
+		theContainer->each([](Particle &p) {p.extra = 0;});
+		theContainer->eachPair([](Particle &p1, Particle &p2) {
+			double d = (p1.x - p2.x).L2Norm();
+			if(d != 0) {
+				p1.extra += 1/d;
+				p2.extra += 1/d;
+			}
+		});
+		std::cout << "Density calculated for all particles!" << std::endl;
+	}*/
 
 	for(int x0=1+maskHalo; x0 < nX0-1-maskHalo; x0++)
 		for(int x1=1+maskHalo; x1 < nX1-1-maskHalo; x1++)
@@ -713,13 +1021,21 @@ void RenderOutputWriter::plotParticles(ParticleContainer & container, const std:
 				int s = plist.getSize();
 				plist.each([&] (Particle &p) {
 					render3dParticles[i++] = p;
+					currentEnergy += p.v.LengthOptimizedR3Squared() * Settings::particleTypes[p.type].mass;
 				});
 			}
+
+	currentEnergy /= 2.0;
+	currentTemperature = 2 * currentEnergy / (Settings::dimensions * numParticles * BOLTZMANN);
 
 	//signal the rendering thread to recompile display list and redraw buffer
 	redrawRequested = true;
 	recompileRequested = true;
 
+}
+
+void RenderOutputWriter::plotParticles(ParticleContainer &container, const std::string &filename, int iteration) {
+	updateRenderer(container, iteration);
 }
 
 } //namespace outputWriter

@@ -17,7 +17,7 @@ CFLAGS=-O3 -fpermissive -std=gnu++0x -Wno-deprecated -fopenmp
 
 # Linker flags
 # ------------
-LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp 
+LDFLAGS= -lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lopengl32 -fopenmp -lglu32
 
 INCLUDES= -I./src -I./libxsd
 

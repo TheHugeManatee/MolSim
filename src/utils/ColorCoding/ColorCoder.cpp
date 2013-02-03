@@ -16,3 +16,6 @@ ColorCoder::~ColorCoder() {
 	// TODO Auto-generated destructor stub
 }
 
+void ColorCoder::getColor(double d, double *c) {
+	c[0] = c[1] = c[2] = 0.0;
+}

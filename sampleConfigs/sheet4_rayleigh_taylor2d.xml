@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+<!--(m): mandatory (o): optional-->     
+  
+  <deltaT>0.0005</deltaT>
+  <endTime>50</endTime>
+  <dimensions>2</dimensions> <!-- (o) Standrat is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
+  <scenarioType>Lennard-Jones</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Lennard-Jones-Gravitational -->
+  <domainSize x0="300" x1="54" x2="4" /><!-- (m) -->
+  <cutoffRadius scaled="1" radius="2.5" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
+
+<!-- (m) Possible: Outflow, Reflect ,Periodic -->
+<!-- Periodic and Reflect on opposite boundaries doesn't work due implementation -->
+  <boundaryHandling						
+  	top="Reflect" bottom="Reflect"					
+  	left="Periodic" right="Periodic"		
+  	front="Reflect" back="Reflect"
+  />
+  
+  <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CellListContainer -->
+  <gravitation x0="0" x1="-12.44" x2="0" /> <!-- (o) used in Lennard-Jones-Gravitational, is set to -9.89 if left out -->
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>1</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/Rayleigh_Taylor2d</outputFilePrefix>
+  <outputFileType>vtk</outputFileType> 
+  <saveLastState></saveLastState> <!--(o) for a given filePath the last state of the particles is saved (can be used as inputFile afterwards) -->
+  <inputFile></inputFile> <!-- (o)  -->
+  
+  <thermostatSwitch>ON</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
+
+  <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
+	<targetTemperature>40</targetTemperature>
+  	<controlInterval>1000</controlInterval><!-- (r) the interval the thermostat is applied, it tries to reach the target temperature until the next step -->
+  </thermostatSettings>
+  
+ <typeList> <!-- (o) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
+ <particleType mass="1.0" sigma="1.2" epsilon ="1.0"/><!-- (o)  -->
+ <particleType mass="2.0" sigma="1.1" epsilon ="1.0"/><!-- (o)  -->
+ 
+ </typeList>  
+ 
+ <generator>
+   <cuboid>
+      <bottomLeft x0="0.6" x1="2" x2="2.0" />
+      <nX x0="250" x1="20" x2="1" />
+      <stepWidth>1.2</stepWidth>
+      <type>0</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+    </cuboid>
+   <cuboid>
+      <bottomLeft x0="0.6" x1="27" x2="2.0" />
+      <nX x0="250" x1="20" x2="1" />
+      <stepWidth>1.2</stepWidth>
+      <type>1</type>
+      <initialVelocity x0="0" x1="0" x2="0"/>
+    </cuboid> 
+  </generator>
+  
+
+</simulationConfig>

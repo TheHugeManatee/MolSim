@@ -48,6 +48,7 @@ typedef struct {
 		double stiffness;
 		int nX0, nX1, nX2;
 	} membraneDescriptor;
+	int lastId;
 } typeDescriptor;
 
 

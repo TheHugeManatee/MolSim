@@ -41,6 +41,10 @@ public:
 	 */
 	int id;
 
+#ifndef NOGLVISUALIZER
+	double extra;
+#endif
+
 	/**
 	 * counter variable for created instances
 	 */
@@ -56,7 +60,7 @@ public:
 
 	Particle(int type = 0);
 
-	Particle(const Particle& other);
+//	Particle(const Particle& other);
 
 	Particle(const std::string importString);
 

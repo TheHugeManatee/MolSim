@@ -13,7 +13,8 @@
 class Grayscale: public ColorCoder {
 public:
 	Grayscale();
-	virtual ~Grayscale();
+	~Grayscale();
+
 	void getColor(double d, double *c);
 };
 

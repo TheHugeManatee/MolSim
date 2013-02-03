@@ -27,7 +27,7 @@ Particle::Particle(int type_arg) {
 	id = -1;
 }
 
-Particle::Particle(const Particle& other) {
+/*Particle::Particle(const Particle& other) {
 	x = other.x;
 	x_t0 = other.x_t0;
 	v = other.v;
@@ -39,7 +39,7 @@ Particle::Particle(const Particle& other) {
 	Particle::createdByCopy++;
 	id = other.id;
 	f = 0;
-}
+}*/
 
 Particle::Particle(	utils::Vector<double, 3> x_arg,
 		utils::Vector<double, 3> v_arg,
@@ -134,7 +134,7 @@ std::string Particle::toStringForExport() {
 
 std::string Particle::toString() {
 	std::stringstream stream;
-	stream << "Particle: X:" << x <<  " v: " << v << " old_f: " << old_f << " type: " << type;
+	stream << "Particle: X:" << x <<  " v: " << v << " old_f: " << old_f << " type: " << type << " id: " << id;
 	return stream.str();
 }
 

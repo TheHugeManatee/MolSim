@@ -19,4 +19,8 @@ SOURCES=\
 	src/utils/ThermostatDiscrete.cpp\
 	src/SimulationJobQueue.cpp\
 	src/APCJobQueue.cpp\
-	src/utils/PapiEnv.cpp
+	src/utils/PapiEnv.cpp\
+	src/utils/ColorCoding/ColorCoder.cpp\
+	src/utils/ColorCoding/Grayscale.cpp\
+	src/utils/ColorCoding/HeatedObjectScale.cpp\
+	src/utils/ColorCoding/MagentaScale.cpp

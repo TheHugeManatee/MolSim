@@ -19,5 +19,6 @@ src/utils/SimulationConfig.cpp
 src/outputWriter/vtk-unstructured.cpp
 src/outputWriter/vtk-unstructured.h
 Default/
+*.csv
 *.state
 .cproject

@@ -54,11 +54,15 @@ private:
 
 public:
 
+	static log4cxx::LoggerPtr logger;
 	static void display(void);
+	static void key(unsigned char key, int x, int y);
+	static void keyup(unsigned char key, int x, int y);
+	static void updateRenderer(ParticleContainer &container, int iteration);
+
 	RenderOutputWriter();
 
 
-	static log4cxx::LoggerPtr logger;
 
 	/**
 	 * updates the global particle list to be rendered in the glut 3D view

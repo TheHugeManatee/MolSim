@@ -120,6 +120,8 @@
 #ifndef NOGLVISUALIZER
 namespace outputWriter {
 extern std::vector<Particle> render3dParticles;
+extern bool renderingPaused;
+extern Simulator *theSimulator;
 }
 #endif
 
@@ -238,7 +240,9 @@ int main(int argc, char* argsv[]) {
 
 	LOG4CXX_TRACE(rootLogger, "Creating Simulator instance...");
 	Simulator *sim = new Simulator();
-
+#ifndef NOGLVISUALIZER
+	outputWriter::theSimulator = sim;
+#endif
 	//Check if we should initialize with old state file
 	if(Settings::inputFile.size() !=0){
 		std::cout << "state found"<<std::endl;
@@ -274,8 +278,11 @@ int main(int argc, char* argsv[]) {
 		LOG4CXX_TRACE(rootLogger, "Iteration " << iteration << " finished.");
 		current_time += Settings::deltaT;
 		timeForOneIteration = ((double)(benchmarkStartTime - getMilliCount()))/iteration;
-		//if(iteration % 100 == 0)
-		//std::cout << "timeforoneiteration: " << timeForOneIteration<<std::endl;
+
+#ifndef NOGLVISUALIZER
+		while(outputWriter::renderingPaused)		usleep(2000);
+#endif
+
 #ifdef PAPI_BENCH
 		for(int i=0; i < Settings::numThreads; i++) {
 			papiCalcFCounters[i]->printResults();

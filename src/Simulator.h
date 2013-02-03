@@ -28,6 +28,9 @@
  */
 
 class Simulator {
+#ifndef NOGLVISUALIZER
+	friend class outputWriter::RenderOutputWriter;
+#endif
 private:
 
 	SimulationScenario *scenario;
