@@ -91,6 +91,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <sys/timeb.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <fstream>
