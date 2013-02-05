@@ -77,9 +77,9 @@ bool recompileRequested = false;
 /// the current iteration being displayed
 int currentIteration = 0;
 /// the camera position in 3d space
-static double camPosition[3] = {10, 10, 10};
+double camPosition[3] = {10, 10, 10};
 /// the rotation around the three primary axes in degrees
-static double camRotation[3] = {0,0,0};
+double camRotation[3] = {0,0,0};
 
 double primitiveScaling = 1.0;
 
@@ -812,6 +812,19 @@ void RenderOutputWriter::keyup(unsigned char key, int x, int y)
 		camPosition[1] = Settings::domainSize[1]/2.0;
 		camPosition[2] = Settings::domainSize[2] + (Settings::domainSize[0] + Settings::domainSize[1]) / 2;
 		break;
+	case 'D':
+		std::cout << "<renderConfig>" << std::endl;
+		std::cout << "\t<enabled>true</enabled>" << std::endl;
+		std::cout << "\t<coloring>" << currentColoring << "</coloring>" << std::endl;
+		std::cout << "\t<scale>" << currentScale << "</scale>" << std::endl;
+		std::cout << "\t<primitive>" << curPrimitiveIdx << "</primitive>" << std::endl;
+		std::cout << "\t<primitiveScaling>" << primitiveScaling << "</primitiveScaling>" << std::endl;
+		std::cout << "\t<showMembrane>" << (renderMembrane?"true":"false") << "</showMembrane>" << std::endl;
+		std::cout << "\t<showCells>" << (renderFilledCells?"true":"false") << "</showCells>" << std::endl;
+		std::cout << "\t<camPosition x0=\"" << camPosition[0] << "\" x1=\"" << camPosition[1] << "\" x2=\"" << camPosition[2] << "\" />" << std::endl;
+		std::cout << "\t<camRotation x0=\"" << camRotation[0] << "\" x1=\"" << camRotation[1] << "\" x2=\"" << camRotation[2] << "\" />" << std::endl;
+		std::cout << "</renderConfig>";
+		break;
 	default:
 		break;
 	}
@@ -1028,7 +1041,7 @@ void * renderFunction(void* arg) {
 	glEndList();
 
 	glNewList(particleGeoLists+1, GL_COMPILE);
-		glutWireSphere(0.5, 8, 8);
+		glutWireSphere(0.5, 5, 5);
 	glEndList();
 
 	glNewList(particleGeoLists+2, GL_COMPILE);

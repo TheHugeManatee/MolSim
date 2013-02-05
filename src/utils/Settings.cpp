@@ -18,6 +18,22 @@
 //Forward declarations
 extern void initializeLogger();//This is implemented in MolSim.cpp
 
+#include "outputWriter/RenderOutputWriter.h"
+
+namespace outputWriter {
+	extern double primitiveScaling;
+	extern bool renderHalo;
+	extern bool renderMembrane;
+	extern bool renderingPaused;
+	extern bool renderCells;
+	extern bool renderFilledCells;
+	extern bool editMode;
+	extern double camPosition[3];
+	extern double camRotation[3];
+	extern int currentColoring;
+	extern int currentScale;
+}
+
 int Settings::numThreads = 0;
 
 //variable definitions and  default settings
@@ -270,6 +286,28 @@ void Settings::parseXmlFile(std::string cfgFile) {
 	    	field.endTime = f.endTime().present()?f.endTime().get():Settings::endTime;
 	    	Settings::forceFields.push_back(field);
 		}
+
+	    auto rcfg = xmlCfg->renderConfig();
+	    if(rcfg.present()) {
+	    	auto renderCfg = rcfg.get();
+	    	if(renderCfg.enabled().present()) Settings::show3DVisual = renderCfg.enabled();
+	    	if(renderCfg.showCells().present()) outputWriter::renderFilledCells = renderCfg.showCells().get();
+	    	if(renderCfg.showMembrane().present()) outputWriter::renderMembrane = renderCfg.showMembrane().get();
+	    	if(renderCfg.coloring().present()) outputWriter::currentColoring = renderCfg.coloring().get();
+	    	if(renderCfg.scale().present()) outputWriter::currentScale = renderCfg.scale().get();
+	    	if(renderCfg.primitiveScaling().present()) outputWriter::primitiveScaling = renderCfg.primitiveScaling().get();
+	    	if(renderCfg.camPosition().present()) {
+	    		outputWriter::camPosition[0] = renderCfg.camPosition().get().x0();
+	    		outputWriter::camPosition[1] = renderCfg.camPosition().get().x1();
+	    		outputWriter::camPosition[2] = renderCfg.camPosition().get().x2();
+	    	}
+	    	if(renderCfg.camRotation().present()) {
+	    		outputWriter::camRotation[0] = renderCfg.camRotation().get().x0();
+	    		outputWriter::camRotation[1] = renderCfg.camRotation().get().x1();
+	    		outputWriter::camRotation[2] = renderCfg.camRotation().get().x2();
+	    	}
+	    }
+
 	  }
 	  catch (const xml_schema::Exception &e)
 	  {

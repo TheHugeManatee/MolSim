@@ -191,6 +191,20 @@
   <xsd:attribute name="deltaR" type="xsd:double" use="required" />
 </xsd:complexType>
 
+<xsd:complexType name="RenderConfig">
+<xsd:sequence>
+	<xsd:element name="enabled" type="xsd:boolean" minOccurs="0" />
+	<xsd:element name="coloring" type="xsd:int" minOccurs="0" />
+	<xsd:element name="scale" type="xsd:int" minOccurs="0" />
+	<xsd:element name="primitive" type="xsd:int" minOccurs="0" />
+	<xsd:element name="primitiveScaling" type="xsd:double" minOccurs="0" />
+	<xsd:element name="showMembrane" type="xsd:boolean" minOccurs="0" />
+	<xsd:element name="showCells" type="xsd:boolean" minOccurs="0" />
+	<xsd:element name="camPosition" type="floatVector" minOccurs="0" />
+	<xsd:element name="camRotation" type="floatVector" minOccurs="0" />
+</xsd:sequence>
+</xsd:complexType>
+
 <xsd:complexType name="simulationConfig">
     <xsd:sequence>
       <xsd:element name="deltaT" type="xsd:double"/>
@@ -217,6 +231,7 @@
       <xsd:element name="typeList" type="TypesList" />
       <xsd:element name="forceField" type="forceField" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="generator" type="generator"/>
+      <xsd:element name="renderConfig" type="RenderConfig" minOccurs="0" />
   </xsd:sequence>
   </xsd:complexType>
 

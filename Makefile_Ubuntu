@@ -13,11 +13,11 @@ include files.mk
 
 # Compiler flags
 # -------------------------------------------------------------------------
-CFLAGS=-fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp 
+CFLAGS=-g -fpermissive -std=gnu++0x -O3 -Wno-deprecated -fopenmp 
 
 # Linker flags
 # ------------
-LDFLAGS=-lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lGL -lGLU -fopenmp
+LDFLAGS=-lxerces-c -llog4cxx -lcppunit -lpthread -lglut -lGL -lGLU -fopenmp 
 
 INCLUDES= -I./src -I./libxsd
 
