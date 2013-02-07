@@ -77,9 +77,9 @@ bool recompileRequested = false;
 /// the current iteration being displayed
 int currentIteration = 0;
 /// the camera position in 3d space
-static double camPosition[3] = {10, 10, 10};
+double camPosition[3] = {10, 10, 10};
 /// the rotation around the three primary axes in degrees
-static double camRotation[3] = {0,0,0};
+double camRotation[3] = {0,0,0};
 
 double primitiveScaling = 1.0;
 
@@ -120,7 +120,7 @@ void computeParticleDensities() {
 }
 
 void computeParticleLocalTemperatures() {
-	std::cout << "Local temperatures..." << std::endl;
+	//std::cout << "Local temperatures..." << std::endl;
 	theContainer->each([](Particle &p) {p.extra = Settings::particleTypes[p.type].mass*p.v.LengthOptimizedR3Squared();});
 	theContainer->eachPair([](Particle &p1, Particle &p2) {
 		p1.extra += Settings::particleTypes[p2.type].mass*p2.v.LengthOptimizedR3Squared();
@@ -193,6 +193,12 @@ static void drawBox(double *c1, double *c2) {
 
 static void drawBoxAndCells() {
 		//draw the simulation domain box
+	glPointSize(5.0);
+	glColor3d(0.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	glVertex3f(0.0, 0.0, 0.0);
+	glEnd();
+
 	glLineWidth(2.0);
 	glDisable(GL_LIGHTING);
 
@@ -506,7 +512,10 @@ void RenderOutputWriter::display(void)
 
 		LOG4CXX_TRACE(RenderOutputWriter::logger, "Redrawing display lists...");
 		glNewList(particlesTotalList, GL_COMPILE_AND_EXECUTE);
-		glEnable(GL_LIGHTING);
+		if(curPrimitiveIdx != 4) //points dont need lighting..
+			glEnable(GL_LIGHTING);
+		else glDisable(GL_LIGHTING);
+
 		int s = render3dParticles.size();
 		for(int i=0; i < s; i++) {
 			glPushMatrix();
@@ -640,6 +649,10 @@ void pickParticle() {
 			std::cout << "\tid:\t\t" << p.id << std::endl;
 		}
 	});
+	if(selectedParticle && selectedType != -1) {
+		selectedType = -1;
+		recompileRequested = true;
+	}
 }
 
 void markSelectedParticle(Particle &p) {
@@ -770,6 +783,47 @@ void RenderOutputWriter::keyup(unsigned char key, int x, int y)
 			selectedType = selectedParticle->type;
 			recompileRequested = true;
 		}
+		break;
+	case '1':
+		camRotation[0] = camRotation[1] = camRotation[2] = 0;
+		break;
+	case '2':
+		camRotation[0] = 90;
+		camRotation[1] = camRotation[2] = 0;
+		break;
+	case '3':
+		camRotation[1] = 270;
+		camRotation[0] = camRotation[2] = 0;
+		break;
+	case '4':
+		camRotation[1] = 180;
+		camRotation[0] = camRotation[2] = 0;
+		break;
+	case '5':
+		camRotation[1] = 90;
+		camRotation[0] = camRotation[2] = 0;
+		break;
+	case '6':
+		camRotation[0] = 90;
+		camRotation[1] = camRotation[2] = 0;
+		break;
+	case '9':
+		camPosition[0] = Settings::domainSize[0]/2.0;
+		camPosition[1] = Settings::domainSize[1]/2.0;
+		camPosition[2] = Settings::domainSize[2] + (Settings::domainSize[0] + Settings::domainSize[1]) / 2;
+		break;
+	case 'D':
+		std::cout << "<renderConfig>" << std::endl;
+		std::cout << "\t<enabled>true</enabled>" << std::endl;
+		std::cout << "\t<coloring>" << currentColoring << "</coloring>" << std::endl;
+		std::cout << "\t<scale>" << currentScale << "</scale>" << std::endl;
+		std::cout << "\t<primitive>" << curPrimitiveIdx << "</primitive>" << std::endl;
+		std::cout << "\t<primitiveScaling>" << primitiveScaling << "</primitiveScaling>" << std::endl;
+		std::cout << "\t<showMembrane>" << (renderMembrane?"true":"false") << "</showMembrane>" << std::endl;
+		std::cout << "\t<showCells>" << (renderFilledCells?"true":"false") << "</showCells>" << std::endl;
+		std::cout << "\t<camPosition x0=\"" << camPosition[0] << "\" x1=\"" << camPosition[1] << "\" x2=\"" << camPosition[2] << "\" />" << std::endl;
+		std::cout << "\t<camRotation x0=\"" << camRotation[0] << "\" x1=\"" << camRotation[1] << "\" x2=\"" << camRotation[2] << "\" />" << std::endl;
+		std::cout << "</renderConfig>";
 		break;
 	default:
 		break;
@@ -987,7 +1041,7 @@ void * renderFunction(void* arg) {
 	glEndList();
 
 	glNewList(particleGeoLists+1, GL_COMPILE);
-		glutWireSphere(0.5, 8, 8);
+		glutWireSphere(0.5, 5, 5);
 	glEndList();
 
 	glNewList(particleGeoLists+2, GL_COMPILE);
@@ -1000,9 +1054,9 @@ void * renderFunction(void* arg) {
 
 	glPointSize(8.0);
 	glNewList(particleGeoLists+4, GL_COMPILE);
-			glBegin(GL_POINTS);
-			glVertex3d(0,0,0);
-			glEnd();
+		glBegin(GL_POINTS);
+		glVertex3d(0,0,0);
+		glEnd();
 	glEndList();
 
 

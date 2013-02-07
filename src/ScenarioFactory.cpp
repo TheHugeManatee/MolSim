@@ -118,13 +118,14 @@ std::function<void(Particle &)> ScenarioFactory::addAdditionalForces =
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJonesPotentialForce =
 		[] (Particle& p1, Particle& p2) {
 
-			utils::Vector<double, 3> xDif = p2.x - p1.x;
+			utils::Vector<double, 3> xDif(p2.x - p1.x);
+
 			double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
 			double sigma = (Settings::particleTypes[p1.type].sigma + Settings::particleTypes[p2.type].sigma) / 2;
 
 			double normSquared = xDif.LengthOptimizedR3Squared();
 			double sigmaNormalizedSquared = sigma*sigma/normSquared;
-			double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
+#define sigmaNormailzedRaisedBySix (sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared)
 
 			double magnitude = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix));
 
@@ -142,6 +143,7 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateLennardJones
 			p2.f[1] -= magnitude * xDif[1];
 			p2.f[2] -= magnitude * xDif[2];
 		};
+#undef sigmaNormailzedRaisedBySix
 
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 [] (Particle& p1, Particle& p2) {
@@ -194,18 +196,18 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateSmoothLJ =
 std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForce =
 		[] (Particle& p1, Particle& p2) {
 
-	utils::Vector<double, 3> xDif = p2.x - p1.x;
+	//utils::Vector<double, 3> xDif = p2.x - p1.x;
+			double xDif[3] = {p2.x[0]-p1.x[0],p2.x[1]-p1.x[1],p2.x[2]-p1.x[2]};
 
 			double epsilon = Settings::geometricMeanEpsilon[p1.type + p2.type * Settings::numParticleTypes];
 
 			double sigma = (Settings::particleTypes[p1.type].sigma + Settings::particleTypes[p2.type].sigma) / 2;
 
 			//double norm = xDif.L2Norm();
-			double normSquared = xDif.LengthOptimizedR3Squared();
+			double normSquared = xDif[0]*xDif[0] + xDif[1]*xDif[1] + xDif[2]*xDif[2];
 			double sigmaNormalizedSquared = sigma*sigma/normSquared;
 			double sigmaNormailzedRaisedBySix = sigmaNormalizedSquared*sigmaNormalizedSquared*sigmaNormalizedSquared;
 
-			utils::Vector<double, 3> resultForce;
 			double forceMagnitude = 0;
 
 			if(Settings::particleTypes[p1.type].isMolecule && (p1.type == p2.type) && (p1.type != -1)) {
@@ -239,16 +241,14 @@ std::function<void(Particle&, Particle&)> ScenarioFactory::calculateMembraneForc
 				forceMagnitude = (24*epsilon/ normSquared) * ((sigmaNormailzedRaisedBySix) - 2 * (sigmaNormailzedRaisedBySix * sigmaNormailzedRaisedBySix));
 			}
 
-			resultForce = forceMagnitude * xDif;
-
-			p1.f[0] += resultForce[0];
-			p1.f[1] += resultForce[1];
-			p1.f[2] += resultForce[2];
+			p1.f[0] += forceMagnitude * xDif[0];
+			p1.f[1] += forceMagnitude * xDif[1];
+			p1.f[2] += forceMagnitude * xDif[2];
 
 			//resultForce = resultForce * -1;
-			p2.f[0] -= resultForce[0];
-			p2.f[1] -= resultForce[1];
-			p2.f[2] -= resultForce[2];
+			p2.f[0] -= forceMagnitude * xDif[0];
+			p2.f[1] -= forceMagnitude * xDif[1];
+			p2.f[2] -= forceMagnitude * xDif[2];
 	};
 
 
@@ -724,3 +724,4 @@ SimulationScenario *ScenarioFactory::build(ScenarioType type) {
 
 	return scenario;
 }
+

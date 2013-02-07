@@ -9,8 +9,8 @@
 #include <iostream>
 
 RainbowScale::RainbowScale() {
-	huemax = 300;
-	huemin = 0;
+	huemax = 0;
+	huemin = 300;
 }
 
 RainbowScale::~RainbowScale() {
