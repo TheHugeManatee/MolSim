@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+
+<simulationConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="simulationConfig.xsd">
+       
+<!--(m): mandatory (o): optional-->     
+  
+  <deltaT>0.001</deltaT>
+  <endTime>100</endTime>
+  <dimensions>3</dimensions> <!-- (o) Standard is 3, For a two dimensionalSimulation all particles should have the same z value > 0  --> 
+  <scenarioType>Lennard-Jones-Smoothed</scenarioType> <!-- (m) Possible: Gravitational, Lennard-Jones, Membrane  -->
+  <domainSize x0="18.4" x1="18.4" x2="18.4" /><!-- (m) -->
+  <cutoffRadius scaled="1" radius="2.3" /><!-- (m) scaled implies whether the radius is scaled by the greatest sigma value or not-->
+  <lRadius>1.9</lRadius>
+  <boundaryHandling
+  	top="Periodic" bottom="Periodic"					
+  	left="Periodic" right="Periodic"		
+  	front="Periodic" back="Periodic"
+  />
+  
+  <containerType>CellListContainer</containerType> <!-- (m) Possible: ParticleContainer , CelllistContainer -->
+  <outputFrequency>100</outputFrequency>
+  <disableOutput>0</disableOutput>
+  <loggerConfigFile>Logger.properties</loggerConfigFile>
+  <outputFilePrefix>OutputFiles/ArgonLargerSuperCooling</outputFilePrefix>
+  <outputFileType>vtk</outputFileType> 
+  <saveLastState></saveLastState> <!--(o) for a given filePath the last state of the particles is saved (can be used as inputFile afterwards) -->
+  <inputFile>argonliquidlarger.state</inputFile> <!-- (o)  -->
+    <statistics fileName = "statisticsArgonSuperCooling.csv" interval="1000" deltaR = "0.03" />
+  
+  
+  <thermostatSwitch>ON</thermostatSwitch> <!-- (o) Possible:ON , OFF indicates whether the given thermostat is used. is switched OFF if left out -->
+  <thermostatSettings> <!-- (o) if left out thermostatSwitch is set OFF -->
+  	<targetTemperature>0.02</targetTemperature>
+  	<controlInterval>25</controlInterval>
+    <temperaturePerStep>0.0025</temperaturePerStep>
+  
+  </thermostatSettings>
+
+  
+ <typeList> <!-- (m) a List of types recognized by the particle generator for applying unique values for sigma and epsilon -->
+ <particleType 
+ 		sigma="1" 
+ 		epsilon="1"
+ 		mass="1"  
+ 		/>
+ </typeList>  
+ 
+ <generator>
+<!--  <cuboid>
+    <bottomLeft x0="0.575" x1="0.575" x2="0.575" />
+    <nX x0="8" x1="8" x2="8" />
+    <stepWidth>1.15</stepWidth>
+    <type>0</type>
+    <initialVelocity x0="0" x1="0" x2="0"/>
+  </cuboid> -->
+</generator>
+
+</simulationConfig>

@@ -12,7 +12,7 @@
 SimulationJobQueue::SimulationJobQueue(CellListContainer *cont) {
 	SliceJob *slice = NULL;
 	//each job has just one slice.. this seems to be the optimal case..
-	int numBlocks = 3*Settings::numThreads;
+	int numBlocks = cont->nX0 - 3;
 
 	std::vector<BlockJob *> blockList;
 
